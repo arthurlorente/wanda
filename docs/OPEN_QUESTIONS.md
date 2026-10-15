@@ -10,6 +10,8 @@
 4. How much does realistic household conversation cost per day/month? How should usage caps, warnings and graceful degradation work?
 5. Is wake-word detection local and robust enough, and how are false activations measured?
 
+**Multilingual validation:** Which languages and dialects does the chosen realtime voice model handle well, including within-session language switching? Test mixed-language interruptions and turn-taking; document actual coverage and gaps.
+
 ## P0 software stack
 
 **Assigned for Codex evaluation, not decided:** Select the simplest maintainable stack for a browser WebRTC client and portable backend, considering long-term Home Assistant and permissioned agent adapters, testing, onboarding, performance, and future non-browser satellites. Compare at least TypeScript-only and Python-backend/TypeScript-frontend approaches and document trade-offs; propose a decision before implementation.

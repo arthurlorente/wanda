@@ -6,7 +6,9 @@
 
 **Accepted P0 policy (D-029–D-033):** During setup, ask users to opt in before persistent memory is enabled. Once enabled, selectively save useful ordinary context; request explicit permission before storing sensitive context, interpreting sensitivity in context and asking when uncertain. Do not archive all conversations or raw audio by default. Store primary memory locally on Wanda's host, outside the public code repository. Users can inspect and delete saved memory and disable further saving.
 
-**Open:** Storage engine, encryption, backups, retention duration, household identity and third-party privacy implementation. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
+**Backup evaluation (D-034):** Codex will recommend a backup and restore approach, comparing on-device/local external backups, optional encrypted offsite backups, and export/import. No backup method or provider is selected. Recovery testing and user control over keys matter.
+
+**Open:** Storage engine, encryption, backup choice, retention duration, household identity and third-party privacy implementation. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.
 

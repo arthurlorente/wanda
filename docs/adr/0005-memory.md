@@ -12,6 +12,8 @@
 
 **Multi-user architecture (D-036):** Model private memories with an owner identity and distinguish them from explicitly shared household data from the beginning. P0 may initially expose a single authenticated account, but must not bake single-user access into the storage schema. Voice recognition alone is not sufficient to authorize access to another resident's memories. Full household onboarding and guest policy can be implemented later.
 
+**Voice-first identity (D-037):** Future household interactions should identify speakers primarily by voice for personalization. A voice match does not by itself grant access to private memories; protect access through independently authorized identity/session checks. Unknown voices receive guest-level permissions. Voice recognition implementation is later than P0.
+
 **Open:** Storage engine, encryption, backup choice, expiry thresholds, identity/authentication implementation and third-party privacy safeguards. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.

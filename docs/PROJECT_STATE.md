@@ -24,7 +24,7 @@
 - D-025: Codex will research licensing options and propose a recommendation for review. No license has been chosen.
 - D-026: Conversational naturalness is the primary P0 success criterion; speed and cost remain benchmarking constraints.
 - D-027: Multilingual P0 and mid-session language switching are accepted targets; actual model coverage unverified.
-- D-028: Persistent cross-session memory is in P0 scope, superseding the earlier deferral; scope of automatic remembering/retention still to decide.
+- D-028–D-033: P0 persistent memory uses opt-in consent, selective automatic ordinary memories, permission for sensitive items, and local primary storage. Retention, database, encryption and household identity are not yet selected.
 
 - Memory storage direction: local on Wanda host; consent during setup.
 

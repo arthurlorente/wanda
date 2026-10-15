@@ -31,6 +31,9 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-19 | Selective automatic memory with explicit approval for contextually sensitive details | Must / P0 | Test ordinary recall, sensitive approval, review and deletion |
 | R-20 | Memory requires setup-time opt-in; keep primary database on the local host | Must / P0 | Test memory disabled before consent and local persistence across restart |
 
+| R-21 | Context-aware expiration: durable facts persist while temporary memories expire with user override | Must / P0 design | Test temporal expiry, retention of durable preferences and user preservation/deletion |
+| R-22 | Use multi-user-ready account, ownership and memory boundaries in P0; deliver full multi-user UX in later milestones | Must / P0 architecture + Later | Validate schema separates private resident data from explicit shared household data; test denial of unauthorized cross-user reads |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

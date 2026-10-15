@@ -26,6 +26,8 @@
 - D-027: Multilingual P0 and mid-session language switching are accepted targets; actual model coverage unverified.
 - D-028: Persistent cross-session memory is in P0 scope, superseding the earlier deferral; scope of automatic remembering/retention still to decide.
 
+- Memory storage direction: local on Wanda host; consent during setup.
+
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.

@@ -36,6 +36,9 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 
 | R-23 | Voice recognition is the primary eventual household identity experience for everyday personalization, with cautious unknown-speaker fallback | Must / Later; P0 design-ready | Evaluate enrolled speakers, false matches, replays, household background speech and unknown voices; require stronger authentication for private data and privileged tools |
 
+| R-24 | Unknown speakers get general Q&A as guests; home-device commands require explicit scoped guest permission | Must / Later | Test allowed general questions and denied device commands absent grant; verify permissions cannot reveal private data |
+| R-25 | Guests can initiate speaker registration by voice without immediately using a phone; maintain in-session conversational context through enrollment | Must / Later; P0 interface-compatible | Test voice enrollment invitation, interrupted/resumed session, verification and individual opt-in before durable private memory begins |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

@@ -36,11 +36,16 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-025 | Accepted evaluation process; licenses undecided | Have Codex compare software, documentation, firmware and hardware licenses against Wanda's philosophy and integrations, then recommend choices for approval. | See [licensing evaluation brief](LICENSING_EVALUATION.md) and [Issue #6](https://github.com/arthurlorente/wanda/issues/6). No operative license added. |
 
+| D-026 | Accepted P0 success priority | Evaluate conversational naturalness first: turn-taking, pauses, interruptions, barge-in and seamless follow-ups. | Response latency and per-session cost remain measured constraints, not ignored or automatically optimized above naturalness. See [Issue #1](https://github.com/arthurlorente/wanda/issues/1). |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-026 accepted: conversational naturalness is P0's primary quality criterion; benchmark latency and cost alongside it.
+
 
 - 2026-10-15: D-024 adopted: autonomous Codex implementation through reviewed pull requests; no automatic merges.
 

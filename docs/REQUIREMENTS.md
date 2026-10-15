@@ -28,6 +28,9 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 
 | R-18 | Ensure persistent memory is opt-in/controlled, stored outside the public repository, and raw audio is not retained by default | Must / P0 | Inspect storage configuration, test disabling/deleting stored information, and verify no recordings or credentials leak into Git |
 
+| R-19 | Selective automatic memory with explicit approval for contextually sensitive details | Must / P0 | Test ordinary recall, sensitive approval, review and deletion |
+| R-20 | Memory requires setup-time opt-in; keep primary database on the local host | Must / P0 | Test memory disabled before consent and local persistence across restart |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

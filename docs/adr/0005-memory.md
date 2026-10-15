@@ -16,6 +16,8 @@
 
 **D-038 guest onboarding:** Keep session context temporary during voice-started registration. Create a persistent personal memory only after individual consent and identity verification. Consented carryover of useful context may be offered after enrollment; the transfer mechanism remains undecided.
 
+**Guest data and trust (D-039/D-040):** A temporary guest identity may retain a minimal, clearly explained set of mundane preferences during the authorized lifecycle. Voice enrollment requires distinct informed consent. Remembered information must not be sold, shared for advertising or used for commercial profiling. Avoid transmitting identifiable memories to cloud providers unless necessary for a disclosed task and consistent with the user's choices. Temporary guest access should not silently become permanent; persistent profiles require explicit authorization.
+
 **Open:** Storage engine, encryption, backup choice, expiry thresholds, identity/authentication implementation and third-party privacy safeguards. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.

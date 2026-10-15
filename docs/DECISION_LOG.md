@@ -64,6 +64,8 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-041 | Accepted | Retain identities and detailed memories locally and transmit minimum task-relevant context to cloud models. | Provider data flows and unavoidable spoken disclosures require review. |
 | D-042 | Accepted | Ask before transmitting identifiable or sensitive information to cloud AI; remember each person's approval or denial by information type. | Per-person scoped consent can be reviewed, changed or revoked; deny by default if uncertain. |
 
+| D-043 | Accepted | Remember cloud disclosure consent separately for each person, cloud provider and information type. | Approval for one provider/category does not authorize other providers or data categories; allow one-time grants, review and revocation. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

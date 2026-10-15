@@ -57,6 +57,8 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-037 | Accepted identity experience; implementation deferred | Use voice recognition as the primary, low-friction way Wanda identifies speakers for everyday household personalization. | Recognized voice is not sufficient proof for revealing private memories or performing privileged actions; use step-up authorization, handle uncertainty as guest access, and evaluate spoofing and false matches. Voice enrollment and recognition implementation not yet selected. See [ADR 0002](adr/0002-trust-boundaries.md). |
 
+| D-038 | Accepted household guest experience; later implementation | Treat unrecognized speakers as guests: answer general questions, but deny device control unless explicit guest-specific permission is granted. Allow guests to initiate registration by voice and continue the live conversation while completing enrollment. | Enrollment must establish identity and opt-in consent before creating private cross-session memory; preserve only ephemeral session context beforehand. Voice initiation does not itself grant privileges or permanent identity. See [ADR 0002](adr/0002-trust-boundaries.md). |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

@@ -79,8 +79,11 @@ across delayed/failed requests, stops the selected instance despite unrelated
 config errors, and provides a reproducible ZIP for launch without Git. **180 Python
 tests and 41 browser workflows passed locally**. The extracted app also passed
 startup, local memory persistence/deletion, mock-light permissions and shutdown
-with no Git in PATH. Remote CI/artifact delivery remains pending; no new privacy
-permission or provider commitment is introduced. Python is still required to run the ZIP.
+with no Git in PATH. [Corrected CI](https://github.com/arthurlorente/wanda/actions/runs/38735661927)
+passed all six OS/Python jobs, the 41 browser workflows and ZIP delivery.
+[Download the demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
+(GitHub sign-in may be needed; expires October 22). No new privacy permission
+or provider commitment is introduced. Python is still required to run the ZIP.
 
 ## Next actions and blockers
 

@@ -22,7 +22,9 @@ V1 is not complete. Main has not been changed or merged.
 - [PR #12](https://github.com/arthurlorente/wanda/pull/12): active cumulative branch
   `codex/wanda-demo-recovery`, based on PR #11. Local draft-loss/stop recovery and
   a committed-source ZIP builder. Implementation commit
-  `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525`; local integration and extracted startup passed.
+  `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525`; Windows configuration repair
+  `fd09723f8e771d9b780f69acb26ad2cce944b486` passed all eight CI jobs, including
+  artifact delivery. Local integration and extracted startup passed.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -100,16 +102,27 @@ V1 is not complete. Main has not been changed or merged.
   lookup before honoring an explicit private configuration file in an isolated
   environment. Lazy config resolution now honors the explicit file before requiring a home
   directory; 20 focused tests passed, including missing-home regressions and safe
-  error reporting. Corrected remote CI is pending. Artifact upload correctly
-  stayed blocked on the initial failed CI. The full corrected local suite passed
-  **180 Python tests** in 23.100s; browser code is unchanged from the 41-workflow pass.
-- The exact PR #12 commit ZIP (65 files) was extracted with macOS `ditto`, preserving
+  error reporting. Artifact upload correctly stayed blocked on the initial failed
+  CI. The full corrected local suite passed **180 Python tests** in 23.100s.
+  [Corrected CI](https://github.com/arthurlorente/wanda/actions/runs/38735661927) passed all six
+  Windows/macOS/Linux Python 3.11/3.14 jobs, 41 Chromium browser workflows and the
+  bundle job at `fd09723f8e771d9b780f69acb26ad2cce944b486`. Windows skips the two
+  OS-specific signal/symlink cases; encryption and child-input checks also passed.
+- The initial PR #12 commit `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525` ZIP (65 files) was extracted with macOS `ditto`, preserving
   executable launcher mode. With no Git in PATH and fresh external synthetic state,
   the app started, served the UI, kept cloud voice disabled, captured a consented
   preference, retained it after restart, deleted it, enforced deny/grant/mock-light
   control and stopped cleanly. Zero external calls. ZIP SHA-256:
   `96bf48ec21158f1cbbdbb5f9bcec434a043aa38f02b75a474baf63842d6c7a55`.
   Local artifact: `dist/wanda-demo-7a6d452f6b4e.zip` (ignored, not committed).
+- [Download the corrected CI demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
+  (GitHub sign-in may be required; expires October 22, 2026). CI packages its tested
+  PR preview commit `f56a58330bcbe1ee0c5b3a6d08322aae814e7e7f`, whose tree exactly
+  matches branch commit `fd09723f8e771d9b780f69acb26ad2cce944b486`. This preview is
+  not a merge into main. The 65-file archive was reproduced locally byte for byte:
+  SHA-256 `cb2e1c9fdef6e059f691bec8da9b07a03e33b4e99634e28a8cee10799a0f21a8`.
+  Local equivalent: `dist/wanda-demo-f56a58330bcb.zip`; no keys or runtime data.
+  Download retrieval succeeded. Desktop download/security prompts remain untested.
 
 ## Authorization, limits and blockers
 
@@ -117,7 +130,7 @@ V1 is not complete. Main has not been changed or merged.
   D-052: **US$10 total** synthetic voice test ceiling, replacing the original US$5
   before paid calls. No real devices, new accounts, billing changes or automatic merges.
 - Stop starting new work/calls at **2026-10-15 15:00 UTC (11am New York)** or an
-  actual usage limit. Last usage check reported 37% of the account window used;
+  actual usage limit. Last usage check reported 38% of the account window used;
   ordinary usage was allowed. Do not consume reset credits or bypass limits.
 - Supported hourly chat continuation is active through that cutoff under
   `wanda-overnight-development-until-11am`. It cannot bypass usage limits.
@@ -139,10 +152,11 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. Publish the tested lazy configuration lookup fix for Windows CI. Verify
-   corrected PR #12 remote CI/artifact
-   delivery and record the downloadable ZIP link. Root owns docs/Git; no other
-   agent owns unfinished edits. Keep this cumulative checkout and all PRs unmerged.
+1. PR #12 implementation CI and ZIP delivery are verified. Finish the evidence-only
+   handoff update, preserving the tested download link above. Any final docs CI can
+   be checked on the next continuation. Keep this cumulative checkout and all PRs
+   unmerged. Root owns documentation/Git; agents are performing bounded read-only
+   review of browser recovery and ZIP delivery, with no implementation edits.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent

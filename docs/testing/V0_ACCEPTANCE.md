@@ -144,12 +144,14 @@ commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.
 
 ## Demo recovery and delivery follow-up
 
-The `codex/wanda-demo-recovery` increment passed **178 Python tests** and **41
-local Chrome workflows**. R-10/R-18/R-34 regressions preserve newer memory/chat
+The `codex/wanda-demo-recovery` increment passed **180 Python tests** and **41
+local Chrome workflows**. The corrected [CI run](https://github.com/arthurlorente/wanda/actions/runs/38735661927)
+passed all six OS/Python jobs, Linux Chromium and bundle delivery. R-10/R-18/R-34 regressions preserve newer memory/chat
 drafts through delays and failures, prevent duplicate pending saves, distinguish
 confirmed mutations from failed refreshes and disclose uncertain outcomes without
 automatic retries. R-03/R-14 recovery checks preserve data-folder scope and report
-unverifiable shutdown state honestly. A POSIX signal-cleanup case is skipped on
+unverifiable shutdown state honestly. Explicit private configuration is honored
+before default home-folder lookup, with missing-home failure regressions. A POSIX signal-cleanup case is skipped on
 Windows because process termination there bypasses Python's signal handler.
 
 R-12/R-14 delivery checks validate committed-only ZIP contents, deterministic

@@ -55,7 +55,9 @@ CI builds the bundle only after the full Python/platform and browser jobs succee
 It uploads the ZIP as a single file using GitHub's documented
 [artifact upload option](https://github.com/actions/upload-artifact#upload-an-individual-file-unzipped),
 preserving the permissions recorded inside our ZIP. No release is published and
-no PR is merged. Local build and extraction evidence belongs in the checkpoint.
+no PR is merged. For pull requests, the manifest identifies GitHub’s tested
+preview commit, which is not a merge into main. The checkpoint links its branch
+head and records checksum/reproduction evidence.
 
 Remove this packaging increment to return to checkout-based launch. Removing an
 extracted source folder does not delete the separate private data folder. Do not

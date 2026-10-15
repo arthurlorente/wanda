@@ -21,8 +21,9 @@ If the browser says it is locked, reopen Start Wanda so it receives the new loca
 session key. Do not share the launch link. If port 8765 is busy, set `WANDA_PORT`
 to 8766 in a private config. Local service startup does not expose Wanda to your LAN.
 
-You can also [download and extract a demo ZIP](DEMO_BUNDLE.md), then use its
-launcher without Git. It uses the same private data folder on this computer;
+You can also [download the tested demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
+and [extract it](DEMO_BUNDLE.md), then use its launcher without Git. GitHub may
+ask you to sign in; this download expires October 22, 2026. It uses the same private data folder on this computer;
 stop an older running copy before testing the new one. Python is still required.
 
 If **Stop Wanda** cannot verify the running session, press **Control+C** in the
@@ -61,16 +62,19 @@ Use invented information throughout:
 
 ## What was tested
 
-The latest published connection fixes passed **160 Python checks** on Windows,
-macOS and Linux with Python 3.11 and 3.14, plus encryption and browser checks.
-See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38708512976).
-The subsequent conversation fix passed **31 browser workflows** locally and in
-[Linux CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553), including
-memory recovery, permission denials, outages, mobile layout and microphone cleanup
-using simulated audio APIs. Typed follow-ups now wait for Wanda to stop before
-requesting another response; a second draft stays in the text box. Missing
-acknowledgements stop the microphone. These checks do not confirm real voice
-quality or physical devices. Current review/CI status is in the [checkpoint](DEVELOPMENT_CHECKPOINT.md).
+The current demo passed **180 Python checks** across Windows, macOS and Linux
+with Python 3.11 and 3.14, plus encryption checks and **41 browser workflows**.
+Two OS-specific tests skip on Windows. The [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38735661927)
+also produced the downloadable ZIP. A local rebuild matched its checksum exactly.
+An extracted earlier build passed startup, memory persistence/deletion, simulated
+light permissions and shutdown without Git installed in its runtime PATH.
+
+Browser tests cover encrypted recovery, permission denials, outages, mobile layout,
+follow-up sequencing, microphone cleanup using simulated audio APIs, and preserving
+newer drafts through slow or failed requests. A missing response acknowledgement
+stops the microphone. Lost writes disclose uncertainty rather than retrying.
+These checks do not confirm real voice quality, desktop download prompts or physical
+devices. Exact versions and evidence are in the [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
 ## Encrypted recovery increment
 

@@ -20,6 +20,7 @@
 - D-019: P0 will be developed as a portable application; permanent host selection is deferred.
 - D-020 through D-022: Browser client, click-to-connect free conversation in P0, wake word later, and optional free-text alternatives in planning questions.
 - D-023: Codex will evaluate and propose the P0 technology stack; none has been selected.
+- D-024: Codex can implement scoped issues autonomously on branches; changes require human-reviewed PRs before merge.
 
 ## Decision status
 

@@ -59,6 +59,11 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-038 | Accepted household guest experience; later implementation | Treat unrecognized speakers as guests: answer general questions, but deny device control unless explicit guest-specific permission is granted. Allow guests to initiate registration by voice and continue the live conversation while completing enrollment. | Enrollment must establish identity and opt-in consent before creating private cross-session memory; preserve only ephemeral session context beforehand. Voice initiation does not itself grant privileges or permanent identity. See [ADR 0002](adr/0002-trust-boundaries.md). |
 
+| D-039 | Accepted | Device-specific guest permission profiles are temporary by default and may become persistent with resident approval. | Minimize guest records; see [HOUSEHOLD_TRUST](HOUSEHOLD_TRUST.md). |
+| D-040 | Accepted foundational principle | Do not commercialize information entrusted to Wanda by household members or guests. | Local control, consent, and transparent provider use; see [IDENTITY](IDENTITY.md). |
+| D-041 | Accepted | Retain identities and detailed memories locally and transmit minimum task-relevant context to cloud models. | Provider data flows and unavoidable spoken disclosures require review. |
+| D-042 | Accepted | Ask before transmitting identifiable or sensitive information to cloud AI; remember each person's approval or denial by information type. | Per-person scoped consent can be reviewed, changed or revoked; deny by default if uncertain. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

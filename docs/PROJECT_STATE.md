@@ -1,68 +1,58 @@
 # Wanda — Current project state
 
-**As of:** 2026-10-15
-**Phase:** Foundation and planning complete enough for P0 preparation; **no functioning Wanda voice prototype has been built or validated**.
+**As of:** 2026-10-15. **Phase:** Runnable V0 on `codex/wanda-v0`, awaiting owner
+review. **V1 is not complete.** Main remains untouched by this implementation.
 
-## Verified repository state
+## Implemented and locally verified
 
-- Public repository: https://github.com/arthurlorente/wanda
-- Initial README, architectural sketches, five technical ADRs, security/contribution guidance and issue templates are committed.
-- GitHub Issues:
-  - [#1 — P0 real-time conversational voice](https://github.com/arthurlorente/wanda/issues/1)
-  - [#2 — P1 Home Assistant](https://github.com/arthurlorente/wanda/issues/2)
-  - [#3 — P2 permissioned agents and memory](https://github.com/arthurlorente/wanda/issues/3)
-  - [#4 — P3 voice satellites](https://github.com/arthurlorente/wanda/issues/4)
-  - [#5 — P4 room handoff](https://github.com/arthurlorente/wanda/issues/5)
-  - [#6 — license decisions](https://github.com/arthurlorente/wanda/issues/6)
-- This consolidation added a context index, decision register, open questions, requirements and decision-capture workflow.
-- README uses Wanda's name without entertainment-brand disclaimers.
-- Foundational first-person manifesto and initial personality specification documented; runtime character behavior has **not** been implemented.
-- D-019: P0 will be developed as a portable application; permanent host selection is deferred.
-- D-020 through D-022: Browser client, click-to-connect free conversation in P0, wake word later, and optional free-text alternatives in planning questions.
-- D-023: Codex will evaluate and propose the P0 technology stack; none has been selected.
-- D-024: Codex can implement scoped issues autonomously on branches; changes require human-reviewed PRs before merge.
-- D-025: Codex will research licensing options and propose a recommendation for review. No license has been chosen.
-- D-026: Conversational naturalness is the primary P0 success criterion; speed and cost remain benchmarking constraints.
-- D-027: Multilingual P0 and mid-session language switching are accepted targets; actual model coverage unverified.
-- D-028–D-033: P0 persistent memory uses opt-in consent, selective automatic ordinary memories, permission for sensitive items, and local primary storage. Retention, database, encryption and household identity are not yet selected.
+- Browser interface with scripted English/Portuguese/Spanish conversation,
+  versioned persona, visible microphone/mode state and local privacy panels.
+- Python 3.11+ standard-library server; no runtime packages or GPU. Mac/Windows
+  start/stop/configure launchers and portable CLI/doctor.
+- Real opt-in SQLite memory outside Git, conservative selective capture,
+  sensitive/uncertain review, inspection/edit/export/delete/disable, expiry and
+  restart persistence. Owner/provider/category consent engine and atomic one-time
+  grants; no saved-memory cloud transmission in V0.
+- Deny-default per-light/action permissions, separate confirmations, revocation,
+  audit, duplicate suppression and truthful state/outage handling with fake lights.
+- Optional OpenAI WebRTC SDP adapter and bounded Home Assistant REST light adapter.
+  Provider/device transports are verified with synthetic mocks, **not live services**.
+- 89 Python tests passed on macOS Python 3.14.5; 11 installed-Chrome browser
+  workflows passed with synthetic microphone/WebRTC APIs. Launcher subprocess
+  start/reopen/stop/restart verified. Node syntax and diff checks passed.
+- The same 89-test suite, doctor and JS syntax checks passed in all six macOS,
+  Linux and Windows CI jobs on Python 3.11/3.14; Linux Chromium browser checks
+  also passed. [PR #8](https://github.com/arthurlorente/wanda/pull/8) is open,
+  unmerged; exact commit/run evidence is in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
-- Memory storage direction: local on Wanda host; consent during setup.
-- D-034: Codex will compare backup and restore options for local memory; no backup method chosen.
-- D-035: Durable memories persist and short-lived facts expire according to context; thresholds pending.
-- D-036: P0 storage and identity boundaries must anticipate multiple residents, even if initial UX serves one account.
-- D-037: Voice recognition is the intended default household identity UX; private memories and privileged actions require independent step-up authorization. Recognition implementation is later.
+## Decisions and limitations
 
-- D-038: Guests can ask general questions; device controls require explicit authorization; registration can start by voice without prematurely storing guest memories.
+Accepted product requirements D-001–D-049 remain unchanged. [ADR 0008](adr/0008-v0-portable-stack.md)
+records **provisional** Python/native-JS/SQLite/loopback architecture, comparison
+with TypeScript alternatives, boundaries and reversal. These are implemented
+choices for review, not owner-approved production policy.
 
-- D-039: Device-scoped guest permission profiles default to temporary and can be upgraded with authorized approval.
-- D-040: Household entrusted information must not become a commercial data asset; apply transparent consent and provider handling throughout design. See [HOUSEHOLD_TRUST](HOUSEHOLD_TRUST.md).
+The V0 local OS-user capability is not multi-resident authentication. Database and
+exports are plaintext with file permissions. Automatic extraction is deliberately
+narrow. Home grants/audit reset on restart. Cloud voice has no saved memory, home
+or computer tools. No raw audio or transcript archive exists. Provider costs and
+quality are not measured. No live key, physical device, private household data,
+account creation, billing change, purchase or automatic merge was used.
 
-- D-039–D-042: Scoped expiring guest device permissions; non-commercial household data stewardship; minimum cloud context; per-person, per-information-type consent for sensitive/identifiable cloud disclosure. Implementation and provider evaluations pending.
+## Next actions and blockers
 
-- D-044–D-049: Final design decisions accepted. Persona follows the manifesto; autonomy is controlled and includes suggestions; device permissions are user-defined; failures degrade gracefully; V1 includes verified home control; privacy and independence have priority.
-- [Issue #7](https://github.com/arthurlorente/wanda/issues/7) contains the implementation handoff. No Codex run has been initiated or verified.
+1. Owner: try [MORNING_HANDOFF](MORNING_HANDOFF.md); no account or key needed.
+2. Review ADR0008, storage/authentication boundary and [provider evidence](PROVIDERS.md).
+3. If approved, privately configure an API key with Configure Voice; manually test
+   pauses, interruptions, languages, disclosure and measured cost.
+4. Configure one safe Home Assistant light and have the owner personally validate
+   permissions and observed state. No unattended household actions.
+5. Add real voice-memory integration only after resolving unavoidable live-audio
+   disclosure and identity/consent. Keep [Issue #7](https://github.com/arthurlorente/wanda/issues/7)
+   open until all V1 criteria have evidence.
+6. Review licensing ([#6](https://github.com/arthurlorente/wanda/issues/6)), encrypted
+   backups, robust household authentication and durable home audit as separate work.
 
-## Decision status
-
-- **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.
-- **Proposed/needs validation:** Exact realtime API/model, WebRTC topology, satellite selection, persistent-memory backend and consent/retention design, permanent host selection, OpenClaw API boundary, identity solution.
-- **Unresolved:** Software/docs/hardware licenses, data retention policy, costs, user consent details, latency/quality targets, Codex technology-stack recommendation and P0 implementation stack.
-
-## Next work, in order
-
-1. Check and reconcile this consolidation with the project owner's intent; log corrections as documentation updates.
-2. Have Codex evaluate licenses via [#6](https://github.com/arthurlorente/wanda/issues/6) and [licensing brief](LICENSING_EVALUATION.md); approve a license before inviting external contributions.
-3. Specify P0 experiments and acceptance criteria in [#1](https://github.com/arthurlorente/wanda/issues/1).
-4. Build P0 on a branch/PR, not directly on main. Compare measured conversational quality against the official ChatGPT Voice experience.
-5. Make hardware purchases only after baseline measurements justify them.
-
-## Known blockers / caution
-
-- No code, test run, audio stream or benchmark has demonstrated the intended user experience.
-- No API key or billing configuration should enter Git.
-- Public repo != licensed open source until license files are chosen.
-- Cross-room, local fallback and comprehensive persistent memory are goals, not current capabilities.
-
-## Updating this file
-
-Keep this short and operational. Whenever an accepted change alters scope, milestone, status, blocker, or next action, update the relevant section along with its issue/PR. Review at the end of significant work sessions; do not invent completion claims.
+Satellite hardware, wake word, voiceprints, room handoff and general computer
+agents remain later. See [acceptance mapping](testing/V0_ACCEPTANCE.md),
+[human actions](HUMAN_ACTIONS_REQUIRED.md) and [checkpoint/PR](DEVELOPMENT_CHECKPOINT.md).

@@ -1,5 +1,10 @@
 # Roadmap
 
+**V0 progress (2026-10-15):** local browser, memory and permissioned mock-home
+demonstration implemented on a review branch. Optional real adapters are present;
+live voice and genuine Home Assistant evidence are still needed for P0/V1 gates.
+See [current state](PROJECT_STATE.md) and [acceptance map](testing/V0_ACCEPTANCE.md).
+
 - **P0 Voice + memory foundation:** Portable browser-based real-time conversational voice, multilingual switching, and private persistent cross-session memory; measure interruption, natural pauses, turn-taking, latency, and authorized recall/deletion. No permanent host selected.
 - **P1 Home:** Scoped Home Assistant controls with local-control fallback.
 - **P2 Agent + advanced memory:** Restricted OpenClaw tools, approvals, expanded structured/searchable memory, advanced user/guest boundaries and export workflows, building on the P0 memory foundation.

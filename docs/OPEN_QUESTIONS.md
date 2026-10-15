@@ -14,6 +14,10 @@
 
 ## P0 software stack
 
+**Provisional V0 answer available:** [ADR 0008](adr/0008-v0-portable-stack.md)
+compares TypeScript end to end, Python + TypeScript and Python + native JavaScript.
+The last is implemented under unattended discretion. Owner acceptance remains open.
+
 **Assigned for Codex evaluation, not decided:** Select the simplest maintainable stack for a browser WebRTC client and portable backend, considering long-term Home Assistant and permissioned agent adapters, testing, onboarding, performance, and future non-browser satellites. Compare at least TypeScript-only and Python-backend/TypeScript-frontend approaches and document trade-offs; propose a decision before implementation.
 
 ## Device and deployment
@@ -45,5 +49,9 @@
 20. Should GitHub Discussions and Projects be enabled to separate exploratory discussions from accepted work?
 
 ## Rule for closing a question
+
+V0 evidence is mapped in [acceptance checks](testing/V0_ACCEPTANCE.md). Local
+storage/permission tests do not close live audio, real device, multi-user identity,
+provider retention, cost, encryption or backup questions.
 
 Provide a link to evidence, acceptance-test output, PR, or an ADR. Update the decision register and any affected requirements/architecture. No answer should silently transition from proposed to accepted.

@@ -1,0 +1,11 @@
+{
+  "WANDA_PORT": 8765,
+  "WANDA_ENABLE_CLOUD_VOICE": false,
+  "OPENAI_API_KEY": "",
+  "WANDA_VOICE_MODEL": "gpt-realtime-2.1",
+  "WANDA_HOME_MODE": "mock",
+  "HOME_ASSISTANT_URL": "",
+  "HOME_ASSISTANT_TOKEN": "",
+  "WANDA_HOME_ENTITIES": [],
+  "WANDA_HA_ALLOW_INSECURE_HTTP": false
+}

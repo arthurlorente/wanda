@@ -1,6 +1,36 @@
 # Wanda — An Open Home Voice Agent
 
-Wanda is a community-oriented, privacy-conscious **experimental** platform for natural conversational voice, home automation, and permissioned computer agents. This is an early design, **not a working or production-ready assistant**.
+Wanda is a community-oriented, privacy-conscious **experimental** platform for natural conversational voice, home automation, and permissioned computer agents. This branch contains a runnable **V0 demonstration**, not a completed V1 or a production assistant.
+
+## Try V0
+
+On a Mac, double-click **Start Wanda.command** in this folder. On Windows,
+double-click **Start Wanda.bat**. A browser opens automatically. Python 3.11 or
+newer is the only runtime requirement; there are no packages to install, no GPU
+requirement, and no API key needed for the local demo.
+
+On Linux, or from a terminal on macOS:
+
+```sh
+python3 -m wanda
+```
+
+Keep the launcher window open. Use **Stop Wanda** or Control+C to stop.
+See the plain-English [morning handoff](docs/MORNING_HANDOFF.md) for a five-minute
+walkthrough, configuration, and what is simulated.
+
+| Capability | V0 status |
+| --- | --- |
+| Browser conversation | Local scripted demo in English, Portuguese, Spanish; no general local AI |
+| Persistent memory | Real local SQLite, opt-in, review/edit/export/delete and conservative selective capture |
+| Home controls | Simulated lights by default; permissions, confirmation, verification and outage handling |
+| Cloud voice | Optional OpenAI WebRTC adapter and explicit disclosure; live audio quality/account access not verified |
+| Home Assistant | Bounded REST light adapter with mocked transport tests; real devices not tested |
+| Household identity | One local OS-user capability; no voice authentication or separate resident login |
+
+No microphone starts automatically. No saved memory is sent to the voice provider.
+Private state lives outside this repository. Real conversation and device
+acceptance tests remain necessary for V1.
 
 ## Why Wanda exists
 
@@ -43,6 +73,19 @@ Do not publish real API keys, household network details, location information, r
 
 ## Development
 Please read [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) before contributing.
+
+```sh
+python3 -m wanda --doctor    # Check runtime/config without contacting providers
+python3 scripts/check.py    # Syntax, unit, integration and HTTP security tests
+python3 -m wanda --stop     # Stop only this Wanda instance
+```
+
+No installation/build step is needed. The source files are the runnable artifact.
+Optional browser regression checks are documented in [testing](docs/testing/V0_ACCEPTANCE.md).
+Do not place real keys in `.env.example` or `config.example.json`.
+For optional integrations, copy the JSON template to a private folder **outside**
+this checkout and point `WANDA_CONFIG` to it. See [Voice](docs/VOICE.md),
+[Memory](docs/MEMORY.md), [Home](docs/HOME.md), and [provisional architecture](docs/adr/0008-v0-portable-stack.md).
 
 ## License
 **Pending.** Software, documentation and hardware licenses have not been selected; public visibility alone does not grant open-source reuse rights.

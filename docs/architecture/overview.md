@@ -1,6 +1,9 @@
 # Architecture overview
 
-**Status: proposed, not validated.**
+**Status:** Whole-home architecture remains a target. The implemented V0 is
+documented in [ADR 0008](../adr/0008-v0-portable-stack.md) and uses a local Python
+HTTP service, native browser client, private SQLite and replaceable voice/home
+adapters. No satellite, OpenClaw or whole-home rollout is implemented.
 
 Room voice satellites → local audio/session gateway → cloud realtime speech-to-speech.
 

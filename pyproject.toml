@@ -1,0 +1,7 @@
+[project]
+name = "wanda-home"
+version = "0.1.0"
+description = "An experimental local-first browser home assistant"
+requires-python = ">=3.11"
+dependencies = []
+# Licensing is pending owner review. Do not publish this package yet.

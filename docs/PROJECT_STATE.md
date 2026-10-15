@@ -27,6 +27,7 @@
 - D-028–D-033: P0 persistent memory uses opt-in consent, selective automatic ordinary memories, permission for sensitive items, and local primary storage. Retention, database, encryption and household identity are not yet selected.
 
 - Memory storage direction: local on Wanda host; consent during setup.
+- D-034: Codex will compare backup and restore options for local memory; no backup method chosen.
 
 ## Decision status
 

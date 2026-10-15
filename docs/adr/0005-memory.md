@@ -18,6 +18,8 @@
 
 **Guest data and trust (D-039/D-040):** A temporary guest identity may retain a minimal, clearly explained set of mundane preferences during the authorized lifecycle. Voice enrollment requires distinct informed consent. Remembered information must not be sold, shared for advertising or used for commercial profiling. Avoid transmitting identifiable memories to cloud providers unless necessary for a disclosed task and consistent with the user's choices. Temporary guest access should not silently become permanent; persistent profiles require explicit authorization.
 
+**Cloud permissions (D-041/D-042):** Keep detailed memories and identity mappings local and share only task-relevant context. Before transmitting identifiable or sensitive memories or personal details to a cloud AI service, seek explicit permission; retain the individual's grant/denial per information type and scope for reuse. Users can inspect and revoke grants. Missing or ambiguous authorization means no disclosure. Another resident's permission never applies to someone else's data. Consent records are local and access-controlled; any unavoidable disclosure in live audio should be explained during onboarding.
+
 **Open:** Storage engine, encryption, backup choice, expiry thresholds, identity/authentication implementation and third-party privacy safeguards. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.

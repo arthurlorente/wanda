@@ -21,6 +21,10 @@ After every substantive **agreed** product, engineering or project decision, fol
 
 Read [docs/IDENTITY.md](docs/IDENTITY.md) before proposing features, implementation trade-offs, UX, hardware or project messaging. Wanda explicitly rejects the JARVIS / Big AI paradigm of an elite, obedient, institution-controlled assistant. Favor affordable, understandable, user-governed, inspectable designs; surface trade-offs when depending on proprietary cloud services. Do not turn the repository's identity documentation into a discussion of entertainment franchises or name origins. Treat this as an engineering review criterion, not just marketing language.
 
+## Wanda's runtime personality — future implementation
+
+Read [docs/MANIFESTO.md](docs/MANIFESTO.md) and [docs/PERSONALITY.md](docs/PERSONALITY.md) when implementing conversational behavior, prompt design, voice tuning, or memory. Preserve the manifesto as a character/design artifact; do not simply paste it as an unrestricted system prompt or pretend Wanda is sentient. Follow the concrete behavior and consent boundaries in PERSONALITY.md; test the actual results and record any changes through the decision workflow.
+
 ## Safety and engineering
 
 4. Do not claim APIs, model availability, prices, firmware support, or performance are verified without reproducible evidence.

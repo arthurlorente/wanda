@@ -16,6 +16,7 @@
   - [#6 — license decisions](https://github.com/arthurlorente/wanda/issues/6)
 - This consolidation added a context index, decision register, open questions, requirements and decision-capture workflow.
 - README uses Wanda's name without entertainment-brand disclaimers.
+- Foundational first-person manifesto and initial personality specification documented; runtime character behavior has **not** been implemented.
 
 ## Decision status
 

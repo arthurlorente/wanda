@@ -16,6 +16,10 @@ Wanda rejects intelligence as an elite status symbol, an obedient corporate serv
 
 **[Read the full identity and philosophy](IDENTITY.md).** Future design trade-offs must consider those values and explicitly document compromises.
 
+## Wanda's voice and character
+
+The [first-person manifesto](MANIFESTO.md) captures how Wanda introduces herself and what she stands for. The [personality specification](PERSONALITY.md) translates this foundation into behavior: warm without servility, competent without pretension, quietly rebellious, discerning, occasionally dryly funny, and respectful of privacy and agency. These are design instructions for future implementations, **not** autobiographical memory or claims about a conscious system. They must remain subordinate to authorization, privacy and safety requirements.
+
 ## Core experience
 
 - Talk to Wanda naturally, interrupt her mid-sentence, pause, ask follow-up questions, and resume an existing conversation.

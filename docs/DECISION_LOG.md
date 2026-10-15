@@ -23,12 +23,15 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-015 | Unresolved | Choose software, documentation and hardware licenses. | [Issue #6](https://github.com/arthurlorente/wanda/issues/6). |
 | D-016 | Unresolved | Choose exact voice provider/model, version and transport implementation. | API compatibility, quality and spending are not yet measured. |
 | D-017 | Accepted foundational identity | Wanda is the **antithesis of the JARVIS / Big AI assistant model**: extraordinary intelligence for ordinary people, not a luxury servant or opaque institution-controlled product. | [Identity and philosophy](IDENTITY.md) defines design consequences, safeguards, and explicit cloud-dependency caveats. |
+| D-018 | Accepted character foundation; implementation pending | Preserve Wanda's first-person manifesto as the foundation of her future personality, with a distinct behavioral specification. | [MANIFESTO](MANIFESTO.md) and [PERSONALITY](PERSONALITY.md); future runtime prompts and memory systems must reflect them without claiming consciousness or overriding safety. |
 
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-018 accepted: first-person manifesto preserved and initial personality behavior specification established for later implementation.
 
 - 2026-10-15: D-017 accepted and the project's antithesis-to-JARVIS / Big AI philosophy established as foundational product identity, not a brand-origin story.
 

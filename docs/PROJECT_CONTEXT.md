@@ -20,6 +20,10 @@ Wanda rejects intelligence as an elite status symbol, an obedient corporate serv
 
 The [first-person manifesto](MANIFESTO.md) captures how Wanda introduces herself and what she stands for. The [personality specification](PERSONALITY.md) translates this foundation into behavior: warm without servility, competent without pretension, quietly rebellious, discerning, occasionally dryly funny, and respectful of privacy and agency. These are design instructions for future implementations, **not** autobiographical memory or claims about a conscious system. They must remain subordinate to authorization, privacy and safety requirements.
 
+## Accepted final V1 product choices (D-044–D-049)
+
+Wanda uses the manifesto as her enduring character north star: warm, witty and adaptive, with room for thoughtful disagreement. She suggests useful actions proactively and performs only those routine tasks explicitly authorized for autonomy. Device controls have resident-defined scopes and confirmation thresholds. Errors and outages lead to transparent graceful degradation and safe local capabilities rather than invented completion. V1 requires multilingual natural voice, local consented memory, and genuinely working permissioned home automation. Privacy and independence are non-negotiable priorities above mere convenience or performance; provider exceptions require conscious review.
+
 ## Core experience
 
 - Talk to Wanda naturally, interrupt her mid-sentence, pause, ask follow-up questions, and resume an existing conversation.
@@ -53,7 +57,7 @@ Wanda should remember ordinary personal context the way a considerate host might
 
 ## Development and deployment approach
 
-P0's first interaction is a **browser-based interface**, implemented as one client of an independently designed service. For P0, a person **clicks to connect** and then converses naturally, including interruptions and follow-ups. The intended household experience uses a **Wanda wake word**; its detection mechanism is deferred. P0 includes a private **persistent cross-session memory foundation** with inspectability and deletion; exact retention/automatic capture rules still need a decision. P0 will be developed as a **portable application**, runnable on an ordinary development machine without depending on the RTX 4080 Super or committing to the older gaming laptop. The permanent always-on host will be chosen after voice experiments and measured resource requirements. Document cross-platform setup and isolate device-specific code and configuration where practical.
+P0's first interaction is a **browser-based interface**, implemented as one client of an independently designed service. For P0, a person **clicks to connect** and then converses naturally, including interruptions and follow-ups. The intended household experience uses a **Wanda wake word**; its detection mechanism is deferred. P0 includes a private **persistent cross-session memory foundation** with inspectability and deletion; context-aware retention and selective automatic capture under consent are accepted directions, with exact implementation settings still open. P0 will be developed as a **portable application**, runnable on an ordinary development machine without depending on the RTX 4080 Super or committing to the older gaming laptop. The permanent always-on host will be chosen after voice experiments and measured resource requirements. Document cross-platform setup and isolate device-specific code and configuration where practical.
 
 ## Initial constraints (planning targets; not measured)
 

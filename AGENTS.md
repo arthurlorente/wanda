@@ -29,6 +29,10 @@ Read [docs/MANIFESTO.md](docs/MANIFESTO.md) and [docs/PERSONALITY.md](docs/PERSO
 
 The initial programming language/framework stack has **not** been selected. Before starting P0 implementation, compare TypeScript end-to-end with Python backend plus TypeScript frontend (and other compelling options). Recommend one based on portability, maintainability, real-time browser audio/API support, testing, future Home Assistant and agent integration, complexity and accessible contributor setup. Present a clear rationale and trade-offs; record the selected architecture in an ADR after review rather than treating the recommendation as already accepted.
 
+## Coding autonomy and review
+
+Codex is authorized to autonomously research, implement and test **scoped, approved requirements** on feature branches and open pull requests. Do not commit implementation changes directly to main and **never merge a PR without human review and approval**. Raise consequential architecture, security/privacy, authentication/permissions, deployment, provider commitments or cost decisions for review rather than treating them as delegated. Provide tests, acceptance-criteria mapping, documentation changes and risks in each PR. See docs/WORKFLOW.md.
+
 ## Safety and engineering
 
 4. Do not claim APIs, model availability, prices, firmware support, or performance are verified without reproducible evidence.

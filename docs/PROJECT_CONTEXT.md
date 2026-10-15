@@ -28,6 +28,10 @@ The [first-person manifesto](MANIFESTO.md) captures how Wanda introduces herself
 - Wanda can answer questions, research, operate home devices and delegate scoped computer tasks.
 - Wanda can recall prior discussions and projects across sessions, with understandable review, export and deletion controls.
 
+## Household trust and guests
+
+Wanda should remember ordinary personal context the way a considerate host might, without turning details entrusted to a household into a commercial data asset. Guest memory should be minimal and context-aware. Voice identity requires separately informed consent. Device access starts with temporary, scoped permissions, and an authorized resident may explicitly turn those into durable guest profiles. Local storage alone does not mean private processing: document and minimize any personal context sent to third-party voice and model providers.
+
 ## Principles and non-negotiables
 
 1. **People first:** Household usefulness, personality and autonomy matter more than impressing a demo audience.

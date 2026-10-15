@@ -39,6 +39,11 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-24 | Unknown speakers get general Q&A as guests; home-device commands require explicit scoped guest permission | Must / Later | Test allowed general questions and denied device commands absent grant; verify permissions cannot reveal private data |
 | R-25 | Guests can initiate speaker registration by voice without immediately using a phone; maintain in-session conversational context through enrollment | Must / Later; P0 interface-compatible | Test voice enrollment invitation, interrupted/resumed session, verification and individual opt-in before durable private memory begins |
 
+| R-26 | Guest device grants use device-scoped profiles, temporary by default, with resident-approved persistence | Must / Later | Validate expiry, revocation and prohibition of ungranted device actions |
+| R-27 | Household and guest information is not used for sale, advertising or commercial profiling | Must / ongoing | Verify data flow, retention and provider policies |
+| R-28 | Cloud AI receives only necessary task context; identity and detailed memory stay local | Must / P0 design + ongoing | Inspect and minimize provider payloads; document unavoidable voice/audio exposure |
+| R-29 | Ask before cloud disclosure of identifiable or sensitive information and store person-specific approvals or denials by information type | Must / P0 design + Later multi-user UX | Test category grants, denials, missing permission prompts, updates/revocation and isolation across residents |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

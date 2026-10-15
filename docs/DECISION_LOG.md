@@ -42,11 +42,16 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-028 | Accepted P0 scope expansion; implementation pending | Implement persistent cross-session memory from the first voice prototype, rather than session-only context or a later milestone. | Move the minimum viable private memory capability into P0; preserve consent, access controls, inspectability and deletion, with full multi-user/agent memory enhancements phased later. Supersedes prior P0 memory deferral in roadmap and requirements; [ADR 0005](adr/0005-memory.md). |
 
+| D-029 | Accepted P0 memory policy direction; defaults pending | Use **selective automatic memory with user controls**, not save-only-on-command and not blanket transcript archival. | Extract useful context and preferences from conversations under consented settings, with inspect/delete/disable controls; sensitive information, retention defaults, confirmation policy, and identity scope require separate decisions. See [ADR 0005](adr/0005-memory.md). |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-029 accepted: selective automatic memory with user controls; detailed sensitivity and retention rules remain open.
+
 
 - 2026-10-15: D-028 accepted: persistent cross-session memory is now within P0 scope, superseding earlier deferral; specific memory granularity and retention remain open.
 

@@ -47,6 +47,9 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-030 | Accepted | Save ordinary useful memories selectively when enabled; sensitive memories require explicit prior approval. | The user can inspect, delete and disable memories. |
 | D-031 | Accepted | Classify memory sensitivity from subject and context, asking permission when uncertain. | Ordinary preferences need not be treated like sensitive diagnoses, finances or intimate information; third-party privacy matters. |
 
+| D-032 | Accepted | Offer memory opt-in during setup. | User choice before persistent storage. |
+| D-033 | Accepted | Keep the primary memory database on Wanda's local host. | Household ownership; database and backup choices pending. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

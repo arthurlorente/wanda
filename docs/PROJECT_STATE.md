@@ -35,7 +35,7 @@
 - D-038: Guests can ask general questions; device controls require explicit authorization; registration can start by voice without prematurely storing guest memories.
 
 - D-039: Device-scoped guest permission profiles default to temporary and can be upgraded with authorized approval.
-- D-040: Household entrusted information must not become a commercial data asset; apply transparent consent and provider handling throughout design.
+- D-040: Household entrusted information must not become a commercial data asset; apply transparent consent and provider handling throughout design. See [HOUSEHOLD_TRUST](HOUSEHOLD_TRUST.md).
 
 ## Decision status
 

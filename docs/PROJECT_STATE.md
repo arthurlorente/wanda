@@ -32,6 +32,8 @@
 - D-036: P0 storage and identity boundaries must anticipate multiple residents, even if initial UX serves one account.
 - D-037: Voice recognition is the intended default household identity UX; private memories and privileged actions require independent step-up authorization. Recognition implementation is later.
 
+- D-038: Guests can ask general questions; device controls require explicit authorization; registration can start by voice without prematurely storing guest memories.
+
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.

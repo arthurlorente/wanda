@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: '22'
       - run: node --check web/app.js
+      - run: node --check web/backup.js
+      - run: node --test tests/backup_crypto.test.cjs
   browser:
     runs-on: ubuntu-latest
     steps:

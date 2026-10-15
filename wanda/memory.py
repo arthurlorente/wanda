@@ -6,6 +6,7 @@ and obtain ``approved=True`` only from a separate explicit review action.
 """
 
 from contextlib import contextmanager
+import json
 import math
 import os
 from pathlib import Path
@@ -23,6 +24,9 @@ MAX_INPUT_CHARS = 8000
 MAX_DISCLOSURE_ITEMS = 8
 MAX_DISCLOSURE_CHARS = 4000
 MAX_MEMORIES_PER_OWNER = 1000
+MAX_BACKUP_BYTES = 8 * 1024 * 1024
+BACKUP_FORMAT = "wanda-memory-backup"
+BACKUP_VERSION = 1
 TEMPORARY_TTL_SECONDS = 24 * 60 * 60
 
 # Full utterance matches only. Never extract a safe-looking substring from a
@@ -106,7 +110,7 @@ def _boolean(value):
 def _text(value, limit=MAX_MEMORY_CHARS):
     if not isinstance(value, str) or not value.strip() or len(value) > limit:
         raise ValueError("Memory text is empty or too long.")
-    if any(ord(char) < 32 and char not in "\n\t" for char in value):
+    if any((ord(char) < 32 and char not in "\n\t") or 127 <= ord(char) <= 159 for char in value):
         raise ValueError("Memory text contains unsupported control characters.")
     # Leading/trailing whitespace is not meaningful. Internal text is never
     # silently truncated or rewritten for an explicitly reviewed manual save.
@@ -140,6 +144,69 @@ def _disclosure_categories(text, category):
     if _ordinary_preference(text) is None:
         categories.add("sensitive")
     return sorted(categories)
+
+
+def _backup_timestamp(value):
+    """Validate serialized time without exposing the value in an error."""
+    if type(value) not in (int, float):
+        raise ValueError("Backup timestamps must be finite positive Unix seconds.")
+    try:
+        finite = math.isfinite(value)
+    except OverflowError:
+        finite = False
+    if not finite or value <= 0:
+        raise ValueError("Backup timestamps must be finite positive Unix seconds.")
+    return float(value)
+
+
+def _validate_backup(payload):
+    """Return a bounded independent copy of an untrusted recovery archive.
+
+    This validates data, not encryption/authenticity. The transport must decrypt
+    and authenticate the archive before calling the memory recovery interface.
+    Only approved restoration, never an archive flag, permits storing its text.
+    """
+    fields = {"format", "version", "created_at", "memories"}
+    if type(payload) is not dict or set(payload) != fields:
+        raise ValueError("Backup has missing or unsupported fields.")
+    if payload["format"] != BACKUP_FORMAT or type(payload["version"]) is not int or payload["version"] != BACKUP_VERSION:
+        raise ValueError("Unsupported memory backup format or version.")
+    archived_at = _backup_timestamp(payload["created_at"])
+    source = payload["memories"]
+    if type(source) is not list or len(source) > MAX_MEMORIES_PER_OWNER:
+        raise ValueError("Backup must contain at most 1000 memory records.")
+    record_fields = {"id", "text", "category", "created_at", "expires_at"}
+    records, original_ids = [], {}
+    for record in source:
+        if type(record) is not dict or set(record) != record_fields:
+            raise ValueError("Backup memory has missing or unsupported fields.")
+        identifier = _identifier(record["id"])
+        text, category = _text(record["text"]), _category(record["category"])
+        if text != record["text"]:
+            raise ValueError("Backup memory text must not contain surrounding whitespace.")
+        try:
+            text.encode("utf-8")
+        except UnicodeError:
+            raise ValueError("Backup memory contains unsupported text.") from None
+        created = _backup_timestamp(record["created_at"])
+        expiry = None if record["expires_at"] is None else _backup_timestamp(record["expires_at"])
+        # Wall clocks can move backward between creation, editing and backup.
+        # Preserve valid absolute timestamps rather than imposing chronology
+        # that could make Wanda's own previously saved records unrecoverable.
+        clean = {"id": identifier, "text": text, "category": category,
+                 "created_at": created, "expires_at": expiry}
+        previous = original_ids.get(identifier)
+        if previous is not None and previous != clean:
+            raise ValueError("Backup reuses a record identifier with inconsistent data.")
+        original_ids[identifier] = clean
+        records.append(clean)
+    validated = {"format": BACKUP_FORMAT, "version": BACKUP_VERSION,
+                 "created_at": archived_at, "memories": records}
+    # No uncontrolled nested objects remain at this point. Bound the exact UTF-8
+    # plaintext that the encryption layer is permitted to serialize.
+    if len(json.dumps(validated, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")) > MAX_BACKUP_BYTES:
+        raise ValueError("Backup exceeds the maximum size.")
+    return validated
 
 
 class MemoryStore:
@@ -410,6 +477,92 @@ class MemoryStore:
                 "memories": [self._memory_record(row) for row in self._rows(owner)],
                 "grants": [self._grant_record(row) for row in grants],
             }
+
+    def backup(self, owner):
+        """Snapshot this owner's unexpired facts for local encrypted recovery.
+
+        The result exists in memory only. It deliberately excludes identity,
+        credentials, opt-in state and grants. The caller encrypts before saving.
+        This management action remains available when capture is disabled.
+        """
+        owner = _owner(owner)
+        with self._transaction():
+            now = time.time()
+            rows = self._connection.execute(
+                "SELECT id, text, category, created_at, expires_at FROM memories "
+                "WHERE owner = ? AND (expires_at IS NULL OR expires_at > ?) "
+                "ORDER BY created_at, id", (owner, now)
+            ).fetchall()
+            payload = {"format": BACKUP_FORMAT, "version": BACKUP_VERSION,
+                       "created_at": now, "memories": [dict(row) for row in rows]}
+            return _validate_backup(payload)
+
+    def _restore_plan(self, owner, payload, now):
+        archive = _validate_backup(payload)
+        existing = self._connection.execute(
+            "SELECT id, text, category, created_at, expires_at FROM memories "
+            "WHERE owner = ? AND (expires_at IS NULL OR expires_at > ?)",
+            (owner, now),
+        ).fetchall()
+        seen = {(row["text"], row["category"], row["expires_at"]) for row in existing}
+        selected, expired, duplicates = [], 0, 0
+        for record in archive["memories"]:
+            if record["expires_at"] is not None and record["expires_at"] <= now:
+                expired += 1
+                continue
+            identity = (record["text"], record["category"], record["expires_at"])
+            if identity in seen:
+                duplicates += 1
+                continue
+            selected.append(record)
+            seen.add(identity)
+        available = max(0, MAX_MEMORIES_PER_OWNER - len(existing))
+        counts = {
+            "total": len(archive["memories"]), "restorable": len(selected),
+            "skipped_expired": expired, "duplicates": duplicates,
+            "existing": len(existing), "capacity": MAX_MEMORIES_PER_OWNER,
+            "available": available, "exceeds_capacity": len(selected) > available,
+        }
+        return selected, counts
+
+    def restore_preview(self, owner, payload):
+        """Validate and count a proposed merge without changing any stored row."""
+        owner = _owner(owner)
+        with self._transaction():
+            _, counts = self._restore_plan(owner, payload, time.time())
+            return counts
+
+    def restore(self, owner, payload, approved=False):
+        """Explicitly approved, atomic merge into the currently enabled owner.
+
+        Revalidates on every call; preview is not authorization. No archive may
+        enable memory, restore permissions, replace live data, or select an
+        owner. Expired memories of this owner are pruned as normal retention
+        maintenance in the same transaction. Imported records receive new IDs.
+        """
+        owner = _owner(owner)
+        if not _boolean(approved):
+            raise PermissionError("Restoring memories requires explicit approval.")
+        with self._transaction():
+            self._require_enabled(owner)
+            now = time.time()
+            selected, counts = self._restore_plan(owner, payload, now)
+            if counts["exceeds_capacity"]:
+                raise ValueError("Restore exceeds memory capacity. Review existing memories first.")
+            # Do not use _prune(): restoring memory must not change any grant.
+            # This retention maintenance rolls back if any later insert fails.
+            self._connection.execute(
+                "DELETE FROM memories WHERE owner = ? AND expires_at IS NOT NULL AND expires_at <= ?",
+                (owner, now),
+            )
+            for record in selected:
+                self._connection.execute(
+                    "INSERT INTO memories(id, owner, text, category, created_at, expires_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (str(uuid.uuid4()), owner, record["text"], record["category"],
+                     record["created_at"], record["expires_at"]),
+                )
+            return {**counts, "restored": len(selected)}
 
     def extract(self, owner, text):
         owner, text = _owner(owner), _text(text, MAX_INPUT_CHARS)

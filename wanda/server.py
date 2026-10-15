@@ -102,6 +102,16 @@ class Application:
             return {"enabled": enabled}
         if method == "GET" and path == "/api/memory/export":
             return self.memory.export(OWNER)
+        if method == "GET" and path == "/api/memory/backup":
+            return self.memory.backup(OWNER)
+        if method == "POST" and path == "/api/memory/restore/preview":
+            if set(data) != {"backup"}:
+                raise ValueError("Provide only the backup to preview.")
+            return self.memory.restore_preview(OWNER, data["backup"])
+        if method == "POST" and path == "/api/memory/restore":
+            if set(data) != {"backup", "approved"}:
+                raise ValueError("Explicit local restore approval is required.")
+            return self.memory.restore(OWNER, data["backup"], approved=boolean(data, "approved"))
         if path.startswith("/api/memory/") and method in ("PATCH", "DELETE"):
             memory_id = path.removeprefix("/api/memory/")
             if method == "DELETE":
@@ -236,7 +246,10 @@ class Handler(BaseHTTPRequestHandler):
                     if self.headers.get("Transfer-Encoding"):
                         raise ApiError(400, "invalid_body", "Chunked request bodies are not supported.")
                     length = int(self.headers.get("Content-Length", "0"))
-                    if length < 0 or length > 131072:
+                    limit = 8 * 1024 * 1024 if self.command == "POST" and path in {
+                        "/api/memory/restore/preview", "/api/memory/restore"
+                    } else 131072
+                    if length < 0 or length > limit:
                         raise ApiError(413, "body_too_large", "Request exceeds the local size limit.")
                     if length:
                         if self.headers.get_content_type() != "application/json":
@@ -251,7 +264,7 @@ class Handler(BaseHTTPRequestHandler):
                 result = self.server.app.dispatch(self.command, path, data)
                 self.respond(200, result)
                 return
-            if self.command != "GET" or path not in ("/", "/index.html", "/app.js", "/styles.css"):
+            if self.command != "GET" or path not in ("/", "/index.html", "/app.js", "/backup.js", "/styles.css"):
                 raise ApiError(404, "not_found", "Page not found.")
             file = ROOT / "web" / ("index.html" if path == "/" else path[1:])
             self.respond(200, file.read_bytes(), (mimetypes.guess_type(str(file))[0] or "text/plain") + "; charset=utf-8")

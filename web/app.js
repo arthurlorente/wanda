@@ -2,7 +2,8 @@
 "use strict";
 (() => {
   const $ = (id) => document.getElementById(id);
-  const state = {status: null, memories: [], home: null, editId: null, busy: false, chatEpoch: 0, homePending: new Set()};
+  const state = {status: null, memories: [], memoryEnabled: false, panel: "conversation", home: null, editId: null, busy: false, chatEpoch: 0, homePending: new Set()};
+  const backup = {busy: false, payload: null, summary: null, page: 0, generation: 0};
   const fragment = new URLSearchParams(location.hash.slice(1));
   let capability = fragment.get("token") || "";
   // Remove the launch capability before any requests or UI navigation.
@@ -69,6 +70,11 @@
   }
   function categoryLabel(value) { return String(value || "memory").replaceAll("_", " "); }
   function changePanel(panel) {
+    state.panel = panel;
+    // Leaving Memory discards decrypted text even if a preview or merge is in
+    // flight. A submitted merge still finishes at the server and reports its
+    // actual result; only the browser's local preview is discarded here.
+    if (panel !== "memory") clearBackupPreview();
     for (const section of document.querySelectorAll(".panel")) section.hidden = section.id !== panel + "-panel";
     for (const button of document.querySelectorAll(".nav-button")) {
       const current = button.dataset.panel === panel;
@@ -114,7 +120,7 @@
     addMessage("assistant", "Hello. I'm Wanda. This local demo is a small beginning: a place to try privacy controls, local memory, and home permissions. What shall we explore?");
   }
   function browserSpeak(text) {
-    if (voice.phase !== "off" || !$("read-aloud").checked || !("speechSynthesis" in window)) return;
+    if (voice.phase !== "off" || backupPrivacyActive() || !$("read-aloud").checked || !("speechSynthesis" in window)) return;
     const localVoice = speechSynthesis.getVoices().find((item) => item.localService && item.lang.toLowerCase().startsWith($("language").value));
     if (!localVoice) { tell("No local browser voice is available for this language. Text replies still work."); return; }
     speechSynthesis.cancel();
@@ -162,7 +168,7 @@
       await refreshMemory();
     } finally {
       state.busy = false; $("send-chat").disabled = false;
-      $("connect-voice").disabled = voice.phase !== "off" || !state.status?.voice?.configured;
+      $("connect-voice").disabled = voice.phase !== "off" || backupPrivacyActive() || !state.status?.voice?.configured;
     }
   }
   $("chat-form").addEventListener("submit", guard(async (event) => { event.preventDefault(); await sendChat($("chat-input").value); }));
@@ -187,12 +193,14 @@
   async function refreshMemory() {
     const data = await api("/api/memory");
     state.memories = data.memories || [];
+    state.memoryEnabled = data.enabled;
     $("memory-enabled").checked = data.enabled;
     $("memory-status").textContent = data.enabled ? "ON" : "OFF";
     $("memory-count").textContent = state.memories.length;
     $("memory-form").querySelector('button[type="submit"]').disabled = !data.enabled;
     $("memory-form-title").textContent = data.enabled ? (state.editId ? "Edit this memory" : "Add a memory") : "Enable memory to add or edit";
     renderMemories();
+    updateBackupControls();
   }
   function renderMemories() {
     const list = $("memory-list"); list.replaceChildren();
@@ -245,10 +253,162 @@
     await api("/api/memory", {method: "DELETE"}); resetMemoryForm(); await refreshMemory(); tell("All local memories deleted.");
   }));
   $("export-memory").addEventListener("click", guard(async () => {
+    prepareBackupPrivacy();
     const data = await api("/api/memory/export");
     const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: "application/json"}));
     const link = node("a"); link.href = url; link.download = "wanda-private-memory-export.json"; link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000); tell("Memory export prepared. It contains private information; keep it somewhere you trust.");
+    setTimeout(() => URL.revokeObjectURL(url), 1000); tell("Plaintext memory export prepared. Anyone with the file can read it; keep it somewhere you trust.");
+  }));
+
+  function backupPrivacyActive() {
+    return backup.busy || backup.payload !== null ||
+      ["backup-password", "backup-password-confirm", "restore-password"].some((id) => $(id).value.length > 0) ||
+      $("restore-file").files.length > 0;
+  }
+  function prepareBackupPrivacy() {
+    stopBrowserSpeech();
+    $("read-aloud").checked = false;
+    if (voice.phase !== "off") {
+      disconnectVoice("Backup controls opened · microphone off");
+      tell("Live voice disconnected before handling your backup. The microphone and browser speech are off.");
+    }
+  }
+  function clearBackupPasswords() {
+    for (const id of ["backup-password", "backup-password-confirm", "restore-password"]) $(id).value = "";
+  }
+  function clearBackupPreview() {
+    ++backup.generation;
+    backup.payload = null; backup.summary = null; backup.page = 0;
+    $("restore-preview").hidden = true;
+    $("restore-memory-list").replaceChildren();
+    $("restore-summary").textContent = "";
+    $("restore-consent-note").textContent = "";
+    $("restore-preview-limit").textContent = "";
+    $("restore-preview-pages").hidden = true;
+    $("restore-file").value = "";
+    clearBackupPasswords();
+    updateBackupControls();
+  }
+  function updateBackupControls() {
+    $("backup-section").setAttribute("aria-busy", String(backup.busy));
+    for (const id of ["create-backup", "preview-backup", "discard-backup-preview", "backup-password", "backup-password-confirm", "restore-password", "restore-file"]) $(id).disabled = backup.busy;
+    $("merge-backup").disabled = backup.busy || !state.memoryEnabled || !backup.summary ||
+      backup.summary.exceeds_capacity || backup.summary.restorable < 1;
+    if (backup.payload) {
+      $("restore-consent-note").textContent = !state.memoryEnabled ? "Enable local memory above before approving a restore. Existing memory and permissions are unchanged." :
+        backup.summary?.exceeds_capacity ? "This merge exceeds local memory capacity. Nothing has been restored. Review existing memories before trying again." :
+        "Local memory is enabled. Review these details and approve only information you have permission to store.";
+    }
+    $("connect-voice").disabled = voice.phase !== "off" || state.busy || backupPrivacyActive() || !state.status?.voice?.configured;
+  }
+  function setBackupBusy(busy, message = "") {
+    backup.busy = busy;
+    $("backup-operation-status").hidden = !message;
+    $("backup-operation-status").textContent = message;
+    updateBackupControls();
+  }
+  function downloadBackup(serialized) {
+    const url = URL.createObjectURL(new Blob([serialized], {type: "application/json"}));
+    const link = node("a"); link.href = url;
+    link.download = "wanda-encrypted-memory-backup.json";
+    link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  function renderBackupPreview(payload, summary) {
+    backup.payload = payload; backup.summary = summary; backup.page = 0;
+    $("restore-preview").hidden = false;
+    $("restore-summary").textContent = `${summary.total} memories in this backup · ${summary.restorable} can be merged · ${summary.duplicates} duplicates · ${summary.skipped_expired} expired. ${summary.existing} memories already on this computer.`;
+    renderBackupPage(); updateBackupControls();
+  }
+  function renderBackupPage() {
+    if (!backup.payload) return;
+    const memories = backup.payload.memories;
+    const start = backup.page * 50;
+    const list = $("restore-memory-list"); list.replaceChildren();
+    for (const memory of memories.slice(start, start + 50)) {
+      const item = node("article", undefined, "list-item");
+      item.append(node("p", memory.text), node("div", categoryLabel(memory.category) + " · " + timeLabel(memory.expires_at), "item-meta"));
+      list.append(item);
+    }
+    if (!memories.length) empty(list, "This backup contains no memories.");
+    $("restore-preview-limit").hidden = memories.length <= 50;
+    $("restore-preview-limit").textContent = `Showing ${start + 1}–${Math.min(start + 50, memories.length)} of ${memories.length} memories. Use the page controls to review the rest. Approval merges all eligible entries.`;
+    $("restore-preview-pages").hidden = memories.length <= 50;
+    $("restore-previous-page").disabled = backup.page === 0;
+    $("restore-next-page").disabled = start + 50 >= memories.length;
+    list.scrollTop = 0;
+  }
+  $("restore-previous-page").addEventListener("click", () => { if (backup.page > 0) { --backup.page; renderBackupPage(); } });
+  $("restore-next-page").addEventListener("click", () => {
+    if (backup.payload && (backup.page + 1) * 50 < backup.payload.memories.length) { ++backup.page; renderBackupPage(); }
+  });
+  $("backup-section").addEventListener("focusin", prepareBackupPrivacy);
+  for (const id of ["backup-password", "backup-password-confirm", "restore-password", "restore-file"]) {
+    $(id).addEventListener("input", updateBackupControls);
+    $(id).addEventListener("change", updateBackupControls);
+  }
+  $("backup-form").addEventListener("submit", guard(async (event) => {
+    event.preventDefault();
+    if (backup.busy) return;
+    prepareBackupPrivacy();
+    let password = $("backup-password").value;
+    let confirmation = $("backup-password-confirm").value;
+    clearBackupPreview();
+    setBackupBusy(true, "Encrypting a backup in this browser…");
+    try {
+      if (!window.WandaBackup) throw new Error("Encrypted backups are unavailable in this browser. Please reload Wanda in a supported browser.");
+      if (password !== confirmation) throw new Error("The passwords do not match. Enter both again; nothing was downloaded.");
+      const payload = await api("/api/memory/backup");
+      const serialized = await window.WandaBackup.encrypt(payload, password);
+      downloadBackup(serialized);
+      tell("Encrypted backup downloaded. Keep its password separately; Wanda cannot recover a lost password.");
+    } finally {
+      password = ""; confirmation = "";
+      clearBackupPasswords(); setBackupBusy(false);
+    }
+  }));
+  $("restore-form").addEventListener("submit", guard(async (event) => {
+    event.preventDefault();
+    if (backup.busy) return;
+    prepareBackupPrivacy();
+    let password = $("restore-password").value;
+    const file = $("restore-file").files[0];
+    clearBackupPreview(); setBackupBusy(true, "Decrypting and checking this backup locally…");
+    const generation = backup.generation;
+    try {
+      if (!window.WandaBackup) throw new Error("Encrypted backups are unavailable in this browser. Please reload Wanda in a supported browser.");
+      if (!file || file.size > window.WandaBackup.MAX_FILE_BYTES) throw new Error("Choose a Wanda encrypted backup file no larger than 12 MiB.");
+      const payload = await window.WandaBackup.decrypt(await file.text(), password);
+      password = "";
+      if (backup.generation !== generation || state.panel !== "memory") {
+        tell("Backup preview discarded because you left Memory. Nothing was restored."); return;
+      }
+      const summary = await api("/api/memory/restore/preview", {method: "POST", body: {backup: payload}});
+      if (backup.generation !== generation || state.panel !== "memory") {
+        tell("Backup preview discarded because you left Memory. Nothing was restored."); return;
+      }
+      renderBackupPreview(payload, summary);
+      tell("Backup decrypted locally. Review the preview before approving a merge.");
+    } finally {
+      password = ""; clearBackupPasswords(); $("restore-file").value = ""; setBackupBusy(false);
+    }
+  }));
+  $("discard-backup-preview").addEventListener("click", () => {
+    clearBackupPreview(); tell("Backup preview discarded. No memories were restored.");
+  });
+  $("merge-backup").addEventListener("click", guard(async () => {
+    if (backup.busy || !backup.payload || !backup.summary) return;
+    const payload = backup.payload, generation = backup.generation;
+    prepareBackupPrivacy(); setBackupBusy(true);
+    try {
+      const accepted = await confirmChoice("Merge these memories?", `${backup.summary.restorable} eligible memories will be added to this local owner's memory. Existing memories stay in place; duplicates and expired entries are skipped.\n\nOnly approve information you have permission to store. No cloud-disclosure rules or device permissions are restored.`, "Approve memory merge");
+      if (!accepted) { clearBackupPreview(); tell("Restore cancelled. No memories were added."); return; }
+      if (backup.generation !== generation || state.panel !== "memory") {
+        tell("Backup preview was discarded before the merge started. Nothing was restored."); return;
+      }
+      const result = await api("/api/memory/restore", {method: "POST", body: {backup: payload, approved: true}});
+      clearBackupPreview(); await refreshMemory();
+      tell(`Restored ${result.restored} memories locally. Existing memories and permissions were preserved.`);
+    } finally { clearBackupPasswords(); setBackupBusy(false); }
   }));
 
   async function refreshDisclosures() {
@@ -346,7 +506,7 @@
     $("voice-state").textContent = text;
     $("voice-state").classList.toggle("listening", phase === "live");
     $("microphone-label").textContent = phase === "live" ? "Mic on · OpenAI" : phase === "connecting" ? "Mic connecting" : "Mic off";
-    $("connect-voice").disabled = phase !== "off" || state.busy || !state.status?.voice?.configured;
+    $("connect-voice").disabled = phase !== "off" || state.busy || backupPrivacyActive() || !state.status?.voice?.configured;
     $("disconnect").disabled = phase === "off";
     $("chat-input").placeholder = phase === "live" ? "Message cloud voice (sent to OpenAI)…" : "What's on your mind?";
     document.body.classList.toggle("live", phase === "live");
@@ -434,10 +594,10 @@
     return `Please use ${language} to start, with a ${$("tone").value === "neutral" ? "neutral, direct" : "warm, thoughtful"} tone. Follow me if I switch languages. Keep replies brief.`;
   }
   async function connectVoice() {
-    if (voice.phase !== "off" || state.busy || !state.status?.voice?.configured) return;
+    if (voice.phase !== "off" || state.busy || backupPrivacyActive() || !state.status?.voice?.configured) return;
     if (!navigator.mediaDevices?.getUserMedia || !window.RTCPeerConnection) throw new Error("This browser cannot start WebRTC audio. Use a supported browser on this computer.");
     if (!await confirmChoice("Start a cloud voice conversation?", "Microphone audio, including voices nearby, and connection metadata will reach OpenAI. Typed messages during this session also go to OpenAI. Saved local memories are not sent. No model device tools are enabled.\n\nProvider processing and retention policies apply. Use non-sensitive examples for this experimental demo. This session ends after 5 minutes; API usage may cost money.", "Connect microphone", true)) return;
-    if (state.busy || voice.phase !== "off") return;
+    if (state.busy || voice.phase !== "off" || backupPrivacyActive()) return;
     const epoch = ++voice.epoch;
     stopBrowserSpeech(); setVoiceState("connecting", "Waiting for microphone permission…");
     voice.abort = new AbortController();

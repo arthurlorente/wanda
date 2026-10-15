@@ -73,6 +73,10 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-048 | Accepted V1 exit criterion | A useful home assistant: natural multilingual voice with interruptions, persistent consented local memory, and working permissioned home-device controls with at least one genuine integration. | P0 remains the earlier voice-plus-memory technical milestone; V1 includes the P1 Home vertical slice. Do not claim V1 achieved until real tests pass. |
 | D-049 | Accepted architecture priority | Privacy and independence take precedence when they conflict with convenience, experience or cloud optimization. | Favor local data, auditable permissions, portable/replaceable services and honest provider exposure; any departure must be explicitly approved and documented. |
 
+| D-050 | Accepted current implementation boundary | Keep all saved memories local for now; do not connect saved-memory recall to cloud voice, even with a stored category grant. | Owner selected this boundary during the overnight V0 review on 2026-10-15. Live microphone audio remains a separately disclosed cloud flow. Revisit only through a new explicit decision. |
+| D-051 | Accepted recovery scope; implementation in progress | Add password-encrypted local memory backup and explicit restore. The owner chooses and keeps the password; losing it prevents recovery. | Extends D-034's evaluation into an approved local recovery feature. No cloud backup vendor, automatic upload or key escrow selected. [ADR 0009](adr/0009-encrypted-memory-backup.md) records provisional technical details. |
+| D-052 | Accepted session-specific testing authorization | Permit at most US$10 total for synthetic voice API tests during the 2026-10-15 overnight session; no real device actions. | Requires a privately configured key, bounded requests, conservative local spending accounting and the 11:00 a.m. America/New_York cutoff. Owner increased the original US$5 ceiling to US$10 before any paid test. This is not an ongoing billing or household-data authorization. |
+
 ## How to append decisions
 
 Before the normal process below, note the 2026-10-15 **provisional unattended

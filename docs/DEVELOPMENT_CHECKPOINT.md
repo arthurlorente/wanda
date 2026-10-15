@@ -1,8 +1,16 @@
 # Development checkpoint
 
-2026-10-15 — V0 delivered for owner review for [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
+2026-10-15 — V0 delivered; approved recovery increment active for [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 
-- Branch: `codex/wanda-v0`, based on `3faec4222fc0093c925e660218229d1c1f79da11`.
+- Baseline branch: `codex/wanda-v0`, based on `3faec4222fc0093c925e660218229d1c1f79da11`.
+- Active increment: `codex/wanda-v0-next`, based on delivered PR #8 commit
+  `2d965315af263fa027207ea598e599719b117ec1`; adds encrypted recovery.
+- Recovery increment local gate: **126 Python tests passed** (9.67s),
+  **6 Web Crypto/interoperability tests passed**, and **20 browser workflows
+  passed**. Integrated feature is awaiting remote CI and reviewable publication.
+- Owner decisions: keep saved memories local; add password-encrypted local
+  backup/restore; allow up to US$10 total in synthetic voice API tests only.
+  No real devices. Stop starting work/calls at 2026-10-15 15:00 UTC (11am New York).
 - Implemented: stdlib Python local server, SQLite memory, scoped consent,
   permissions/confirmations, mock home, real HA REST adapter behind explicit config,
   optional OpenAI WebRTC proxy, launch/stop/doctor/private-key setup scripts;
@@ -35,14 +43,21 @@
   backup/encryption and licenses remain review items, not silently accepted policies.
 - Next: owner walkthrough,
   architecture/privacy review and optional live voice/physical light acceptance.
-- No automatic resumption is configured; no limit has been reached. Native usage
-  snapshot during work reported 9% of weekly allowance used.
+- Supported hourly chat continuation is active through the cutoff under automation
+  `wanda-overnight-development-until-11am`. It cannot bypass usage limits; none has
+  been reached. Owner privately configured the API key; doctor confirms configured voice
+  without showing credentials. Bounded synthetic live test preparation is active. Paid call spend so far: US$0. Metadata-only API access check succeeded after
+  diagnosing missing Python CA configuration; OS trust bundle validated HTTPS.
+  Production TLS fallback fix and bounded Realtime smoke tests are next.
 
 ## Exact continuation
 
-“Continue Issue #7 on `codex/wanda-v0`. Read AGENTS.md, canonical context,
+“Continue Issue #7 on `codex/wanda-v0-next`. Preserve baseline PR #8. Read AGENTS.md, canonical context,
 docs/DEVELOPMENT_CHECKPOINT.md and docs/MORNING_HANDOFF.md, inspect git status and
 open PRs. Preserve local work. Run `python3 scripts/check.py` (loopback permission
 may be needed in sandbox). Confirm PR #8 status and use the V0 acceptance map for the next scoped increment;
-do not merge, access private credentials, contact live devices or spend on APIs.
+do not merge or contact live devices. Only use the explicitly configured Wanda
+key for approved synthetic voice tests within the session-wide US$10 cap; otherwise
+use mocks. Keep saved memories local, implement encrypted recovery, and honor the
+11am New York cutoff. Check private test accounting before any paid request.
 Keep simulated and verified features clearly distinguished.”

@@ -15,7 +15,12 @@ All API calls need `Authorization: Bearer <launch capability>`. JSON errors use
 - POST `/api/memory/consent` `{enabled:boolean}`.
 - POST `/api/memory` `{text,category:"preference"|"project"|"temporary"|"sensitive",approved:boolean,expires_at:number|null}`.
 - PATCH `/api/memory/<id>` same fields; DELETE `/api/memory/<id>`; DELETE `/api/memory`.
-- GET `/api/memory/export`: JSON export download via authorized fetch.
+- GET `/api/memory/export`: plaintext JSON export download via authorized fetch.
+- GET `/api/memory/backup`: memory-only portable schema for browser encryption.
+- POST `/api/memory/restore/preview` `{backup:<decrypted payload>}`: read-only counts.
+- POST `/api/memory/restore` `{backup:<decrypted payload>,approved:true}`: atomic merge into current enabled owner. No live-memory deletion or consent/grant/identity restoration; normal expired-memory cleanup is atomic with the merge.
+  Restore routes allow at most 8 MiB JSON; all other request-body limits stay 128 KiB.
+  See [backup format and boundaries](adr/0009-encrypted-memory-backup.md).
 - GET `/api/disclosures`: `{grants:[]}`. POST `/api/disclosures`
   `{provider:"openai",category,allowed:boolean,one_time:boolean,expires_at:number|null}`.
   DELETE `/api/disclosures/<id>`. No memory is automatically sent to cloud in V0.
@@ -41,6 +46,10 @@ All API calls need `Authorization: Bearer <launch capability>`. JSON errors use
 single-use grants atomically; never called automatically), `close()`.
 Raise ValueError for invalid inputs, PermissionError for denied consent/access.
 Use Unix seconds for times, UUID strings for IDs. Reentrant lock for HTTP threads.
+Recovery adds `backup(owner)`, `restore_preview(owner,payload)` and
+`restore(owner,payload,approved=False)`; exact schema/counts and validation are
+covered in `tests/test_memory_restore.py`.
+
 Additive `recall(owner)` checks consent and reads atomically, bounded to eight
 records/4000 text characters; conversational callers use it instead of inspection.
 

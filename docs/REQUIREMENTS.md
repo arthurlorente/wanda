@@ -57,6 +57,12 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-35 | V1 succeeds only with natural multilingual voice, durable user-controlled memory and verified home-device control | Must / V1 | End-to-end demo with a real Home Assistant integration and authorized state verification |
 | R-36 | Privacy and independence outrank convenience and marginal conversational improvements in trade-off decisions | Must / ongoing | Architecture reviews document local-first boundaries, portability, provider exposure and explicitly approved exceptions |
 
+| R-37 | Password-encrypted local memory backup with previewed, explicitly approved restore; password remains user-controlled and no cloud upload is required | Approved V0 increment (D-051) | Test authenticated encryption, wrong password/tampering, portable restore, expiry, duplicate handling, atomic failure and preservation of existing permissions |
+
+Current implementation boundary D-050 keeps all saved memories local. R-28–R-30
+remain broader design requirements; no stored grant currently authorizes an
+application path to disclose saved memories to a cloud provider.
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

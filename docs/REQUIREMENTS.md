@@ -21,6 +21,9 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-13 | Operate within hardware + monthly budget targets when practical | Target / ongoing | Bill of materials and real usage measurements |
 | R-14 | P0 implementation is portable and does not require a specific computer or dedicated GPU | Must / P0 | Document setup and run/test on supported host environments; avoid machine-specific hardcoding |
 
+| R-15 | Browser voice interface independent from underlying portable session service | Must / P0 | Browser client and documented non-browser interface boundary |
+| R-16 | Click-to-connect conversation with interruptions and follow-ups in P0; wake-word activation is a later household goal | Must / P0 + Later | P0 hands-free session test; later wake-word detection evaluation |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

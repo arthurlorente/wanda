@@ -120,8 +120,21 @@ class LocalHttpSecurityTests(unittest.TestCase):
         status, data, _ = self.request("POST", "/api/memory/consent", b'{"enabled":true}', raw=True,
                                        headers={"Content-Type": "text/plain"})
         self.assertEqual((status, data["code"]), (415, "json_required"))
-        status, data, _ = self.request("POST", "/api/memory/consent", b"x" * 131073, raw=True)
-        self.assertEqual((status, data["code"]), (413, "body_too_large"))
+        # Assert rejection from headers. Sending the declared body can race the
+        # server's correct early 413 and reset the client connection on macOS.
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=3)
+        try:
+            connection.putrequest("POST", "/api/memory/consent", skip_host=True)
+            connection.putheader("Host", f"127.0.0.1:{self.port}")
+            connection.putheader("Authorization", "Bearer " + self.app.token)
+            connection.putheader("Content-Type", "application/json")
+            connection.putheader("Content-Length", "131073")
+            connection.endheaders()
+            response = connection.getresponse()
+            data = json.loads(response.read())
+            self.assertEqual((response.status, data["code"]), (413, "body_too_large"))
+        finally:
+            connection.close()
         for body in (b"{", b"[]", b'{"enabled":NaN}'):
             status, data, _ = self.request("POST", "/api/memory/consent", body, raw=True)
             self.assertEqual((status, data["code"]), (400, "invalid_request"))

@@ -39,6 +39,9 @@
 
 - D-039–D-042: Scoped expiring guest device permissions; non-commercial household data stewardship; minimum cloud context; per-person, per-information-type consent for sensitive/identifiable cloud disclosure. Implementation and provider evaluations pending.
 
+- D-044–D-049: Final design decisions accepted. Persona follows the manifesto; autonomy is controlled and includes suggestions; device permissions are user-defined; failures degrade gracefully; V1 includes verified home control; privacy and independence have priority.
+- [Issue #7](https://github.com/arthurlorente/wanda/issues/7) contains the implementation handoff. No Codex run has been initiated or verified.
+
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.

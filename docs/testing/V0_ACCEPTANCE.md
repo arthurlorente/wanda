@@ -165,4 +165,7 @@ Final deletion review: **47 local Chrome workflows passed**, adding six regressi
 for unchanged deletion resets, newer draft/category preservation, deleted edit
 conversion to an unsaved new record, unrelated edits and confirmed deletion with
 failed refresh. All events are synthetic; no provider or microphone call occurred.
-Remote evidence for this final fix belongs in the checkpoint.
+[Final CI](https://github.com/arthurlorente/wanda/actions/runs/38746282007) passed all six
+OS/Python jobs, the 47 browser workflows and bundle delivery at
+`0e9f2856b27a571bda1bacf3b973c2d7c7d1d660`; exact artifact evidence is in
+the checkpoint.

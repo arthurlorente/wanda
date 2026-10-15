@@ -77,16 +77,17 @@ The next scoped increment in [PR #12](https://github.com/arthurlorente/wanda/pul
 on `codex/wanda-demo-recovery` preserves browser drafts
 across delayed/failed requests, stops the selected instance despite unrelated
 config errors, and provides a reproducible ZIP for launch without Git. **180 Python
-tests and 41 browser workflows passed locally**. The extracted app also passed
+tests and 47 browser workflows passed locally**. The extracted app also passed
 startup, local memory persistence/deletion, mock-light permissions and shutdown
-with no Git in PATH. [Corrected CI](https://github.com/arthurlorente/wanda/actions/runs/38735661927)
-passed all six OS/Python jobs, the 41 browser workflows and ZIP delivery.
-[Download the demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
+with no Git in PATH. [Corrected CI](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
+passed all six OS/Python jobs, the 47 browser workflows and ZIP delivery.
+[Download the demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38746282007/artifacts/11979560780)
 (GitHub sign-in may be needed; expires October 22). No new privacy permission
 or provider commitment is introduced. Python is still required to run the ZIP.
 A final review found delayed deletion could erase newer drafts; the same protection
 now covers one/all memory deletions and truthful post-delete refresh failures.
-**47 local browser workflows passed**; remote CI for that last fix is pending.
+**47 browser workflows passed locally and in the final CI run linked above**.
+A local instance is available for owner review; keep the verified demo stable.
 
 ## Next actions and blockers
 

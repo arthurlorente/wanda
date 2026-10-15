@@ -21,7 +21,7 @@ If the browser says it is locked, reopen Start Wanda so it receives the new loca
 session key. Do not share the launch link. If port 8765 is busy, set `WANDA_PORT`
 to 8766 in a private config. Local service startup does not expose Wanda to your LAN.
 
-You can also [download the tested demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
+You can also [download the tested demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38746282007/artifacts/11979560780)
 and [extract it](DEMO_BUNDLE.md), then use its launcher without Git. GitHub may
 ask you to sign in; this download expires October 22, 2026. It uses the same private data folder on this computer;
 stop an older running copy before testing the new one. Python is still required.
@@ -67,8 +67,8 @@ Use invented information throughout:
 ## What was tested
 
 The current demo passed **180 Python checks** across Windows, macOS and Linux
-with Python 3.11 and 3.14, plus encryption checks and **41 browser workflows**.
-Two OS-specific tests skip on Windows. The [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38735661927)
+with Python 3.11 and 3.14, plus encryption checks and **47 browser workflows**.
+Two OS-specific tests skip on Windows. The [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
 also produced the downloadable ZIP. A local rebuild matched its checksum exactly.
 An extracted earlier build passed startup, memory persistence/deletion, simulated
 light permissions and shutdown without Git installed in its runtime PATH.

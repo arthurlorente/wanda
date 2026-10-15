@@ -24,7 +24,9 @@ V1 is not complete. Main has not been changed or merged.
   a committed-source ZIP builder. Implementation commit
   `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525`; Windows configuration repair
   `fd09723f8e771d9b780f69acb26ad2cce944b486` passed all eight CI jobs, including
-  artifact delivery. Local integration and extracted startup passed.
+  artifact delivery. Final deletion fix `0e9f2856b27a571bda1bacf3b973c2d7c7d1d660`
+  passed all eight CI jobs with 47 browser workflows. Local integration and
+  extracted startup passed.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -134,8 +136,15 @@ V1 is not complete. Main has not been changed or merged.
   remain selected, and a confirmed deletion stays confirmed if refresh fails.
   **47 local Chrome workflows passed** (six new deletion scenarios), with no page
   errors or external requests. Syntax and diff checks passed; Python code is
-  unchanged from the 180-test gate. Remote CI is pending for this final fix.
-  No cloud or memory-policy change is involved.
+  unchanged from the 180-test gate. [Final CI](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
+  passed all six OS/Python jobs (180 tests, two Windows-specific skips), 47 browser
+  workflows, encryption/child-input checks and ZIP delivery at
+  `0e9f2856b27a571bda1bacf3b973c2d7c7d1d660`. No cloud or memory-policy change
+  is involved. [Download the latest tested ZIP](https://github.com/arthurlorente/wanda/actions/runs/38746282007/artifacts/11979560780).
+  Preview commit `ed4d81f8a3f65c75d613100fb38381d1911a93d6` has the same tree as
+  that branch commit. Its 65-file archive reproduced locally with identical
+  SHA-256 `abdf1f741fd3ab3769f71eb59a98c68bef6706ff115f38da4a3a53ea5186b784`.
+  Local equivalent: `dist/wanda-demo-ed4d81f8a3f6.zip`; CI download expires October 22.
 
 ## Authorization, limits and blockers
 
@@ -165,10 +174,13 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. Publish the locally verified deletion/draft recovery fix and check remote CI.
-   Preserve the already verified download until a corrected replacement passes.
-   All agents are done; root owns documentation/Git. Keep the cumulative checkout
-   and all PRs unmerged.
+1. The final implementation CI and replacement ZIP above are verified. Check any
+   subsequent evidence-only documentation CI before further work. All agents are
+   done and their code is integrated; all PRs remain unmerged. A local review
+   instance was started from the final implementation commit. Keep it available
+   during owner review; do not restart it or operate the microphone/devices.
+   Continue with read-only review, documentation or user-reported fixes until
+   the cutoff, preserving the tested demo.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent

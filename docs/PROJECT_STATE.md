@@ -34,6 +34,9 @@
 
 - D-038: Guests can ask general questions; device controls require explicit authorization; registration can start by voice without prematurely storing guest memories.
 
+- D-039: Device-scoped guest permission profiles default to temporary and can be upgraded with authorized approval.
+- D-040: Household entrusted information must not become a commercial data asset; apply transparent consent and provider handling throughout design.
+
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.

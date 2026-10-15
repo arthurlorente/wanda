@@ -28,7 +28,7 @@
 
 11. Which Home Assistant calls are safe without authentication, and how are command outcomes verified?
 12. How is an OpenClaw action isolated, scoped, logged, rate-limited and approved out of band?
-13. How are residents/guests informed of active listening and retention; how do they opt out?
+13. How are residents/guests informed of active listening and retention; how do they opt out? How should voiceprint enrollment, unknown speaker fallback, spoofing tests and step-up checks work for voice-first identity?
 14. **P0 memory policy agreed:** Setup opt-in, selective ordinary memories, context-sensitive approval, local primary storage. Which database, encryption, backups, retention, per-person access and third-party protections should we use?
 15. Can long-term conversation memory avoid storing private third-party content by default?
 16. How do we recover from agent errors and revoke all active tokens/devices quickly?

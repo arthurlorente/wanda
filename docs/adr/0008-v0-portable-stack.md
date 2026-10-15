@@ -41,3 +41,15 @@ Accept by reviewing this ADR and its implementation PR. Modify by swapping servi
 adapters or migrating the HTTP client to TypeScript. Revert the feature branch/PR
 without merging; private state remains outside Git. Keep licensing undecided.
 V1 still needs real voice, privacy-policy and Home Assistant acceptance evidence.
+
+## V0 delivery increment
+
+A reproducible [source ZIP](../DEMO_BUNDLE.md) removes Git from the owner's launch
+path while retaining the same Python-only runtime. Developer packaging reads only
+committed Git blobs and records a commit/file-hash manifest; private runtime state
+is never copied from the workspace. This is a provisional delivery choice for PR
+review. A platform-specific bundled Python installer would remove one prerequisite
+but add signing, updating, size and per-OS maintenance work; it is deferred. The ZIP
+does not install Python, bypass download/security prompts or imply release readiness.
+Removing the packaging script and CI artifact step leaves normal checkout launch
+and private memory unchanged.

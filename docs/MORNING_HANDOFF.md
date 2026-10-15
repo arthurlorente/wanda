@@ -21,6 +21,22 @@ If the browser says it is locked, reopen Start Wanda so it receives the new loca
 session key. Do not share the launch link. If port 8765 is busy, set `WANDA_PORT`
 to 8766 in a private config. Local service startup does not expose Wanda to your LAN.
 
+You can also [download the tested demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38746282007/artifacts/11979560780)
+and [extract it](DEMO_BUNDLE.md), then use its launcher without Git. GitHub may
+ask you to sign in; this download expires October 22, 2026. It uses the same private data folder on this computer;
+stop an older running copy before testing the new one. Python is still required.
+
+While a memory save or deletion is pending, you can keep drafting. Newer text
+is preserved. If its original record was deleted, Wanda labels the text as an
+unsaved new-memory draft; it is saved again only if you choose Save.
+
+If **Stop Wanda** cannot verify the running session, press **Control+C** in the
+window that started it. The launcher now distinguishes a missing session record
+from an unreadable, corrupt or unreachable one. It does not guess process IDs or
+search other data folders. An explicitly selected data folder remains stoppable
+even when unrelated configuration is broken. If damaged JSON makes a custom
+folder's location unknown, repair the config or use the original window to stop.
+
 ## Five-minute walkthrough
 
 Use invented information throughout:
@@ -50,16 +66,19 @@ Use invented information throughout:
 
 ## What was tested
 
-The latest published connection fixes passed **160 Python checks** on Windows,
-macOS and Linux with Python 3.11 and 3.14, plus encryption and browser checks.
-See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38708512976).
-The subsequent conversation fix passed **31 browser workflows** locally and in
-[Linux CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553), including
-memory recovery, permission denials, outages, mobile layout and microphone cleanup
-using simulated audio APIs. Typed follow-ups now wait for Wanda to stop before
-requesting another response; a second draft stays in the text box. Missing
-acknowledgements stop the microphone. These checks do not confirm real voice
-quality or physical devices. Current review/CI status is in the [checkpoint](DEVELOPMENT_CHECKPOINT.md).
+The current demo passed **180 Python checks** across Windows, macOS and Linux
+with Python 3.11 and 3.14, plus encryption checks and **47 browser workflows**.
+Two OS-specific tests skip on Windows. The [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
+also produced the downloadable ZIP. A local rebuild matched its checksum exactly.
+An extracted earlier build passed startup, memory persistence/deletion, simulated
+light permissions and shutdown without Git installed in its runtime PATH.
+
+Browser tests cover encrypted recovery, permission denials, outages, mobile layout,
+follow-up sequencing, microphone cleanup using simulated audio APIs, and preserving
+newer drafts through slow or failed requests. A missing response acknowledgement
+stops the microphone. Lost writes disclose uncertainty rather than retrying.
+These checks do not confirm real voice quality, desktop download prompts or physical
+devices. Exact versions and evidence are in the [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
 ## Encrypted recovery increment
 
@@ -124,8 +143,9 @@ Reviewable, unmerged change: [PR #8](https://github.com/arthurlorente/wanda/pull
 Encrypted recovery: [PR #9](https://github.com/arthurlorente/wanda/pull/9), based on PR #8.
 Verified synthetic voice and connection fixes: [PR #10](https://github.com/arthurlorente/wanda/pull/10), based on PR #9.
 Conversation sequencing and recovery: [PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10.
-The current checkout includes all four increments; use it for the demo without
-merging anything. The cumulative branch is [codex/wanda-live-turns](https://github.com/arthurlorente/wanda/tree/codex/wanda-live-turns).
+Draft/stop recovery and portable ZIP: [PR #12](https://github.com/arthurlorente/wanda/pull/12), based on PR #11.
+The current checkout includes all five increments; use it for the demo without
+merging anything. The cumulative branch is [codex/wanda-demo-recovery](https://github.com/arthurlorente/wanda/tree/codex/wanda-demo-recovery).
 Assignment: [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 The final PR and verification evidence are recorded in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 

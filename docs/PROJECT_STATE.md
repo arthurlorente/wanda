@@ -73,6 +73,22 @@ A durable private spending ledger, strict synthetic input, bounded output and
 server-side cleanup gate the tests; no real devices are authorized. New work
 stops at 11:00am New York (15:00 UTC) on 2026-10-15 or an actual usage limit.
 
+The next scoped increment in [PR #12](https://github.com/arthurlorente/wanda/pull/12)
+on `codex/wanda-demo-recovery` preserves browser drafts
+across delayed/failed requests, stops the selected instance despite unrelated
+config errors, and provides a reproducible ZIP for launch without Git. **180 Python
+tests and 47 browser workflows passed locally**. The extracted app also passed
+startup, local memory persistence/deletion, mock-light permissions and shutdown
+with no Git in PATH. [Corrected CI](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
+passed all six OS/Python jobs, the 47 browser workflows and ZIP delivery.
+[Download the demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38746282007/artifacts/11979560780)
+(GitHub sign-in may be needed; expires October 22). No new privacy permission
+or provider commitment is introduced. Python is still required to run the ZIP.
+A final review found delayed deletion could erase newer drafts; the same protection
+now covers one/all memory deletions and truthful post-delete refresh failures.
+**47 browser workflows passed locally and in the final CI run linked above**.
+A local instance is available for owner review; keep the verified demo stable.
+
 ## Next actions and blockers
 
 1. Owner: try [MORNING_HANDOFF](MORNING_HANDOFF.md); no account or key needed.

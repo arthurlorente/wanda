@@ -13,6 +13,11 @@ See [bounded live validation](testing/LIVE_VOICE.md) for exact evidence and cost
 
 - Opens without microphone access in local demo mode. Text messages go only to
   the local Wanda server. Chat is held in this page's memory, not archived.
+- If a local chat request fails, its message is marked unconfirmed. The text can
+  return to an empty composer without replacing a newer draft or undoing Clear
+  chat. There is no automatic resend: consented local capture may already have
+  happened before a response was lost. A later memory-list refresh failure does
+  not turn an already received answer into an unconfirmed message.
 - Offers English, Portuguese and Spanish scripts and warm or neutral tone.
 - Can read scripted replies with `speechSynthesis` only when explicitly enabled
   and a voice reports `localService: true` for the selected language. Browser/OS

@@ -16,7 +16,17 @@ V1 is not complete. Main has not been changed or merged.
   evidence. Latest verified commit `d6dee615ec71460b092ca9c293fc2154cfd9061e`.
 - [PR #11](https://github.com/arthurlorente/wanda/pull/11): `codex/wanda-live-turns`,
   stacked on PR #10. Browser response sequencing passed local tests and independent
-  review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.
+  review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`;
+  final handoff `17d71d547c8075535715daa2414b2aa971731b92` passed
+  [all CI jobs](https://github.com/arthurlorente/wanda/actions/runs/38709876678).
+- [PR #12](https://github.com/arthurlorente/wanda/pull/12): active cumulative branch
+  `codex/wanda-demo-recovery`, based on PR #11. Local draft-loss/stop recovery and
+  a committed-source ZIP builder. Implementation commit
+  `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525`; Windows configuration repair
+  `fd09723f8e771d9b780f69acb26ad2cce944b486` passed all eight CI jobs, including
+  artifact delivery. Final deletion fix `0e9f2856b27a571bda1bacf3b973c2d7c7d1d660`
+  passed all eight CI jobs with 47 browser workflows. Local integration and
+  extracted startup passed.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -42,6 +52,18 @@ V1 is not complete. Main has not been changed or merged.
   acknowledgements, retains one queued typed turn and additional draft, and drops
   unsent work on disconnect. One correlated automatic-response conflict retry
   never duplicates typed text; fifteen-second missing acknowledgements disconnect.
+- Delayed memory saves preserve newer drafts/selected edits and reject duplicate
+  pending submissions. Failed chat restores only an untouched composer; Clear chat
+  and newer drafts survive. Lost mutation responses disclose uncertain outcomes
+  without automatic retry; a failed refresh cannot undo a confirmed write/reply.
+- Stop resolves the selected data folder without unrelated configuration validation,
+  preserves explicit environment precedence, and reports corrupt/unreachable state
+  honestly. Unknown custom folders require the original window or repaired config;
+  no process scanning, token guessing or cross-folder shutdown is introduced.
+- A deterministic source ZIP includes only allowed committed Git blobs, launchers,
+  docs and templates, with a commit/hash manifest. Untracked/ignored runtime files,
+  local Git object replacements, links/submodules and development harnesses cannot
+  enter through the builder. Python remains required; Git is not needed at runtime.
 
 ## Tests and evidence
 
@@ -72,6 +94,57 @@ V1 is not complete. Main has not been changed or merged.
   `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`; basic repository checks also passed.
 - Actual microphone, listening quality, natural pauses, spoken interruptions and
   physical device behavior still require human testing. No household data used.
+- Recovery/delivery local gate: **178 Python tests passed** in 22.265s and **41
+  Chrome browser workflows passed**. Ten bundle tests cover committed snapshots,
+  exclusions, deterministic bytes, permissions, overwrite refusal and extracted
+  doctor without Git. Eighteen launcher/config tests cover corrupt configuration,
+  folder scoping and truthful shutdown. Node syntax and diff checks passed.
+  [Initial remote CI](https://github.com/arthurlorente/wanda/actions/runs/38712291597)
+  passed Linux/macOS and 41 browser workflows. Windows exposed eager home-directory
+  lookup before honoring an explicit private configuration file in an isolated
+  environment. Lazy config resolution now honors the explicit file before requiring a home
+  directory; 20 focused tests passed, including missing-home regressions and safe
+  error reporting. Artifact upload correctly stayed blocked on the initial failed
+  CI. The full corrected local suite passed **180 Python tests** in 23.100s.
+  [Corrected CI](https://github.com/arthurlorente/wanda/actions/runs/38735661927) passed all six
+  Windows/macOS/Linux Python 3.11/3.14 jobs, 41 Chromium browser workflows and the
+  bundle job at `fd09723f8e771d9b780f69acb26ad2cce944b486`. Windows skips the two
+  OS-specific signal/symlink cases; encryption and child-input checks also passed.
+- The initial PR #12 commit `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525` ZIP (65 files) was extracted with macOS `ditto`, preserving
+  executable launcher mode. With no Git in PATH and fresh external synthetic state,
+  the app started, served the UI, kept cloud voice disabled, captured a consented
+  preference, retained it after restart, deleted it, enforced deny/grant/mock-light
+  control and stopped cleanly. Zero external calls. ZIP SHA-256:
+  `96bf48ec21158f1cbbdbb5f9bcec434a043aa38f02b75a474baf63842d6c7a55`.
+  Local artifact: `dist/wanda-demo-7a6d452f6b4e.zip` (ignored, not committed).
+- [Download the corrected CI demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
+  (GitHub sign-in may be required; expires October 22, 2026). CI packages its tested
+  PR preview commit `f56a58330bcbe1ee0c5b3a6d08322aae814e7e7f`, whose tree exactly
+  matches branch commit `fd09723f8e771d9b780f69acb26ad2cce944b486`. This preview is
+  not a merge into main. The 65-file archive was reproduced locally byte for byte:
+  SHA-256 `cb2e1c9fdef6e059f691bec8da9b07a03e33b4e99634e28a8cee10799a0f21a8`.
+  Local equivalent: `dist/wanda-demo-f56a58330bcb.zip`; no keys or runtime data.
+  Download retrieval succeeded. Independent review verified all 64 manifest hashes,
+  65 archive entries, launcher permissions and private/runtime exclusions. No
+  packaging defect was found. Desktop download/security prompts remain untested.
+- Handoff commit `105d917c0c7666c9adec4ef9f667ad41fd1e754f` also passed
+  [all eight CI jobs](https://github.com/arthurlorente/wanda/actions/runs/38744873185).
+- Final browser review found no defect in the changed save/chat guards, but
+  reproduced a pre-existing delayed Delete-all response erasing a newer draft.
+  The revision guard now covers single/all memory deletion: newer fields survive,
+  a deleted edit becomes an explicitly unsaved new-memory draft, unrelated edits
+  remain selected, and a confirmed deletion stays confirmed if refresh fails.
+  **47 local Chrome workflows passed** (six new deletion scenarios), with no page
+  errors or external requests. Syntax and diff checks passed; Python code is
+  unchanged from the 180-test gate. [Final CI](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
+  passed all six OS/Python jobs (180 tests, two Windows-specific skips), 47 browser
+  workflows, encryption/child-input checks and ZIP delivery at
+  `0e9f2856b27a571bda1bacf3b973c2d7c7d1d660`. No cloud or memory-policy change
+  is involved. [Download the latest tested ZIP](https://github.com/arthurlorente/wanda/actions/runs/38746282007/artifacts/11979560780).
+  Preview commit `ed4d81f8a3f65c75d613100fb38381d1911a93d6` has the same tree as
+  that branch commit. Its 65-file archive reproduced locally with identical
+  SHA-256 `abdf1f741fd3ab3769f71eb59a98c68bef6706ff115f38da4a3a53ea5186b784`.
+  Local equivalent: `dist/wanda-demo-ed4d81f8a3f6.zip`; CI download expires October 22.
 
 ## Authorization, limits and blockers
 
@@ -79,7 +152,7 @@ V1 is not complete. Main has not been changed or merged.
   D-052: **US$10 total** synthetic voice test ceiling, replacing the original US$5
   before paid calls. No real devices, new accounts, billing changes or automatic merges.
 - Stop starting new work/calls at **2026-10-15 15:00 UTC (11am New York)** or an
-  actual usage limit. Last usage check reported 30% of the account window used;
+  actual usage limit. Last usage check reported 38% of the account window used;
   ordinary usage was allowed. Do not consume reset credits or bypass limits.
 - Supported hourly chat continuation is active through that cutoff under
   `wanda-overnight-development-until-11am`. It cannot bypass usage limits.
@@ -101,19 +174,23 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. PR #11 local and remote CI passed. Keep this branch as the cumulative demo
-   checkout; no agent owns unfinished edits. Do not merge. Prioritize remaining
-   scoped failure recovery and demo usability before the cutoff.
+1. The final implementation CI and replacement ZIP above are verified. Check any
+   subsequent evidence-only documentation CI before further work. All agents are
+   done and their code is integrated; all PRs remain unmerged. A local review
+   instance was started from the final implementation commit. Keep it available
+   during owner review; do not restart it or operate the microphone/devices.
+   Continue with read-only review, documentation or user-reported fixes until
+   the cutoff, preserving the tested demo.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
    acceptance remains deferred rather than fabricated. Update handoff/checkpoint.
 
 Continuation instruction:
-“Continue Issue #7 on `codex/wanda-live-turns` from this checkpoint. Read
+“Continue Issue #7 on `codex/wanda-demo-recovery` from this checkpoint. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
 and the private synthetic-test accounting without exposing credentials. Preserve
-unfinished work and keep PRs #8/#9/#10/#11 unmerged. Native subagents are available and
+unfinished work and keep PRs #8/#9/#10/#11/#12 unmerged. Native subagents are available and
 explicitly authorized; use bounded ownership. Follow the approved US$10 total
 session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
 no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved

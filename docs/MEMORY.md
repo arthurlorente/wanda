@@ -30,6 +30,17 @@ Use invented examples when sharing screenshots or reporting bugs. The older JSON
 export is plaintext and contains actual memory text. Encrypted backups also belong
 in private, owner-controlled storage; neither belongs in the public repository.
 
+A pending manual save blocks duplicate submission. You may draft the next memory
+while waiting; the completed save clears only the unchanged submitted form and
+preserves newer edits. If a request loses its response, the action may already
+have completed. Inspect the memory list before deciding whether to submit again;
+the browser never retries the write automatically.
+
+Deleting one or all saved memories also preserves newer text entered while the
+request is pending. If that text was editing a now-deleted record, it becomes an
+unsaved new-memory draft; saving it again requires your explicit action. A
+confirmed deletion remains reported even if the list cannot refresh.
+
 ## What is stored
 
 The Python standard-library `sqlite3` store uses a private database path supplied

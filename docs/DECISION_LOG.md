@@ -52,6 +52,9 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-034 | Accepted evaluation process; backup method undecided | Have Codex evaluate and recommend a secure, portable backup and restore strategy for Wanda's locally stored memories before selecting one. | Compare local backups, encrypted optional cloud backups, and manual export; assess recoverability, encryption, key ownership, complexity, cost and tested restores. Primary memory remains local. |
 
+| D-035 | Accepted | Use context-aware memory retention: durable facts persist; temporary ones can expire with user override. | Exact expiration rules undecided. |
+| D-036 | Accepted | Design P0 memory and identity schemas for multiple residents and shared household context, while implementing full multi-user support gradually. | Prevent accidental cross-person memory access; P0 may initially offer one authenticated user. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

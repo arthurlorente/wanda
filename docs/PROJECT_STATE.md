@@ -18,6 +18,7 @@
 - README uses Wanda's name without entertainment-brand disclaimers.
 - Foundational first-person manifesto and initial personality specification documented; runtime character behavior has **not** been implemented.
 - D-019: P0 will be developed as a portable application; permanent host selection is deferred.
+- D-020 through D-022: Browser client, click-to-connect free conversation in P0, wake word later, and optional free-text alternatives in planning questions.
 
 ## Decision status
 

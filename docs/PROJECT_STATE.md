@@ -21,6 +21,7 @@
 - D-020 through D-022: Browser client, click-to-connect free conversation in P0, wake word later, and optional free-text alternatives in planning questions.
 - D-023: Codex will evaluate and propose the P0 technology stack; none has been selected.
 - D-024: Codex can implement scoped issues autonomously on branches; changes require human-reviewed PRs before merge.
+- D-025: Codex will research licensing options and propose a recommendation for review. No license has been chosen.
 
 ## Decision status
 
@@ -31,7 +32,7 @@
 ## Next work, in order
 
 1. Check and reconcile this consolidation with the project owner's intent; log corrections as documentation updates.
-2. Resolve license selection in [#6](https://github.com/arthurlorente/wanda/issues/6) before inviting external contributions.
+2. Have Codex evaluate licenses via [#6](https://github.com/arthurlorente/wanda/issues/6) and [licensing brief](LICENSING_EVALUATION.md); approve a license before inviting external contributions.
 3. Specify P0 experiments and acceptance criteria in [#1](https://github.com/arthurlorente/wanda/issues/1).
 4. Build P0 on a branch/PR, not directly on main. Compare measured conversational quality against the official ChatGPT Voice experience.
 5. Make hardware purchases only after baseline measurements justify them.

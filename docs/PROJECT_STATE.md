@@ -30,6 +30,7 @@
 - D-034: Codex will compare backup and restore options for local memory; no backup method chosen.
 - D-035: Durable memories persist and short-lived facts expire according to context; thresholds pending.
 - D-036: P0 storage and identity boundaries must anticipate multiple residents, even if initial UX serves one account.
+- D-037: Voice recognition is the intended default household identity UX; private memories and privileged actions require independent step-up authorization. Recognition implementation is later.
 
 ## Decision status
 

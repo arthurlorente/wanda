@@ -72,8 +72,15 @@ connection metadata reach OpenAI. Saved local memories are **never** automatical
 sent. Memory category grants cannot filter microphone audio. Provider retention
 and processing policies apply; no blanket privacy guarantee is made.
 
-The UI sends typed live messages over the data channel. Language and tone changes
-request a new style without replacing the server's foundational persona. Audio
+The UI sends typed live messages over the data channel. If Wanda is responding,
+one typed follow-up waits for the matching cancellation acknowledgement; another
+draft stays in the text box. Language and tone changes accompany that waiting
+message without replacing the server's foundational persona. Missing creation or
+cancellation acknowledgements disconnect after fifteen seconds. A correlated
+automatic-response conflict permits one retry of the rejected response request,
+without sending the typed text twice; repeated or unrelated errors disconnect.
+No network/session creation retry is added. These sequencing paths are covered by
+synthetic browser events; real spoken interruption quality remains unverified. Audio
 transcripts returned by the provider appear in the page only; user transcription
 is not separately enabled. Reloading removes the page transcript. Clearing an
 active live chat first disconnects; this cannot erase prior provider processing.

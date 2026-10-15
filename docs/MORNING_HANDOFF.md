@@ -50,11 +50,15 @@ Use invented information throughout:
 
 ## What was tested
 
-The 89 automated Python checks passed on Windows, macOS and Linux with both
-Python 3.11 and 3.14. Eleven browser workflows passed, including memory, permission
-denials, outages, mobile layout and microphone cleanup using simulated audio APIs.
-This confirms the demo flows; it does not confirm real voice quality or devices.
-See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38697725609).
+The latest published connection fixes passed **160 Python checks** on Windows,
+macOS and Linux with Python 3.11 and 3.14, plus encryption and browser checks.
+See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38708512976).
+The subsequent conversation fix passed **31 local browser workflows**, including
+memory recovery, permission denials, outages, mobile layout and microphone cleanup
+using simulated audio APIs. Typed follow-ups now wait for Wanda to stop before
+requesting another response; a second draft stays in the text box. Missing
+acknowledgements stop the microphone. These checks do not confirm real voice
+quality or physical devices. Current review/CI status is in the [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
 ## Encrypted recovery increment
 
@@ -64,7 +68,7 @@ download a password-encrypted file, preview it locally, and approve a merge. Kee
 the password separately: Wanda cannot recover it if lost. Restoring preserves
 existing memories and never restores old permissions or keys. Saved memories remain
 local as requested. Its 126 Python tests and six encryption tests passed across
-Windows, macOS and Linux; 20 browser workflows passed. Both PRs remain unmerged.
+Windows, macOS and Linux; 20 browser workflows passed. All PRs remain unmerged.
 
 ## Optional live voice
 

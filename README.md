@@ -24,7 +24,7 @@ walkthrough, configuration, and what is simulated.
 | Browser conversation | Local scripted demo in English, Portuguese, Spanish; no general local AI |
 | Persistent memory | Real local SQLite, opt-in, review/edit/export/delete and conservative selective capture |
 | Home controls | Simulated lights by default; permissions, confirmation, verification and outage handling |
-| Cloud voice | Optional OpenAI WebRTC adapter and explicit disclosure; live audio quality/account access not verified |
+| Cloud voice | Synthetic OpenAI WebRTC audio response verified; explicit disclosure and server-only key. Microphone and conversational quality still need human testing |
 | Home Assistant | Bounded REST light adapter with mocked transport tests; real devices not tested |
 | Household identity | One local OS-user capability; no voice authentication or separate resident login |
 

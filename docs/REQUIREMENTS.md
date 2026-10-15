@@ -34,6 +34,8 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-21 | Context-aware expiration: durable facts persist while temporary memories expire with user override | Must / P0 design | Test temporal expiry, retention of durable preferences and user preservation/deletion |
 | R-22 | Use multi-user-ready account, ownership and memory boundaries in P0; deliver full multi-user UX in later milestones | Must / P0 architecture + Later | Validate schema separates private resident data from explicit shared household data; test denial of unauthorized cross-user reads |
 
+| R-23 | Voice recognition is the primary eventual household identity experience for everyday personalization, with cautious unknown-speaker fallback | Must / Later; P0 design-ready | Evaluate enrolled speakers, false matches, replays, household background speech and unknown voices; require stronger authentication for private data and privileged tools |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

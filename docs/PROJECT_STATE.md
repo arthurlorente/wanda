@@ -37,6 +37,8 @@
 - D-039: Device-scoped guest permission profiles default to temporary and can be upgraded with authorized approval.
 - D-040: Household entrusted information must not become a commercial data asset; apply transparent consent and provider handling throughout design. See [HOUSEHOLD_TRUST](HOUSEHOLD_TRUST.md).
 
+- D-039–D-042: Scoped expiring guest device permissions; non-commercial household data stewardship; minimum cloud context; per-person, per-information-type consent for sensitive/identifiable cloud disclosure. Implementation and provider evaluations pending.
+
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.

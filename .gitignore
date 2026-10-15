@@ -1,0 +1,33 @@
+# Private credentials and configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.yaml
+**/secrets.yaml
+**/secrets/**
+**/.storage/**
+# Private runtime state
+/data/
+/runtime/
+/private/
+/memory/
+/transcripts/
+/recordings/
+*.sqlite
+*.sqlite3
+*.db
+*.wav
+*.mp3
+# Build and tooling
+__pycache__/
+.pytest_cache/
+.venv/
+node_modules/
+dist/
+build/
+.DS_Store
+.idea/
+.vscode/

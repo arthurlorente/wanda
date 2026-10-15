@@ -13,9 +13,10 @@ V1 is not complete. Main has not been changed or merged.
   `4d02c03c3e073fc4ebeff22ba9b24537889c180f`.
 - [PR #10](https://github.com/arthurlorente/wanda/pull/10): `codex/wanda-voice-validation`,
   stacked on PR #9. HTTPS trust repair, exact SDP preservation and bounded live
-  evidence. Initial commit `ea42f21a6d26026e80700888f5218bae27b3bcd7`.
-- Active follow-up branch: `codex/wanda-live-turns`, based on PR #10. Separate
-  browser response-sequencing work is in progress; preserve any unstaged edits.
+  evidence. Latest verified commit `d6dee615ec71460b092ca9c293fc2154cfd9061e`.
+- [PR #11](https://github.com/arthurlorente/wanda/pull/11): `codex/wanda-live-turns`,
+  stacked on PR #10. Browser response sequencing passed local tests and independent
+  review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -37,6 +38,10 @@ V1 is not complete. Main has not been changed or merged.
 - Missing Python CA configuration on the development Mac was diagnosed. Narrow
   fallback to the OS certificate bundle preserves certificate/hostname checks;
   voice and HA adapters share the helper. No TLS verification bypass exists.
+- Browser tracks requested, active and cancelling responses, waits for matching
+  acknowledgements, retains one queued typed turn and additional draft, and drops
+  unsent work on disconnect. One correlated automatic-response conflict retry
+  never duplicates typed text; fifteen-second missing acknowledgements disconnect.
 
 ## Tests and evidence
 
@@ -52,11 +57,19 @@ V1 is not complete. Main has not been changed or merged.
 - Final TLS/SDP/harness gate: **160 Python tests passed** in 10.987s, including
   real loopback auth/cleanup with fake provider, budget limits and SDP preservation.
   **Six crypto and five child-input tests passed**; **20 browser workflows passed**
-  before the final SDP change (covered by Python and actual live smoke). Remote CI
-  for PR #10 passed Linux/macOS and browser checks. Windows found a test assertion
-  using POSIX separators while mocking macOS on Windows. The assertion now uses
-  the host path representation; six targeted TLS tests pass. Corrected CI pending.
-  [Initial run](https://github.com/arthurlorente/wanda/actions/runs/38707650624).
+  before the final SDP change (covered by Python and actual live smoke). Final
+  [PR #10 CI](https://github.com/arthurlorente/wanda/actions/runs/38708512976)
+  passed all six platform/version jobs and the browser job at `d6dee615ec71460b092ca9c293fc2154cfd9061e`.
+  CI corrections fixed a Windows path assertion in a macOS mock and another macOS
+  test-client early-413 race; actual body-size rejection assertions remain intact.
+- Browser sequencing follow-up: **31 local Chrome workflows passed**, with no
+  page errors or external requests. JavaScript syntax and diff checks passed.
+  An independent agent reviewed request correlation, queued-message preservation,
+  conflict retry, disconnect guards and backup privacy transitions. Its two
+  findings (late audio clear and updated preferences on retry) have regressions.
+  [Follow-up CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553)
+  passed all six platform/version jobs and Linux Chromium browser checks at
+  `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`; basic repository checks also passed.
 - Actual microphone, listening quality, natural pauses, spoken interruptions and
   physical device behavior still require human testing. No household data used.
 
@@ -66,7 +79,7 @@ V1 is not complete. Main has not been changed or merged.
   D-052: **US$10 total** synthetic voice test ceiling, replacing the original US$5
   before paid calls. No real devices, new accounts, billing changes or automatic merges.
 - Stop starting new work/calls at **2026-10-15 15:00 UTC (11am New York)** or an
-  actual usage limit. Last usage check reported 20% of the account window used;
+  actual usage limit. Last usage check reported 30% of the account window used;
   ordinary usage was allowed. Do not consume reset credits or bypass limits.
 - Supported hourly chat continuation is active through that cutoff under
   `wanda-overnight-development-until-11am`. It cannot bypass usage limits.
@@ -88,13 +101,11 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. Verify corrected PR #10 CI, then record its evidence. Do not merge.
-2. Voice subagent is preparing a separate browser fix in web/app.js and
-   scripts/browser-check.cjs: serialize requested/active/cancelling responses and
-   await cancellation acknowledgement before typed follow-ups/style changes.
-   Two races were reproduced offline; no additional live API tests are planned.
-   Keep those unstaged changes out of the current TLS/SDP/harness commit, carry
-   them onto a successor branch, integrate and test before publishing.
+1. PR #11 local and remote CI passed. Keep this branch as the cumulative demo
+   checkout; no agent owns unfinished edits. Do not merge. Prioritize remaining
+   scoped failure recovery and demo usability before the cutoff.
+2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
+   attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
    acceptance remains deferred rather than fabricated. Update handoff/checkpoint.
 
@@ -102,7 +113,7 @@ Continuation instruction:
 “Continue Issue #7 on `codex/wanda-live-turns` from this checkpoint. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
 and the private synthetic-test accounting without exposing credentials. Preserve
-unfinished work and keep PRs #8/#9/#10 unmerged. Native subagents are available and
+unfinished work and keep PRs #8/#9/#10/#11 unmerged. Native subagents are available and
 explicitly authorized; use bounded ownership. Follow the approved US$10 total
 session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
 no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved

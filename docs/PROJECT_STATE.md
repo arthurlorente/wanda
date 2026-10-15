@@ -33,6 +33,16 @@ Main remains untouched by this implementation.
   on PR #8. The 126-test Python suite passed all six platform/version jobs;
   six Web Crypto tests and 20 browser workflows passed locally and in Linux CI.
   [Recovery CI](https://github.com/arthurlorente/wanda/actions/runs/38702654185).
+- Connection fixes and bounded live harness in [PR #10](https://github.com/arthurlorente/wanda/pull/10):
+  160 Python tests passed across all six platform/version jobs; six encryption,
+  five harness-input and 20 browser checks passed in
+  [CI](https://github.com/arthurlorente/wanda/actions/runs/38708512976).
+- Browser follow-up sequencing now waits for matching cancellation acknowledgements,
+  preserves one queued message and additional drafts, and disconnects on missing
+  acknowledgements. The follow-up branch passed **31 browser workflows** locally
+  and in [Linux CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553),
+  alongside all six platform/version jobs;
+  provider event races and microphone quality are still not verified live.
 
 ## Decisions and limitations
 
@@ -44,7 +54,7 @@ choices for review, not owner-approved production policy.
 The V0 local OS-user capability is not multi-resident authentication. Database and
 exports are plaintext with file permissions. Automatic extraction is deliberately
 narrow. Home grants/audit reset on restart. Cloud voice has no saved memory, home
-or computer tools. No raw audio or transcript archive exists. Provider costs and
+or computer tools. No raw audio or transcript archive exists. Conversational
 quality and realistic household cost are not measured. A privately configured key
 was used for metadata/configuration checks and two synthetic connection attempts;
 one completed inference has a conservative US$0.006424 estimate. No physical device, private household data, account
@@ -55,8 +65,8 @@ creation, billing change or automatic merge was used by development.
 Owner approved encrypted local backup/restore (D-051) and retained all saved
 memories locally (D-050). Recovery is implemented in the unmerged PR #9.
 TLS/SDP fixes and live evidence are in [PR #10](https://github.com/arthurlorente/wanda/pull/10),
-stacked on PR #9. Work continues on `codex/wanda-live-turns` for browser follow-up
-response sequencing. Synthetic live
+stacked on PR #9. Tested browser follow-up response sequencing is on
+[PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10. Synthetic live
 voice testing has a session-specific **US$10 total** ceiling (D-052), replacing
 the original US$5 ceiling before any paid call. The private key is configured.
 A durable private spending ledger, strict synthetic input, bounded output and

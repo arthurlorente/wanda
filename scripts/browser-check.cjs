@@ -316,6 +316,10 @@ async function main() {
 
     // Synthetic browser APIs exercise lifecycle paths, never a microphone/provider.
     const voiceContext = await browser.newContext();
+    await voiceContext.route('**/*', async route => {
+      if (!route.request().url().startsWith(base)) { external.push(new URL(route.request().url()).origin); await route.abort(); }
+      else await route.continue();
+    });
     await voiceContext.addInitScript(() => {
       window.__probe = {captures: 0, stops: 0, closes: 0, sends: [], pending: null};
       const probe = window.__probe;
@@ -340,6 +344,7 @@ async function main() {
       };
     });
     const vp = await voiceContext.newPage();
+    vp.on('pageerror', e => errors.push(e.message));
     await vp.route('**/api/status', async route => {
       const response = await route.fetch();
       const data = await response.json(); data.voice.configured = true;
@@ -367,15 +372,167 @@ async function main() {
       await vp.locator('#audio-consent').check();
       await vp.locator('#confirm-accept').click();
     }
+    const emit = event => vp.evaluate(event => window.__probe.channel.onmessage({data: JSON.stringify(event)}), event);
+    const sent = type => vp.evaluate(type => window.__probe.sends.filter(event => event.type === type), type);
+    async function latestRequest() { return (await sent('response.create')).at(-1); }
+    async function created(id, request = null) {
+      await emit({type: 'response.created', response: {id, ...(request ? {metadata: request.response.metadata} : {})}});
+    }
+    const done = (id, status = 'completed') => emit({type: 'response.done', response: {id, status}});
+    async function typeTurn(text) {
+      await vp.locator('#chat-input').fill(text);
+      await vp.locator('#send-chat').click();
+    }
+    async function completeLatest(id) { await created(id, await latestRequest()); await done(id); }
+    async function cancelCount(id) { return (await sent('response.cancel')).filter(event => event.response_id === id).length; }
+
     await connect();
     await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
-    await vp.locator('#chat-input').fill('A synthetic cloud test');
-    await vp.locator('#send-chat').click();
-    assert.ok(await vp.evaluate(() => window.__probe.sends.some(x => x.type === 'conversation.item.create' && x.item.content[0].text === 'A synthetic cloud test')));
-    await vp.evaluate(() => window.__probe.channel.onmessage({data: JSON.stringify({type: 'response.created'})}));
+    const greetingRequest = await latestRequest();
+    await typeTurn('A synthetic cloud test');
+    assert.equal((await sent('response.create')).length, 1, 'Greeting creation must be acknowledged first');
+    assert.equal((await sent('conversation.item.create')).length, 1, 'Queued text must not be sent yet');
+    assert.equal(await vp.locator('#send-chat').isDisabled(), true);
+    await vp.locator('#chat-input').fill('Preserve this next draft');
+    await vp.locator('#chat-form').evaluate(form => form.requestSubmit());
+    assert.equal(await vp.locator('#chat-input').inputValue(), 'Preserve this next draft');
+    await created('greeting', greetingRequest);
+    assert.equal(await cancelCount('greeting'), 1);
+    assert.equal((await sent('output_audio_buffer.clear')).length, 1, 'Late-created cancellation must also clear queued audio');
+    assert.equal(await vp.locator('#remote-audio').evaluate(audio => audio.muted), true);
+    await done('unrelated-response');
+    assert.equal((await sent('response.create')).length, 1, 'An unrelated done event cannot release the queue');
+    await done('greeting', 'cancelled');
+    assert.equal((await sent('response.create')).length, 2);
+    assert.equal((await sent('conversation.item.create')).at(-1).item.content[0].text, 'A synthetic cloud test');
+    assert.equal(await vp.locator('#send-chat').isDisabled(), false);
+    assert.equal(await vp.locator('#chat-input').inputValue(), 'Preserve this next draft');
+    passed++;
+
+    // A current response is cancelled once; late completion cannot release a
+    // different response, and cancelled transcript/audio events stay inert.
+    await created('typed-first', await latestRequest());
+    await typeTurn('A queued follow-up');
+    assert.equal(await cancelCount('typed-first'), 1);
+    await done('greeting', 'cancelled');
+    assert.equal((await sent('response.create')).length, 2);
+    await emit({type: 'response.output_audio_transcript.delta', response_id: 'typed-first', delta: 'Cancelled text must not appear'});
+    assert.equal(await vp.getByText('Cancelled text must not appear', {exact: true}).count(), 0);
+    await done('typed-first', 'cancelled');
+    assert.equal((await sent('response.create')).length, 3);
+    await created('typed-follow-up', await latestRequest());
+    await emit({type: 'output_audio_buffer.started', response_id: 'typed-follow-up'});
+    await done('typed-follow-up');
+    await emit({type: 'output_audio_buffer.stopped', response_id: 'typed-first'});
+    const clearsBefore = (await sent('output_audio_buffer.clear')).length;
     await vp.locator('#interrupt').click();
-    assert.ok(await vp.evaluate(() => window.__probe.sends.some(x => x.type === 'response.cancel')));
+    assert.equal((await sent('output_audio_buffer.clear')).length, clearsBefore + 1, 'Old audio stop cannot hide current playback');
+    assert.equal(await cancelCount('typed-follow-up'), 0, 'Completed generation only needs playback cleared');
+    passed++;
+
+    // Native automatic VAD responses are tracked without manufacturing an
+    // extra client response.create. Typed follow-ups still wait for their done.
+    const beforeAutomatic = (await sent('response.create')).length;
+    await emit({type: 'input_audio_buffer.speech_started'});
+    await created('automatic-turn');
+    assert.equal(await vp.locator('#remote-audio').evaluate(audio => audio.muted), false);
+    await emit({type: 'response.output_audio_transcript.delta', response_id: 'automatic-turn', delta: 'Synthetic automatic transcript'});
+    await vp.getByText('Synthetic automatic transcript', {exact: true}).waitFor();
+    await emit({type: 'input_audio_buffer.speech_started'});
+    await created('automatic-barge-in');
+    await done('automatic-turn', 'cancelled');
+    assert.equal(await vp.locator('#voice-state').textContent(), 'Wanda is responding · mic on');
+    assert.equal(await vp.locator('#remote-audio').evaluate(audio => audio.muted), false);
+    assert.equal((await sent('response.create')).length, beforeAutomatic);
+    await typeTurn('After an automatic turn');
+    assert.equal(await cancelCount('automatic-barge-in'), 1);
+    assert.equal(await cancelCount('automatic-turn'), 0);
+    assert.equal((await sent('response.create')).length, beforeAutomatic);
+    await done('automatic-barge-in', 'cancelled');
+    await completeLatest('after-automatic');
+    assert.equal((await sent('response.create')).length, beforeAutomatic + 1);
+    passed++;
+
+    // Interrupt is meaningful even before response.created, and a late created
+    // event must neither unmute playback nor start a queued replacement.
+    await typeTurn('Interrupt before creation');
+    const earlyRequest = await latestRequest();
+    const beforeEarlyCancel = (await sent('response.create')).length;
+    await vp.locator('#interrupt').click();
+    await created('early-interruption', earlyRequest);
+    assert.equal(await cancelCount('early-interruption'), 1);
+    assert.equal(await vp.locator('#remote-audio').evaluate(audio => audio.muted), true);
+    await vp.locator('#interrupt').click();
+    assert.equal(await cancelCount('early-interruption'), 1);
+    await done('early-interruption', 'cancelled');
+    assert.equal((await sent('response.create')).length, beforeEarlyCancel);
+    passed++;
+
+    // Preference changes coalesce around the single queued typed turn. Latest
+    // language/tone arrive once, after cancellation, without losing the text.
+    await created('automatic-style');
+    const beforeStyleItems = (await sent('conversation.item.create')).length;
+    const beforeStyleResponses = (await sent('response.create')).length;
+    await vp.locator('#language').selectOption('pt');
+    await vp.locator('#tone').selectOption('neutral');
+    await typeTurn('Keep this typed message');
+    await vp.locator('#language').selectOption('es');
+    assert.equal(await cancelCount('automatic-style'), 1);
+    assert.equal((await sent('conversation.item.create')).length, beforeStyleItems);
+    await done('automatic-style', 'cancelled');
+    const styleItems = (await sent('conversation.item.create')).slice(beforeStyleItems);
+    assert.equal(styleItems.length, 2);
+    assert.match(styleItems[0].item.content[0].text, /Spanish.*neutral, direct/);
+    assert.equal(styleItems[1].item.content[0].text, 'Keep this typed message');
+    assert.equal((await sent('response.create')).length, beforeStyleResponses + 1);
+    await completeLatest('typed-with-style');
+    passed++;
+
+    // Automatic VAD may win the server-side race against a manual create. Only
+    // the correlated rejected create can retry once; its text is never resent.
+    await typeTurn('Synthetic collision');
+    const collision = await latestRequest();
+    const collisionItems = (await sent('conversation.item.create')).length;
+    const collisionCreates = (await sent('response.create')).length;
+    await created('automatic-collision');
+    assert.equal(await cancelCount('automatic-collision'), 1);
+    await emit({type: 'error', error: {code: 'conversation_already_has_active_response', event_id: collision.event_id}});
+    assert.equal((await sent('response.create')).length, collisionCreates);
+    await vp.locator('#language').selectOption('pt');
+    await done('automatic-collision', 'cancelled');
+    assert.equal((await sent('response.create')).length, collisionCreates + 1);
+    assert.equal((await sent('conversation.item.create')).length, collisionItems + 1);
+    assert.match((await sent('conversation.item.create')).at(-1).item.content[0].text, /Portuguese.*neutral, direct/);
+    assert.equal((await sent('conversation.item.create')).filter(event => event.item.content[0].text === 'Synthetic collision').length, 1);
+    await completeLatest('collision-retry');
+    passed++;
+
+    await typeTurn('Synthetic reordered collision');
+    const reordered = await latestRequest();
+    const reorderedItems = (await sent('conversation.item.create')).length;
+    const reorderedCreates = (await sent('response.create')).length;
+    await emit({type: 'error', error: {code: 'conversation_already_has_active_response', event_id: reordered.event_id}});
+    assert.equal((await sent('response.create')).length, reorderedCreates);
+    await created('automatic-reordered');
+    await done('automatic-reordered', 'cancelled');
+    assert.equal((await sent('response.create')).length, reorderedCreates + 1);
+    assert.equal((await sent('conversation.item.create')).length, reorderedItems);
+    await completeLatest('reordered-retry');
+    passed++;
+
+    await typeTurn('Disconnect the outstanding request');
+    const disconnectedRequest = await latestRequest();
+    await typeTurn('Must stay unsent after disconnect');
+    const beforeDisconnect = (await sent('response.create')).length;
+    await vp.evaluate(() => { window.__probe.oldMessage = window.__probe.channel.onmessage; });
     await vp.locator('#disconnect').click();
+    await vp.evaluate(request => {
+      window.__probe.oldMessage({data: JSON.stringify({type: 'response.created', response: {id: 'late-disconnected', metadata: request.response.metadata}})});
+      window.__probe.oldMessage({data: JSON.stringify({type: 'response.done', response: {id: 'late-disconnected', status: 'completed'}})});
+    }, disconnectedRequest);
+    assert.equal((await sent('response.create')).length, beforeDisconnect);
+    assert.equal((await sent('conversation.item.create')).some(event => event.item.content[0].text === 'Must stay unsent after disconnect'), false);
+    await vp.getByText('Not sent · voice interrupted or disconnected.', {exact: true}).waitFor();
     assert.equal(await vp.evaluate(() => window.__probe.stops), 1);
     assert.equal(await vp.locator('#microphone-label').textContent(), 'Mic off');
     assert.equal(offers, 1);
@@ -402,8 +559,10 @@ async function main() {
     await vp.evaluate(() => { window.__probe.reject = false; });
     await connect();
     await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
+    await completeLatest('timer-greeting');
     await vp.clock.fastForward(5 * 60 * 1000 + 1);
     assert.equal(await vp.locator('#microphone-label').textContent(), 'Mic off');
+    assert.equal(await vp.locator('#voice-state').textContent(), 'Five-minute session ended · mic off');
     assert.equal(await vp.evaluate(() => window.__probe.stops), 3);
     passed++;
     await connect();
@@ -434,7 +593,61 @@ async function main() {
     assert.deepEqual(errors, []);
     assert.deepEqual(external, []);
     passed++;
-    console.log(`PASS: ${passed} browser workflows; local-only requests, memory CRUD/export, encrypted backup/restore, home permissions/outage, responsive layout, and mocked voice consent/cancellation/timeout.`);
+
+    await connect();
+    await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
+    await typeTurn('Unsent on creation timeout');
+    const beforeCreationTimeout = (await sent('response.create')).length;
+    await vp.clock.fastForward(15001);
+    assert.equal(await vp.locator('#voice-state').textContent(), 'Voice acknowledgement timed out · mic off');
+    assert.equal((await sent('response.create')).length, beforeCreationTimeout);
+    assert.equal((await sent('conversation.item.create')).some(event => event.item.content[0].text === 'Unsent on creation timeout'), false);
+    assert.equal(await vp.evaluate(() => window.__probe.stops), 6);
+    passed++;
+
+    await connect();
+    await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
+    await created('missing-cancel-ack', await latestRequest());
+    await typeTurn('Unsent on cancellation timeout');
+    const beforeCancelTimeout = (await sent('response.create')).length;
+    await emit({type: 'error', error: {code: 'response_cancel_not_active'}});
+    assert.equal((await sent('response.create')).length, beforeCancelTimeout, 'Cancel error is not a done acknowledgement');
+    await vp.clock.fastForward(15001);
+    assert.equal(await vp.locator('#voice-state').textContent(), 'Voice acknowledgement timed out · mic off');
+    assert.equal((await sent('conversation.item.create')).some(event => event.item.content[0].text === 'Unsent on cancellation timeout'), false);
+    assert.equal(await vp.evaluate(() => window.__probe.stops), 7);
+    passed++;
+
+    await connect();
+    await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
+    await completeLatest('bounded-retry-greeting');
+    await typeTurn('Never retry twice');
+    const firstRejected = await latestRequest();
+    await created('bounded-automatic-one');
+    await emit({type: 'error', error: {code: 'conversation_already_has_active_response', event_id: firstRejected.event_id}});
+    await done('bounded-automatic-one', 'cancelled');
+    const finalRejected = await latestRequest();
+    assert.notEqual(finalRejected.event_id, firstRejected.event_id);
+    await created('bounded-automatic-two');
+    const beforeRepeatedError = (await sent('response.create')).length;
+    await emit({type: 'error', error: {code: 'conversation_already_has_active_response', event_id: finalRejected.event_id}});
+    assert.equal(await vp.locator('#microphone-label').textContent(), 'Mic off');
+    assert.equal((await sent('response.create')).length, beforeRepeatedError);
+    assert.equal((await sent('conversation.item.create')).filter(event => event.item.content[0].text === 'Never retry twice').length, 1);
+    assert.equal(await vp.evaluate(() => window.__probe.stops), 8);
+    passed++;
+
+    await connect();
+    await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
+    const beforeUncorrelatedError = (await sent('response.create')).length;
+    await emit({type: 'error', error: {code: 'conversation_already_has_active_response', event_id: 'unrelated-client-event'}});
+    assert.equal(await vp.locator('#microphone-label').textContent(), 'Mic off');
+    assert.equal((await sent('response.create')).length, beforeUncorrelatedError);
+    assert.equal(await vp.evaluate(() => window.__probe.stops), 9);
+    assert.deepEqual(errors, []);
+    assert.deepEqual(external, []);
+    passed++;
+    console.log(`PASS: ${passed} browser workflows; local-only requests, memory CRUD/export, encrypted backup/restore, home permissions/outage, responsive layout, and mocked voice sequencing/consent/cancellation/timeout.`);
   } finally {
     if (browser) await browser.close();
     child.kill('SIGTERM');

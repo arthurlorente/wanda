@@ -29,7 +29,7 @@
 11. Which Home Assistant calls are safe without authentication, and how are command outcomes verified?
 12. How is an OpenClaw action isolated, scoped, logged, rate-limited and approved out of band?
 13. How are residents/guests informed of active listening and retention; how do they opt out?
-14. Which memory schema, retrieval, encryption, backup, per-person boundaries, retention and deletion semantics are appropriate?
+14. **Now required for P0:** What should be remembered automatically versus manually approved? Which memory schema, retrieval, encryption, backup, per-person boundaries, retention, inspection and deletion semantics are appropriate?
 15. Can long-term conversation memory avoid storing private third-party content by default?
 16. How do we recover from agent errors and revoke all active tokens/devices quickly?
 

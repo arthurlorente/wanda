@@ -14,6 +14,8 @@
 
 **Voice-first identity (D-037):** Future household interactions should identify speakers primarily by voice for personalization. A voice match does not by itself grant access to private memories; protect access through independently authorized identity/session checks. Unknown voices receive guest-level permissions. Voice recognition implementation is later than P0.
 
+**D-038 guest onboarding:** Keep session context temporary during voice-started registration. Create a persistent personal memory only after individual consent and identity verification. Consented carryover of useful context may be offered after enrollment; the transfer mechanism remains undecided.
+
 **Open:** Storage engine, encryption, backup choice, expiry thresholds, identity/authentication implementation and third-party privacy safeguards. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.

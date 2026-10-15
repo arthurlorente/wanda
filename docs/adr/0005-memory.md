@@ -8,7 +8,11 @@
 
 **Backup evaluation (D-034):** Codex will recommend a backup and restore approach, comparing on-device/local external backups, optional encrypted offsite backups, and export/import. No backup method or provider is selected. Recovery testing and user control over keys matter.
 
-**Open:** Storage engine, encryption, backup choice, retention duration, household identity and third-party privacy implementation. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
+**Retention (D-035):** Durable preferences and ongoing projects should persist; temporary memories should expire based on context. Users can review and override retention. Exact thresholds and enforcement remain to be designed.
+
+**Multi-user architecture (D-036):** Model private memories with an owner identity and distinguish them from explicitly shared household data from the beginning. P0 may initially expose a single authenticated account, but must not bake single-user access into the storage schema. Voice recognition alone is not sufficient to authorize access to another resident's memories. Full household onboarding and guest policy can be implemented later.
+
+**Open:** Storage engine, encryption, backup choice, expiry thresholds, identity/authentication implementation and third-party privacy safeguards. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.
 

@@ -17,11 +17,12 @@
 - This consolidation added a context index, decision register, open questions, requirements and decision-capture workflow.
 - README uses Wanda's name without entertainment-brand disclaimers.
 - Foundational first-person manifesto and initial personality specification documented; runtime character behavior has **not** been implemented.
+- D-019: P0 will be developed as a portable application; permanent host selection is deferred.
 
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.
-- **Proposed/needs validation:** Exact realtime API/model, WebRTC topology, satellite selection, persistent-memory backend, local host deployment, OpenClaw API boundary, identity solution.
+- **Proposed/needs validation:** Exact realtime API/model, WebRTC topology, satellite selection, persistent-memory backend, permanent host selection, OpenClaw API boundary, identity solution.
 - **Unresolved:** Software/docs/hardware licenses, data retention policy, costs, user consent details, latency/quality targets, P0 implementation stack.
 
 ## Next work, in order

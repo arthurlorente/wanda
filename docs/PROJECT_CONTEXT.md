@@ -47,6 +47,10 @@ The [first-person manifesto](MANIFESTO.md) captures how Wanda introduces herself
 - Notion is **not currently required**. Add it only when a distinct use case is compelling; never make a second competing source of architectural truth.
 - Discuss changes freely, then consolidate *substantive* decisions and their implications into GitHub. A complete consolidation is exceptional, not required after every message.
 
+## Development and deployment approach
+
+P0 will be developed as a **portable application**, runnable on an ordinary development machine without depending on the RTX 4080 Super or committing to the older gaming laptop. The permanent always-on host will be chosen after voice experiments and measured resource requirements. Document cross-platform setup and isolate device-specific code and configuration where practical.
+
 ## Initial constraints (planning targets; not measured)
 
 - Existing desktop with RTX 4080 Super; an older Windows gaming laptop is a candidate always-on host. Do not require the high-power desktop for daily operation.

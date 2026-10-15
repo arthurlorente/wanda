@@ -12,7 +12,7 @@
 
 ## Device and deployment
 
-6. Can an older laptop host the gateway reliably without relying on a separate RTX 4080 desktop being available?
+6. After validating a portable P0 application, can an older laptop host the gateway reliably, or is a different always-on host preferable?
 7. Which inexpensive satellites actually support echo cancellation, far-field pickup, duplex audio and interruptions?
 8. Can existing cast speakers be used for output only, and how does that affect latency and handoff?
 9. How should room attribution and simultaneous wake-ups work?

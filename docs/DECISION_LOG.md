@@ -14,7 +14,7 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-006 | Accepted | Public code with private local credentials, history, recordings and household data. | Privacy and safe collaboration. See [ADR 0003](adr/0003-public-repo-private-runtime.md). |
 | D-007 | Accepted as requirement; mechanism experimental | Support cross-room continuity; test explicit handoff before automatic tracking. | Technical feasibility and guest privacy. See [ADR 0004](adr/0004-cross-room-handoff.md). |
 | D-008 | Accepted as requirement; storage unselected | Preserve useful cross-session text history and structured memory; no raw recordings by default. | User-controlled durable context. See [ADR 0005](adr/0005-memory.md). |
-| D-009 | Accepted | Validate laptop-based P0 before buying satellite hardware or implementing all integrations. | Fastest way to test the hardest assumption; [Issue #1](https://github.com/arthurlorente/wanda/issues/1). |
+| D-009 | Accepted | Validate a portable P0 voice prototype before buying satellite hardware or implementing all integrations. | Fastest way to test the hardest assumption; [Issue #1](https://github.com/arthurlorente/wanda/issues/1). |
 | D-010 | Accepted planning constraint | Aim for ≤$350 initial added hardware and $60–$100/month cloud expense. | Affordable home operation; values are budgets, not verified costs. |
 | D-011 | Accepted | No Notion dependency at this stage. | Avoid duplicate truth. Revisit if nontechnical collaboration or a private notebook demands it. |
 | D-012 | Accepted requirement | Target general household availability with identity-gated personal/privileged actions. | Anyone at home may use safe shared controls without opening private data. [ADR 0002](adr/0002-trust-boundaries.md). |
@@ -24,12 +24,15 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-016 | Unresolved | Choose exact voice provider/model, version and transport implementation. | API compatibility, quality and spending are not yet measured. |
 | D-017 | Accepted foundational identity | Wanda is the **antithesis of the JARVIS / Big AI assistant model**: extraordinary intelligence for ordinary people, not a luxury servant or opaque institution-controlled product. | [Identity and philosophy](IDENTITY.md) defines design consequences, safeguards, and explicit cloud-dependency caveats. |
 | D-018 | Accepted character foundation; implementation pending | Preserve Wanda's first-person manifesto as the foundation of her future personality, with a distinct behavioral specification. | [MANIFESTO](MANIFESTO.md) and [PERSONALITY](PERSONALITY.md); future runtime prompts and memory systems must reflect them without claiming consciousness or overriding safety. |
+| D-019 | Accepted P0 implementation constraint | Develop Wanda as a **portable application**; choose the permanent always-on host after validating the prototype. | Avoid coupling initial code to the RTX desktop or older gaming laptop; keep setup and tests reproducible across supported host machines. |
 
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-019 accepted: portable-first development; permanent host decision deferred. D-009 wording revised from laptop-based to portable without changing its prototype-first rationale.
 
 - 2026-10-15: D-018 accepted: first-person manifesto preserved and initial personality behavior specification established for later implementation.
 

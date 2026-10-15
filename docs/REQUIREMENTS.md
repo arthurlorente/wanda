@@ -19,6 +19,7 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-11 | User-controlled deployments and safe offline home functions where feasible | Must / Later | Internet-disconnect tests |
 | R-12 | Reproducible, public hardware/software docs without exposing user data | Must / ongoing | Repo review and contribution checklist |
 | R-13 | Operate within hardware + monthly budget targets when practical | Target / ongoing | Bill of materials and real usage measurements |
+| R-14 | P0 implementation is portable and does not require a specific computer or dedicated GPU | Must / P0 | Document setup and run/test on supported host environments; avoid machine-specific hardcoding |
 
 ## Deliberately not in P0
 

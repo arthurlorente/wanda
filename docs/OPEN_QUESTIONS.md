@@ -10,6 +10,10 @@
 4. How much does realistic household conversation cost per day/month? How should usage caps, warnings and graceful degradation work?
 5. Is wake-word detection local and robust enough, and how are false activations measured?
 
+## P0 software stack
+
+**Assigned for Codex evaluation, not decided:** Select the simplest maintainable stack for a browser WebRTC client and portable backend, considering long-term Home Assistant and permissioned agent adapters, testing, onboarding, performance, and future non-browser satellites. Compare at least TypeScript-only and Python-backend/TypeScript-frontend approaches and document trade-offs; propose a decision before implementation.
+
 ## Device and deployment
 
 6. After validating a portable P0 application, can an older laptop host the gateway reliably, or is a different always-on host preferable?

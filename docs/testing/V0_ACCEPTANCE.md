@@ -160,3 +160,9 @@ output, private/runtime exclusions, executable modes, no overwrite and extracted
 require additional OS privileges. Source review, full extracted-app smoke results,
 remote CI and artifact links are recorded in the checkpoint. Actual desktop
 download prompts and physical microphone use remain manual acceptance work.
+
+Final deletion review: **47 local Chrome workflows passed**, adding six regressions
+for unchanged deletion resets, newer draft/category preservation, deleted edit
+conversion to an unsaved new record, unrelated edits and confirmed deletion with
+failed refresh. All events are synthetic; no provider or microphone call occurred.
+Remote evidence for this final fix belongs in the checkpoint.

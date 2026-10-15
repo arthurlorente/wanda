@@ -26,6 +26,10 @@ and [extract it](DEMO_BUNDLE.md), then use its launcher without Git. GitHub may
 ask you to sign in; this download expires October 22, 2026. It uses the same private data folder on this computer;
 stop an older running copy before testing the new one. Python is still required.
 
+While a memory save or deletion is pending, you can keep drafting. Newer text
+is preserved. If its original record was deleted, Wanda labels the text as an
+unsaved new-memory draft; it is saved again only if you choose Save.
+
 If **Stop Wanda** cannot verify the running session, press **Control+C** in the
 window that started it. The launcher now distinguishes a missing session record
 from an unreadable, corrupt or unreachable one. It does not guess process IDs or

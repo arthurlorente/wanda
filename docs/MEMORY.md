@@ -36,6 +36,11 @@ preserves newer edits. If a request loses its response, the action may already
 have completed. Inspect the memory list before deciding whether to submit again;
 the browser never retries the write automatically.
 
+Deleting one or all saved memories also preserves newer text entered while the
+request is pending. If that text was editing a now-deleted record, it becomes an
+unsaved new-memory draft; saving it again requires your explicit action. A
+confirmed deletion remains reported even if the list cannot refresh.
+
 ## What is stored
 
 The Python standard-library `sqlite3` store uses a private database path supplied

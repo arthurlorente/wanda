@@ -84,6 +84,9 @@ passed all six OS/Python jobs, the 41 browser workflows and ZIP delivery.
 [Download the demo ZIP](https://github.com/arthurlorente/wanda/actions/runs/38735661927/artifacts/11973626154)
 (GitHub sign-in may be needed; expires October 22). No new privacy permission
 or provider commitment is introduced. Python is still required to run the ZIP.
+A final review found delayed deletion could erase newer drafts; the same protection
+now covers one/all memory deletions and truthful post-delete refresh failures.
+**47 local browser workflows passed**; remote CI for that last fix is pending.
 
 ## Next actions and blockers
 

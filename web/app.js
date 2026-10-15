@@ -241,9 +241,9 @@
       const controls = node("div", undefined, "item-actions");
       controls.append(action("Edit", () => editMemory(memory)), action("Delete", async () => {
         if (!await confirmChoice("Forget this memory?", memory.text, "Delete memory")) return;
+        const revision = state.memoryFormRevision;
         await api("/api/memory/" + encodeURIComponent(memory.id), {method: "DELETE"});
-        if (state.editId === memory.id) resetMemoryForm();
-        await refreshMemory(); tell("Memory deleted.");
+        await finishMemoryDeletion(revision, new Set([memory.id]));
       }));
       item.append(controls); list.append(item);
     }
@@ -252,6 +252,25 @@
     ++state.memoryFormRevision;
     state.editId = null; $("memory-form").reset();
     $("memory-form-title").textContent = "Add a memory"; $("cancel-memory-edit").hidden = true;
+  }
+  async function finishMemoryDeletion(revision, deletedIds, all = false) {
+    let refreshed = true;
+    try { await refreshMemory(); } catch (_) { refreshed = false; }
+    const newerDraft = state.memoryFormRevision !== revision;
+    const deletedEdit = state.editId && (deletedIds.has(state.editId) ||
+      (all && refreshed && !state.memories.some((memory) => memory.id === state.editId)));
+    let detail = "";
+    if (!newerDraft && (all || deletedEdit)) resetMemoryForm();
+    else if (deletedEdit) {
+      // Keep every field, but never submit a later PATCH to a record whose
+      // deletion was confirmed. Saving this draft requires another user action.
+      ++state.memoryFormRevision; state.editId = null;
+      $("memory-form-title").textContent = state.memoryEnabled ? "Add a memory" : "Enable memory to add or edit";
+      $("cancel-memory-edit").hidden = true;
+      detail = " Your text was kept as an unsaved draft for a new memory.";
+    } else if (newerDraft) detail = " Your newer draft was kept.";
+    tell((all ? "All local memories deleted." : "Memory deleted.") + detail +
+      (refreshed ? "" : " The memory list could not refresh. Choose Refresh to check saved details."), !refreshed);
   }
   function editMemory(memory) {
     ++state.memoryFormRevision;
@@ -294,7 +313,11 @@
   $("refresh-memory").addEventListener("click", guard(refreshMemory));
   $("clear-memory").addEventListener("click", guard(async () => {
     if (!await confirmChoice("Delete every saved memory?", "This removes all memories for this local owner. You can export a copy first. This cannot remove copies you exported or cloud-provider data.", "Delete all memories")) return;
-    await api("/api/memory", {method: "DELETE"}); resetMemoryForm(); await refreshMemory(); tell("All local memories deleted.");
+    const revision = state.memoryFormRevision;
+    const deletedIds = new Set(state.memories.map((memory) => memory.id));
+    if (state.editId) deletedIds.add(state.editId);
+    await api("/api/memory", {method: "DELETE"});
+    await finishMemoryDeletion(revision, deletedIds, true);
   }));
   $("export-memory").addEventListener("click", guard(async () => {
     prepareBackupPrivacy();

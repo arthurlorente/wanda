@@ -452,6 +452,97 @@ async function main() {
     await recovery.locator('#notice').filter({hasText: 'Wanda is not reachable'}).waitFor();
     assert.equal((await recovery.locator('#notice').textContent()).includes('may already have completed'), false, 'Failed reads have no mutation uncertainty');
     await recovery.unroute('**/api/memory');
+    passed++;
+
+    async function addDeletionFixture(text) {
+      if (await recovery.locator('#cancel-memory-edit').isVisible()) await recovery.locator('#cancel-memory-edit').click();
+      await fillMemory(text); await recovery.locator('#memory-category').selectOption('preference');
+      await saveButton.click(); await saved(); await memoryRow(text).waitFor();
+    }
+    async function confirmDeleteAll() {
+      await recovery.locator('#clear-memory').click(); await recovery.locator('#confirm-accept').click();
+    }
+    async function confirmDelete(text) {
+      await memoryRow(text).getByRole('button', {name: 'Delete', exact: true}).click();
+      await recovery.locator('#confirm-accept').click();
+    }
+    await addDeletionFixture('Synthetic delete-all unchanged form');
+    await memoryRow('Synthetic delete-all unchanged form').getByRole('button', {name: 'Edit', exact: true}).click();
+    const unchangedDeleteAll = await holdApi('**/api/memory', 'DELETE');
+    await confirmDeleteAll(); await unchangedDeleteAll.started; unchangedDeleteAll.release();
+    await recovery.getByText('All local memories deleted.', {exact: true}).waitFor();
+    assert.equal(await recovery.locator('#memory-text').inputValue(), '');
+    assert.equal(await recovery.locator('#cancel-memory-edit').isVisible(), false);
+    assert.equal(await recovery.locator('#memory-list .list-item').count(), 0);
+    await unchangedDeleteAll.remove();
+    passed++;
+
+    await addDeletionFixture('Synthetic delete-all newer draft fixture');
+    const newerDeleteAll = await holdApi('**/api/memory', 'DELETE');
+    await confirmDeleteAll(); await newerDeleteAll.started;
+    await fillMemory('Synthetic newer draft after delete-all confirmation');
+    await recovery.locator('#memory-category').selectOption('project');
+    newerDeleteAll.release();
+    await recovery.locator('#notice').filter({hasText: 'Your newer draft was kept'}).waitFor();
+    assert.equal(await recovery.locator('#memory-text').inputValue(), 'Synthetic newer draft after delete-all confirmation');
+    assert.equal(await recovery.locator('#memory-category').inputValue(), 'project');
+    assert.equal(await recovery.locator('#memory-list .list-item').count(), 0);
+    await newerDeleteAll.remove();
+    passed++;
+
+    await addDeletionFixture('Synthetic deleted record selected during wait');
+    const selectedDeleteAll = await holdApi('**/api/memory', 'DELETE');
+    await confirmDeleteAll(); await selectedDeleteAll.started;
+    await memoryRow('Synthetic deleted record selected during wait').getByRole('button', {name: 'Edit', exact: true}).click();
+    await fillMemory('Synthetic preserved edit becomes a new draft');
+    await recovery.locator('#memory-category').selectOption('sensitive');
+    selectedDeleteAll.release();
+    await recovery.locator('#notice').filter({hasText: 'unsaved draft for a new memory'}).waitFor();
+    assert.equal(await recovery.locator('#memory-text').inputValue(), 'Synthetic preserved edit becomes a new draft');
+    assert.equal(await recovery.locator('#memory-category').inputValue(), 'sensitive');
+    assert.equal(await recovery.locator('#memory-form-title').textContent(), 'Add a memory');
+    assert.equal(await recovery.locator('#cancel-memory-edit').isVisible(), false);
+    await selectedDeleteAll.remove();
+    const recreatedRequest = recovery.waitForRequest(request => new URL(request.url()).pathname === '/api/memory' && request.method() === 'POST');
+    await saveButton.click(); await recreatedRequest; await saved();
+    await memoryRow('Synthetic preserved edit becomes a new draft').waitFor();
+    passed++;
+
+    await memoryRow('Synthetic preserved edit becomes a new draft').getByRole('button', {name: 'Edit', exact: true}).click();
+    const newerSingleDelete = await holdApi('**/api/memory/*', 'DELETE');
+    await confirmDelete('Synthetic preserved edit becomes a new draft'); await newerSingleDelete.started;
+    await recovery.locator('#memory-text').fill('Synthetic new text during single deletion');
+    await recovery.locator('#memory-category').selectOption('project');
+    await recovery.route('**/api/memory', route => route.fulfill({status: 503, json: {error: 'Synthetic post-delete refresh failure'}}));
+    newerSingleDelete.release();
+    await recovery.locator('#notice').filter({hasText: 'The memory list could not refresh'}).waitFor();
+    assert.match(await recovery.locator('#notice').textContent(), /^Memory deleted\./);
+    assert.equal(await recovery.locator('#memory-text').inputValue(), 'Synthetic new text during single deletion');
+    assert.equal(await recovery.locator('#memory-category').inputValue(), 'project');
+    assert.equal(await recovery.locator('#memory-form-title').textContent(), 'Add a memory');
+    assert.equal(await recovery.locator('#cancel-memory-edit').isVisible(), false);
+    await newerSingleDelete.remove(); await recovery.unroute('**/api/memory');
+    await recovery.locator('#refresh-memory').click();
+    await recovery.getByText('A fresh page. Nothing is saved yet.', {exact: true}).waitFor();
+    passed++;
+
+    await addDeletionFixture('Synthetic unrelated deletion target');
+    await addDeletionFixture('Synthetic unrelated edit must stay selected');
+    await memoryRow('Synthetic unrelated edit must stay selected').getByRole('button', {name: 'Edit', exact: true}).click();
+    const unrelatedDelete = await holdApi('**/api/memory/*', 'DELETE');
+    await confirmDelete('Synthetic unrelated deletion target'); await unrelatedDelete.started; unrelatedDelete.release();
+    await recovery.getByText('Memory deleted.', {exact: true}).waitFor();
+    assert.equal(await recovery.locator('#memory-text').inputValue(), 'Synthetic unrelated edit must stay selected');
+    assert.equal(await recovery.locator('#memory-form-title').textContent(), 'Edit this memory');
+    assert.equal(await recovery.locator('#cancel-memory-edit').isVisible(), true);
+    await unrelatedDelete.remove();
+    passed++;
+
+    const unchangedSingleDelete = await holdApi('**/api/memory/*', 'DELETE');
+    await confirmDelete('Synthetic unrelated edit must stay selected'); await unchangedSingleDelete.started; unchangedSingleDelete.release();
+    await recovery.waitForFunction(() => document.getElementById('memory-text').value === '' && document.getElementById('cancel-memory-edit').hidden);
+    assert.equal(await recovery.locator('#memory-list .list-item').count(), 0);
+    await unchangedSingleDelete.remove();
     await recovery.close();
     passed++;
 

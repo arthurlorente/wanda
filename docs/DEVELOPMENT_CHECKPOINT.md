@@ -122,7 +122,20 @@ V1 is not complete. Main has not been changed or merged.
   not a merge into main. The 65-file archive was reproduced locally byte for byte:
   SHA-256 `cb2e1c9fdef6e059f691bec8da9b07a03e33b4e99634e28a8cee10799a0f21a8`.
   Local equivalent: `dist/wanda-demo-f56a58330bcb.zip`; no keys or runtime data.
-  Download retrieval succeeded. Desktop download/security prompts remain untested.
+  Download retrieval succeeded. Independent review verified all 64 manifest hashes,
+  65 archive entries, launcher permissions and private/runtime exclusions. No
+  packaging defect was found. Desktop download/security prompts remain untested.
+- Handoff commit `105d917c0c7666c9adec4ef9f667ad41fd1e754f` also passed
+  [all eight CI jobs](https://github.com/arthurlorente/wanda/actions/runs/38744873185).
+- Final browser review found no defect in the changed save/chat guards, but
+  reproduced a pre-existing delayed Delete-all response erasing a newer draft.
+  The revision guard now covers single/all memory deletion: newer fields survive,
+  a deleted edit becomes an explicitly unsaved new-memory draft, unrelated edits
+  remain selected, and a confirmed deletion stays confirmed if refresh fails.
+  **47 local Chrome workflows passed** (six new deletion scenarios), with no page
+  errors or external requests. Syntax and diff checks passed; Python code is
+  unchanged from the 180-test gate. Remote CI is pending for this final fix.
+  No cloud or memory-policy change is involved.
 
 ## Authorization, limits and blockers
 
@@ -152,11 +165,10 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. PR #12 implementation CI and ZIP delivery are verified. Finish the evidence-only
-   handoff update, preserving the tested download link above. Any final docs CI can
-   be checked on the next continuation. Keep this cumulative checkout and all PRs
-   unmerged. Root owns documentation/Git; agents are performing bounded read-only
-   review of browser recovery and ZIP delivery, with no implementation edits.
+1. Publish the locally verified deletion/draft recovery fix and check remote CI.
+   Preserve the already verified download until a corrected replacement passes.
+   All agents are done; root owns documentation/Git. Keep the cumulative checkout
+   and all PRs unmerged.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent

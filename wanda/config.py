@@ -19,10 +19,10 @@ def private_path(value):
 
 def default_data_dir():
     if sys.platform == "win32":
-        return Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData/Local")) / "Wanda"
+        return Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData/Local") / "Wanda"
     if sys.platform == "darwin":
         return Path.home() / "Library/Application Support/Wanda"
-    return Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "wanda"
+    return Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "wanda"
 
 
 @dataclass(frozen=True)
@@ -42,7 +42,7 @@ class Config:
     def load(cls, environ=None):
         env = os.environ if environ is None else environ
         raw = {}
-        suggested = private_path(env.get("WANDA_DATA_DIR", str(default_data_dir()))) / "config.json"
+        suggested = private_path(env.get("WANDA_DATA_DIR") or default_data_dir()) / "config.json"
         # Explicit empty WANDA_CONFIG disables file loading (useful for isolated tests).
         selected = env.get("WANDA_CONFIG") if "WANDA_CONFIG" in env else str(suggested) if suggested.is_file() else None
         if selected:
@@ -56,7 +56,7 @@ class Config:
         def value(name, default=""):
             return env.get(name, raw.get(name, default))
 
-        data_dir = private_path(value("WANDA_DATA_DIR", str(default_data_dir())))
+        data_dir = private_path(value("WANDA_DATA_DIR") or default_data_dir())
         port = int(value("WANDA_PORT", 8765))
         if not 1024 <= port <= 65535:
             raise ValueError("WANDA_PORT must be between 1024 and 65535.")

@@ -88,7 +88,7 @@ Never infer a successful state change from an HTTP dispatch alone.
 - Voice/provider transport and real HA tests use injected responses only.
 - Browser/launcher final evidence and commit/PR linkage: see
   [development checkpoint](../DEVELOPMENT_CHECKPOINT.md).
-- Final local gate: **87 Python tests passed** and **11 browser workflows passed**
+- Final local gate: **89 Python tests passed** and **11 browser workflows passed**
   on installed Chrome, including mobile overflow checks, consent before microphone,
   delayed permission cancellation, permission denial, five-minute cutoff and local
   server loss. WebRTC/audio were mocked; no natural voice benchmark was run.

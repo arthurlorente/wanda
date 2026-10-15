@@ -92,6 +92,7 @@ unmerged. Nothing was merged automatically. Reverting code does not delete your
 private data folder. The data locations are described in [Memory](MEMORY.md).
 
 Development branch: [codex/wanda-v0](https://github.com/arthurlorente/wanda/tree/codex/wanda-v0).
+Reviewable, unmerged change: [PR #8](https://github.com/arthurlorente/wanda/pull/8).
 Assignment: [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 The final PR and verification evidence are recorded in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 

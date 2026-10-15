@@ -7,6 +7,7 @@ import json
 import math
 import mimetypes
 import secrets
+from socketserver import TCPServer
 import threading
 from urllib.parse import urlsplit
 
@@ -162,6 +163,13 @@ class LocalServer(ThreadingHTTPServer):
         self.app = app
         self.slots = threading.BoundedSemaphore(16)
         super().__init__(("127.0.0.1", app.config.port if port is None else port), Handler)
+
+    def server_bind(self):
+        # HTTPServer performs reverse DNS here, which can block offline startup.
+        # This listener always uses the numeric loopback address.
+        TCPServer.server_bind(self)
+        self.server_name = "localhost"
+        self.server_port = self.server_address[1]
 
     def process_request(self, request, client_address):
         if not self.slots.acquire(blocking=False):

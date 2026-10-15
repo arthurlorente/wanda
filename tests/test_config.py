@@ -53,6 +53,11 @@ class ConfigTests(unittest.TestCase):
             self.assertEqual(Config.load({"WANDA_DATA_DIR": directory}).port, 9911)
             self.assertEqual(Config.load({"WANDA_DATA_DIR": directory, "WANDA_CONFIG": ""}).port, 8765)
 
+    def test_explicit_data_directory_needs_no_home_environment(self):
+        with tempfile.TemporaryDirectory() as directory, patch("wanda.config.Path.home", side_effect=RuntimeError("No home directory")):
+            config = Config.load({"WANDA_DATA_DIR": directory, "WANDA_CONFIG": ""})
+            self.assertEqual(config.data_dir, Path(directory).resolve())
+
     def test_doctor_checks_adapter_configuration_without_network(self):
         from wanda.__main__ import main
         with tempfile.TemporaryDirectory() as directory, patch.dict("os.environ", {

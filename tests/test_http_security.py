@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 
 from wanda.config import Config
 
@@ -94,6 +95,16 @@ class LocalHttpSecurityTests(unittest.TestCase):
         status, data, _ = self.request("POST", "/api/memory/consent", {"enabled": True}, auth=False)
         self.assertEqual((status, data["code"]), (401, "unauthorized"))
         self.assertEqual(self.memory.calls, [])
+
+    def test_loopback_start_needs_no_dns(self):
+        with patch("socket.getfqdn", side_effect=AssertionError("Startup must not resolve DNS")):
+            server = self.LocalServer(self.app, port=0)
+        try:
+            self.assertEqual(server.server_address[0], "127.0.0.1")
+            self.assertEqual(server.server_name, "localhost")
+            self.assertEqual(server.server_port, server.server_address[1])
+        finally:
+            server.server_close()
 
     def test_cross_origin_host_and_fetch_site_are_rejected(self):
         for headers, code in (

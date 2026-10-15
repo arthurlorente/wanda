@@ -62,17 +62,25 @@ class LauncherTests(unittest.TestCase):
                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         self.processes.append(process)
         deadline = time.monotonic() + 12
+        state_path = Path(self.temp.name) / "launcher.json"
+        last_health = "not attempted"
         while time.monotonic() < deadline:
             if process.poll() is not None:
                 self.fail(f"Wanda launcher exited before serving (code {process.returncode})")
-            try:
-                status, data = self.api("GET", "/health", auth=False)
-                if status == 200 and data.get("service") == "wanda":
-                    return process
-            except (OSError, TimeoutError, ValueError):
-                pass
+            # The launcher writes its private state after LocalServer finishes
+            # binding. Polling an unready socket can fill its listen backlog.
+            if state_path.exists():
+                try:
+                    status, data = self.api("GET", "/health", auth=False)
+                    last_health = f"HTTP {status}"
+                    if status == 200 and data.get("service") == "wanda":
+                        return process
+                except (OSError, TimeoutError, ValueError) as error:
+                    last_health = type(error).__name__
             time.sleep(0.1)
-        self.fail("Wanda did not start within 12 seconds")
+        self.fail("Wanda did not start within 12 seconds "
+                  f"(process_alive={process.poll() is None}, private_state_created={state_path.exists()}, "
+                  f"last_health={last_health})")
 
     def capability(self):
         state_path = Path(self.temp.name) / "launcher.json"

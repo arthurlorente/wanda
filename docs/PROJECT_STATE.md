@@ -17,7 +17,7 @@ review. **V1 is not complete.** Main remains untouched by this implementation.
   audit, duplicate suppression and truthful state/outage handling with fake lights.
 - Optional OpenAI WebRTC SDP adapter and bounded Home Assistant REST light adapter.
   Provider/device transports are verified with synthetic mocks, **not live services**.
-- 87 Python tests passed on macOS Python 3.14.5; 11 installed-Chrome browser
+- 89 Python tests passed on macOS Python 3.14.5; 11 installed-Chrome browser
   workflows passed with synthetic microphone/WebRTC APIs. Launcher subprocess
   start/reopen/stop/restart verified. Node syntax and diff checks passed.
 - Windows/Linux/Python 3.11 CI matrix configured; final remote results are recorded

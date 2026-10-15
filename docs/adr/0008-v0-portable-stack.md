@@ -14,8 +14,9 @@ Date: 2026-10-15. **Status: provisional implementation for owner review**, under
 Choose the third option for V0. Separate service modules and HTTP contracts allow
 TypeScript, a production server, or another voice provider later without replacing
 the memory schema. No GPU, hosted database, account, cloud call or device is needed
-for the default demo. Python's installed runtime is verified locally; Windows and
-Linux launchers require subsequent CI/manual validation.
+for the default demo. The Python service and start/stop lifecycle pass macOS, Windows and Linux CI
+on Python 3.11/3.14 (see [checkpoint](../DEVELOPMENT_CHECKPOINT.md)). Native
+double-click launch and physical audio still need owner walkthroughs.
 
 ## Boundaries
 

@@ -47,6 +47,14 @@ Use invented information throughout:
    These are real stored policy records, but V0 does not send saved memories to
    voice. Enabling a permission is not evidence that disclosure happened.
 
+## What was tested
+
+The 89 automated Python checks passed on Windows, macOS and Linux with both
+Python 3.11 and 3.14. Eleven browser workflows passed, including memory, permission
+denials, outages, mobile layout and microphone cleanup using simulated audio APIs.
+This confirms the demo flows; it does not confirm real voice quality or devices.
+See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38697725609).
+
 ## Optional live voice
 
 The microphone remains off until you choose live voice, consent to the audio

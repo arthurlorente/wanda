@@ -92,3 +92,8 @@ Never infer a successful state change from an HTTP dispatch alone.
   on installed Chrome, including mobile overflow checks, consent before microphone,
   delayed permission cancellation, permission denial, five-minute cutoff and local
   server loss. WebRTC/audio were mocked; no natural voice benchmark was run.
+
+- Remote application commit `7e522d18859c3c94d57d727de93564bd9ae1a84f`: all six
+  Python 3.11/3.14 macOS/Linux/Windows jobs and Linux Chromium browser job passed
+  in [CI run 38697725609](https://github.com/arthurlorente/wanda/actions/runs/38697725609).
+  CI does not validate physical audio devices or live provider availability.

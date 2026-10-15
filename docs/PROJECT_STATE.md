@@ -20,8 +20,10 @@ review. **V1 is not complete.** Main remains untouched by this implementation.
 - 89 Python tests passed on macOS Python 3.14.5; 11 installed-Chrome browser
   workflows passed with synthetic microphone/WebRTC APIs. Launcher subprocess
   start/reopen/stop/restart verified. Node syntax and diff checks passed.
-- Windows/Linux/Python 3.11 CI matrix configured; final remote results are recorded
-  in [checkpoint](DEVELOPMENT_CHECKPOINT.md), not assumed from configuration.
+- The same 89-test suite, doctor and JS syntax checks passed in all six macOS,
+  Linux and Windows CI jobs on Python 3.11/3.14; Linux Chromium browser checks
+  also passed. [PR #8](https://github.com/arthurlorente/wanda/pull/8) is open,
+  unmerged; exact commit/run evidence is in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
 ## Decisions and limitations
 

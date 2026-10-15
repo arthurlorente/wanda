@@ -6,6 +6,7 @@ Wanda is a community-oriented, privacy-conscious **experimental** platform for n
 - Built for households and tinkerers, with user-controlled configurations.
 - Public source; private memory, transcripts, household data, and credentials stay outside Git.
 - Cloud voice processing is part of the initial prototype and will be disclosed plainly.
+- Meaningful project decisions are recorded in GitHub rather than left solely in chat history.
 
 ## Goals
 - Natural real-time voice, including interruptions and follow-up conversation
@@ -14,14 +15,21 @@ Wanda is a community-oriented, privacy-conscious **experimental** platform for n
 - Restricted OpenClaw delegation for computer tasks
 - Persistent, inspectable, deletable memory with household privacy boundaries
 
+## Project knowledge
+- [Project context and vision](docs/PROJECT_CONTEXT.md)
+- [Current project state](docs/PROJECT_STATE.md)
+- [Decision register](docs/DECISION_LOG.md)
+- [Product requirements](docs/REQUIREMENTS.md)
+- [Open questions](docs/OPEN_QUESTIONS.md)
+- [Standing decision-capture workflow](docs/WORKFLOW.md)
+- [Architecture](docs/architecture/overview.md), [ADRs](docs/adr/), and [roadmap](docs/ROADMAP.md)
+
 ## Roadmap
 - **P0:** Benchmark streaming voice and interruptions against ChatGPT Voice
 - **P1:** Home Assistant control with a robust local fallback
 - **P2:** Restricted OpenClaw tools and memory
 - **P3:** Affordable voice satellite evaluation
 - **P4:** Multi-room conversation handoff
-
-See [roadmap](docs/ROADMAP.md), [architecture](docs/architecture/overview.md), and [decisions](docs/adr/).
 
 ## Security
 Do not publish real API keys, household network details, location information, recordings, transcripts, or private memory. Use synthetic fixtures and sample configs. See [SECURITY.md](SECURITY.md).

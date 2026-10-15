@@ -6,7 +6,6 @@ Wanda is a community-oriented, privacy-conscious **experimental** platform for n
 - Built for households and tinkerers, with user-controlled configurations.
 - Public source; private memory, transcripts, household data, and credentials stay outside Git.
 - Cloud voice processing is part of the initial prototype and will be disclosed plainly.
-- No affiliation with Marvel, HBO, or other entertainment franchises.
 
 ## Goals
 - Natural real-time voice, including interruptions and follow-up conversation

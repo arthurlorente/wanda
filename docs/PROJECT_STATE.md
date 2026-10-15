@@ -39,7 +39,9 @@ Main remains untouched by this implementation.
   [CI](https://github.com/arthurlorente/wanda/actions/runs/38708512976).
 - Browser follow-up sequencing now waits for matching cancellation acknowledgements,
   preserves one queued message and additional drafts, and disconnects on missing
-  acknowledgements. The follow-up branch passed **31 local browser workflows**;
+  acknowledgements. The follow-up branch passed **31 browser workflows** locally
+  and in [Linux CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553),
+  alongside all six platform/version jobs;
   provider event races and microphone quality are still not verified live.
 
 ## Decisions and limitations
@@ -64,7 +66,7 @@ Owner approved encrypted local backup/restore (D-051) and retained all saved
 memories locally (D-050). Recovery is implemented in the unmerged PR #9.
 TLS/SDP fixes and live evidence are in [PR #10](https://github.com/arthurlorente/wanda/pull/10),
 stacked on PR #9. Tested browser follow-up response sequencing is on
-`codex/wanda-live-turns`, ready for separate review. Synthetic live
+[PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10. Synthetic live
 voice testing has a session-specific **US$10 total** ceiling (D-052), replacing
 the original US$5 ceiling before any paid call. The private key is configured.
 A durable private spending ledger, strict synthetic input, bounded output and

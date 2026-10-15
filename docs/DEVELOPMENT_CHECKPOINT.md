@@ -14,9 +14,9 @@ V1 is not complete. Main has not been changed or merged.
 - [PR #10](https://github.com/arthurlorente/wanda/pull/10): `codex/wanda-voice-validation`,
   stacked on PR #9. HTTPS trust repair, exact SDP preservation and bounded live
   evidence. Latest verified commit `d6dee615ec71460b092ca9c293fc2154cfd9061e`.
-- Active follow-up branch: `codex/wanda-live-turns`, based on PR #10. Separate
-  browser response sequencing passed local tests and independent review; ready
-  for a separate PR. Preserve any unstaged edits until published.
+- [PR #11](https://github.com/arthurlorente/wanda/pull/11): `codex/wanda-live-turns`,
+  stacked on PR #10. Browser response sequencing passed local tests and independent
+  review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -67,7 +67,9 @@ V1 is not complete. Main has not been changed or merged.
   An independent agent reviewed request correlation, queued-message preservation,
   conflict retry, disconnect guards and backup privacy transitions. Its two
   findings (late audio clear and updated preferences on retry) have regressions.
-  Remote CI for the follow-up is pending publication.
+  [Follow-up CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553)
+  passed all six platform/version jobs and Linux Chromium browser checks at
+  `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`; basic repository checks also passed.
 - Actual microphone, listening quality, natural pauses, spoken interruptions and
   physical device behavior still require human testing. No household data used.
 
@@ -99,9 +101,9 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. Publish and verify the separate `codex/wanda-live-turns` follow-up PR against
-   `codex/wanda-voice-validation`. Local tests/review are complete; no agent still
-   owns unfinished edits. Record its remote CI and review link. Do not merge.
+1. PR #11 local and remote CI passed. Keep this branch as the cumulative demo
+   checkout; no agent owns unfinished edits. Do not merge. Prioritize remaining
+   scoped failure recovery and demo usability before the cutoff.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
@@ -111,7 +113,7 @@ Continuation instruction:
 “Continue Issue #7 on `codex/wanda-live-turns` from this checkpoint. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
 and the private synthetic-test accounting without exposing credentials. Preserve
-unfinished work and keep PRs #8/#9/#10 unmerged. Native subagents are available and
+unfinished work and keep PRs #8/#9/#10/#11 unmerged. Native subagents are available and
 explicitly authorized; use bounded ownership. Follow the approved US$10 total
 session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
 no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved

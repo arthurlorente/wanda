@@ -53,7 +53,8 @@ Use invented information throughout:
 The latest published connection fixes passed **160 Python checks** on Windows,
 macOS and Linux with Python 3.11 and 3.14, plus encryption and browser checks.
 See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38708512976).
-The subsequent conversation fix passed **31 local browser workflows**, including
+The subsequent conversation fix passed **31 browser workflows** locally and in
+[Linux CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553), including
 memory recovery, permission denials, outages, mobile layout and microphone cleanup
 using simulated audio APIs. Typed follow-ups now wait for Wanda to stop before
 requesting another response; a second draft stays in the text box. Missing
@@ -122,6 +123,9 @@ Development branch: [codex/wanda-v0](https://github.com/arthurlorente/wanda/tree
 Reviewable, unmerged change: [PR #8](https://github.com/arthurlorente/wanda/pull/8).
 Encrypted recovery: [PR #9](https://github.com/arthurlorente/wanda/pull/9), based on PR #8.
 Verified synthetic voice and connection fixes: [PR #10](https://github.com/arthurlorente/wanda/pull/10), based on PR #9.
+Conversation sequencing and recovery: [PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10.
+The current checkout includes all four increments; use it for the demo without
+merging anything. The cumulative branch is [codex/wanda-live-turns](https://github.com/arthurlorente/wanda/tree/codex/wanda-live-turns).
 Assignment: [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 The final PR and verification evidence are recorded in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 

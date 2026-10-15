@@ -130,11 +130,14 @@ or multilingual fluency; the manual voice and real-light criteria remain open.
 
 ## Browser turn sequencing follow-up
 
-The `codex/wanda-live-turns` follow-up passed **31 local Chrome workflows** with
+The [PR #11](https://github.com/arthurlorente/wanda/pull/11) follow-up passed
+**31 browser workflows** locally and in Linux Chromium CI with
 synthetic microphone/provider events and blocked external requests. Regressions
 cover delayed creation/cancellation, matching response IDs, one queued typed turn,
 preserved drafts, automatic-response conflicts, one bounded retry without duplicate
 text, style changes, stale events after disconnect and fifteen-second acknowledgement
 timeouts. JavaScript syntax and diff checks passed. This supports R-02/R-03/R-17
 failure handling; actual conversational timing and spoken interruption still need
-the manual protocol. Published CI status is recorded in the checkpoint.
+the manual protocol. All six platform/version jobs also passed in
+[CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553) at implementation
+commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.

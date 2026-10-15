@@ -24,11 +24,12 @@
 - D-025: Codex will research licensing options and propose a recommendation for review. No license has been chosen.
 - D-026: Conversational naturalness is the primary P0 success criterion; speed and cost remain benchmarking constraints.
 - D-027: Multilingual P0 and mid-session language switching are accepted targets; actual model coverage unverified.
+- D-028: Persistent cross-session memory is in P0 scope, superseding the earlier deferral; scope of automatic remembering/retention still to decide.
 
 ## Decision status
 
 - **Accepted:** Wanda identity and vision, GitHub as canonical project knowledge, decision-record workflow, cloud realtime speech as P0 direction, separate permission tiers, private data excluded from the public repo, staged handoff, durable user-controlled memory as a goal.
-- **Proposed/needs validation:** Exact realtime API/model, WebRTC topology, satellite selection, persistent-memory backend, permanent host selection, OpenClaw API boundary, identity solution.
+- **Proposed/needs validation:** Exact realtime API/model, WebRTC topology, satellite selection, persistent-memory backend and consent/retention design, permanent host selection, OpenClaw API boundary, identity solution.
 - **Unresolved:** Software/docs/hardware licenses, data retention policy, costs, user consent details, latency/quality targets, Codex technology-stack recommendation and P0 implementation stack.
 
 ## Next work, in order

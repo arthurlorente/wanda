@@ -21,11 +21,12 @@ that authorized work. See [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
 ## P0 software stack
 
-**Provisional V0 answer available:** [ADR 0008](adr/0008-v0-portable-stack.md)
+**Accepted V0 answer (D-053, 2026-10-15):** [ADR 0008](adr/0008-v0-portable-stack.md)
 compares TypeScript end to end, Python + TypeScript and Python + native JavaScript.
-The last is implemented under unattended discretion. Owner acceptance remains open.
+The owner accepted the implemented third option for V0 and approved merging
+PRs #8–#12. This does not select permanent production hosting or a V1 provider.
 
-**Assigned for Codex evaluation, not decided:** Select the simplest maintainable stack for a browser WebRTC client and portable backend, considering long-term Home Assistant and permissioned agent adapters, testing, onboarding, performance, and future non-browser satellites. Compare at least TypeScript-only and Python-backend/TypeScript-frontend approaches and document trade-offs; propose a decision before implementation.
+**Remaining evaluation:** Revisit the stack only when requirements or measured evidence justify a change; retain the comparison, portability, replaceable adapters and accessible contributor setup. The initial V0 stack evaluation is complete.
 
 ## Device and deployment
 

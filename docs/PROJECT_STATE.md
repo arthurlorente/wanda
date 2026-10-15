@@ -1,8 +1,12 @@
 # Wanda — Current project state
 
-**As of:** 2026-10-15. **Phase:** Runnable V0 and encrypted recovery published for
-review; synthetic live voice connection verified. **V1 is not complete.**
-Main remains untouched by this implementation.
+**As of:** 2026-10-15. **Phase:** Owner-approved V0 merged into `main` through
+PRs #8–#12; encrypted recovery and synthetic live voice connection verified.
+**V1 is not complete.** D-053 records acceptance of the current design for V0.
+The final implementation merge is
+[`dec8f8a`](https://github.com/arthurlorente/wanda/commit/dec8f8a6f03ee408071ce7e23c1eb2f0c4987bd1).
+Its tree matches the approved demo, and [main CI](https://github.com/arthurlorente/wanda/actions/runs/38749589357)
+passed all six OS/Python jobs, 47 browser workflows and ZIP delivery.
 
 ## Implemented and locally verified
 
@@ -26,8 +30,8 @@ Main remains untouched by this implementation.
   start/reopen/stop/restart verified. Node syntax and diff checks passed.
 - The same 89-test suite, doctor and JS syntax checks passed in all six macOS,
   Linux and Windows CI jobs on Python 3.11/3.14; Linux Chromium browser checks
-  also passed. [PR #8](https://github.com/arthurlorente/wanda/pull/8) is open,
-  unmerged; exact commit/run evidence is in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
+  also passed. [PR #8](https://github.com/arthurlorente/wanda/pull/8) is merged;
+  exact commit/run evidence is in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 - Password-encrypted local memory backup, decrypt/inspect preview and explicit
   merge restore in [PR #9](https://github.com/arthurlorente/wanda/pull/9), stacked
   on PR #8. The 126-test Python suite passed all six platform/version jobs;
@@ -46,10 +50,10 @@ Main remains untouched by this implementation.
 
 ## Decisions and limitations
 
-Accepted product requirements D-001–D-049 remain unchanged. [ADR 0008](adr/0008-v0-portable-stack.md)
-records **provisional** Python/native-JS/SQLite/loopback architecture, comparison
-with TypeScript alternatives, boundaries and reversal. These are implemented
-choices for review, not owner-approved production policy.
+Accepted product requirements D-001–D-049 remain unchanged. D-053 accepts the
+current implementation for V0. [ADR 0008](adr/0008-v0-portable-stack.md) records
+Python/native-JS/SQLite/loopback architecture, comparison with TypeScript alternatives,
+boundaries and reversal. This is not approval for production deployment or V1 release.
 
 The V0 local OS-user capability is not multi-resident authentication. Database and
 exports are plaintext with file permissions. Automatic extraction is deliberately
@@ -60,10 +64,10 @@ was used for metadata/configuration checks and two synthetic connection attempts
 one completed inference has a conservative US$0.006424 estimate. No physical device, private household data, account
 creation, billing change or automatic merge was used by development.
 
-## Authorized development in progress
+## Accepted V0 delivery and remaining work
 
 Owner approved encrypted local backup/restore (D-051) and retained all saved
-memories locally (D-050). Recovery is implemented in the unmerged PR #9.
+memories locally (D-050). Recovery is implemented in merged PR #9.
 TLS/SDP fixes and live evidence are in [PR #10](https://github.com/arthurlorente/wanda/pull/10),
 stacked on PR #9. Tested browser follow-up response sequencing is on
 [PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10. Synthetic live
@@ -73,7 +77,7 @@ A durable private spending ledger, strict synthetic input, bounded output and
 server-side cleanup gate the tests; no real devices are authorized. New work
 stops at 11:00am New York (15:00 UTC) on 2026-10-15 or an actual usage limit.
 
-The next scoped increment in [PR #12](https://github.com/arthurlorente/wanda/pull/12)
+The merged increment in [PR #12](https://github.com/arthurlorente/wanda/pull/12)
 on `codex/wanda-demo-recovery` preserves browser drafts
 across delayed/failed requests, stops the selected instance despite unrelated
 config errors, and provides a reproducible ZIP for launch without Git. **180 Python
@@ -91,19 +95,23 @@ A local instance is available for owner review; keep the verified demo stable.
 
 ## Next actions and blockers
 
-1. Owner: try [MORNING_HANDOFF](MORNING_HANDOFF.md); no account or key needed.
-2. Review ADR0008, storage/authentication boundary and [provider evidence](PROVIDERS.md).
-3. Have the owner manually test
-   pauses, interruptions, languages, disclosure and measured cost. Private key
-   setup is complete; no additional owner decision blocks unattended development.
-   The two planned live attempts are complete; continue offline reliability work.
-4. Configure one safe Home Assistant light and have the owner personally validate
-   permissions and observed state. No unattended household actions.
-5. Add real voice-memory integration only after resolving unavoidable live-audio
-   disclosure and identity/consent. Keep [Issue #7](https://github.com/arthurlorente/wanda/issues/7)
-   open until all V1 criteria have evidence.
-6. Review licensing ([#6](https://github.com/arthurlorente/wanda/issues/6)), the
-   implemented backup design, robust household authentication and durable home audit.
+1. V0 is accepted and merged. Use [MORNING_HANDOFF](MORNING_HANDOFF.md) for launch
+   and the remaining walkthrough; no account or key is needed for the default demo.
+2. Before broader household use, review [provider evidence](PROVIDERS.md), privacy
+   and authentication boundaries. V0 acceptance does not resolve those V1 gates.
+3. Complete a documented human voice evaluation of pauses, interruptions, languages,
+   disclosure and measured cost. Quick owner demo feedback is positive but does not
+   constitute the full acceptance protocol. Both planned synthetic attempts are
+   exhausted; no additional paid inference is authorized for development.
+4. Home Assistant setup and the owner-operated single-light test are deferred to a
+   later session. Do not operate real devices unattended or treat setup as verified.
+5. Saved-memory cloud integration requires a new explicit owner decision changing
+   D-050, as well as privacy and identity review. OpenClaw is not connected.
+   Keep [Issue #7](https://github.com/arthurlorente/wanda/issues/7) open until all V1
+   criteria have evidence.
+6. Review licensing ([#6](https://github.com/arthurlorente/wanda/issues/6)), robust
+   household authentication and durable home audit. Use new feature branches and
+   human-approved PRs for subsequent changes.
 
 Satellite hardware, wake word, voiceprints, room handoff and general computer
 agents remain later. See [acceptance mapping](testing/V0_ACCEPTANCE.md),

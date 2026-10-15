@@ -13,7 +13,7 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-005 | Accepted | Keep home control separate from restricted personal/PC agency. | Minimize risk and preserve household access. See [ADR 0002](adr/0002-trust-boundaries.md). |
 | D-006 | Accepted | Public code with private local credentials, history, recordings and household data. | Privacy and safe collaboration. See [ADR 0003](adr/0003-public-repo-private-runtime.md). |
 | D-007 | Accepted as requirement; mechanism experimental | Support cross-room continuity; test explicit handoff before automatic tracking. | Technical feasibility and guest privacy. See [ADR 0004](adr/0004-cross-room-handoff.md). |
-| D-008 | Accepted as requirement; storage unselected | Preserve useful cross-session text history and structured memory; no raw recordings by default. | User-controlled durable context. See [ADR 0005](adr/0005-memory.md). |
+| D-008 | Accepted requirement; V0 memory uses SQLite under D-053 | Preserve useful cross-session text history and structured memory; no raw recordings by default. | User-controlled durable context. V0 stores selective facts, not a conversation archive; broader history remains future work. See [ADR 0005](adr/0005-memory.md). |
 | D-009 | Accepted | Validate a portable P0 voice prototype before buying satellite hardware or implementing all integrations. | Fastest way to test the hardest assumption; [Issue #1](https://github.com/arthurlorente/wanda/issues/1). |
 | D-010 | Accepted planning constraint | Aim for ≤$350 initial added hardware and $60–$100/month cloud expense. | Affordable home operation; values are budgets, not verified costs. |
 | D-011 | Accepted | No Notion dependency at this stage. | Avoid duplicate truth. Revisit if nontechnical collaboration or a private notebook demands it. |
@@ -21,16 +21,16 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-013 | Proposed | Use older gaming laptop as possible always-on host and ESP32-class satellites. | Reuse existing devices and avoid requiring desktop GPU availability; benchmark first. |
 | D-014 | Proposed | Use Home Assistant for deterministic home control, OpenClaw for broader scoped actions, and a separate memory service. | Clean permission and service boundaries. Specific APIs and components not selected. |
 | D-015 | Unresolved | Choose software, documentation and hardware licenses. | [Issue #6](https://github.com/arthurlorente/wanda/issues/6). |
-| D-016 | Unresolved | Choose exact voice provider/model, version and transport implementation. | API compatibility, quality and spending are not yet measured. |
+| D-016 | V0 configuration accepted under D-053; permanent provider unresolved | Use the current optional OpenAI WebRTC configuration for V0; choose a permanent provider/model only after further evaluation. | One synthetic connection is verified; full conversational acceptance, provider handling and realistic household cost remain open. Updated 2026-10-15 by D-053. |
 | D-017 | Accepted foundational identity | Wanda is the **antithesis of the JARVIS / Big AI assistant model**: extraordinary intelligence for ordinary people, not a luxury servant or opaque institution-controlled product. | [Identity and philosophy](IDENTITY.md) defines design consequences, safeguards, and explicit cloud-dependency caveats. |
-| D-018 | Accepted character foundation; implementation pending | Preserve Wanda's first-person manifesto as the foundation of her future personality, with a distinct behavioral specification. | [MANIFESTO](MANIFESTO.md) and [PERSONALITY](PERSONALITY.md); future runtime prompts and memory systems must reflect them without claiming consciousness or overriding safety. |
+| D-018 | Accepted character foundation; V0 prompt implemented, generated behavior unvalidated | Preserve Wanda's first-person manifesto as the foundation of her future personality, with a distinct behavioral specification. | [MANIFESTO](MANIFESTO.md) and [PERSONALITY](PERSONALITY.md); runtime prompts and memory systems must reflect them without claiming consciousness or overriding safety. See D-053 for V0 acceptance. |
 | D-019 | Accepted P0 implementation constraint | Develop Wanda as a **portable application**; choose the permanent always-on host after validating the prototype. | Avoid coupling initial code to the RTX desktop or older gaming laptop; keep setup and tests reproducible across supported host machines. |
 
 | D-020 | Accepted | P0 uses a browser interface as a client to an independently designed portable voice service. | Eases testing and later satellite integration. |
 | D-021 | Accepted | During project planning, multiple-choice questions include an optional free-text alternative. | Allows clarification and alternatives to suggested responses. |
 | D-022 | Accepted | P0 begins with click-to-connect, followed by natural hands-free conversation; the intended household interface uses a Wanda wake word. | Decouples conversational quality testing from wake-word recognition. |
 
-| D-023 | Accepted process delegation; technical selection pending | Let Codex research, compare, and propose the P0 development stack rather than preselecting Python or TypeScript. | Compare portable deployment, WebRTC/browser integration, long-term Home Assistant and agent adapters, developer ergonomics, ecosystem maturity, maintenance, testability and complexity. Record alternatives and rationale before implementing. |
+| D-023 | Accepted process delegation; V0 selection completed under D-053 | Let Codex research, compare, and propose the P0 development stack rather than preselecting Python or TypeScript. | Comparison completed in ADR 0008; owner accepted Python/native JavaScript/SQLite for V0 on 2026-10-15. Future consequential changes still require review. |
 
 | D-024 | Accepted development workflow | Codex may independently research, implement and test scoped work on feature branches, but must open PRs for human review before merging to main. | Preserve momentum without surrendering architectural, privacy, security or integration approvals. See [WORKFLOW](WORKFLOW.md). |
 
@@ -40,19 +40,19 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-027 | Accepted P0 capability target; model support unvalidated | Design Wanda for multilingual speech conversation from P0, including switching languages during a session, without an English-only gate. | Actual language coverage and quality depend on the chosen voice model; benchmark supported languages and mixed-language conversations rather than promising universal fluency. |
 
-| D-028 | Accepted P0 scope expansion; implementation pending | Implement persistent cross-session memory from the first voice prototype, rather than session-only context or a later milestone. | Move the minimum viable private memory capability into P0; preserve consent, access controls, inspectability and deletion, with full multi-user/agent memory enhancements phased later. Supersedes prior P0 memory deferral in roadmap and requirements; [ADR 0005](adr/0005-memory.md). |
+| D-028 | Accepted P0 scope expansion; V0 local foundation implemented under D-053 | Implement persistent cross-session memory from the first voice prototype, rather than session-only context or a later milestone. | Move the minimum viable private memory capability into P0; preserve consent, access controls, inspectability and deletion, with full multi-user/agent memory enhancements phased later. Saved-memory cloud recall is not connected (D-050). Supersedes prior P0 memory deferral; [ADR 0005](adr/0005-memory.md). |
 
-| D-029 | Accepted P0 memory policy direction; defaults pending | Use **selective automatic memory with user controls**, not save-only-on-command and not blanket transcript archival. | Extract useful context and preferences from conversations under consented settings, with inspect/delete/disable controls; sensitive information, retention defaults, confirmation policy, and identity scope require separate decisions. See [ADR 0005](adr/0005-memory.md). |
+| D-029 | Accepted P0 direction; narrow V0 defaults accepted under D-053 | Use **selective automatic memory with user controls**, not save-only-on-command and not blanket transcript archival. | V0 uses conservative scripted extraction and explicit review. Broader sensitivity, retention and household identity policy remain open. See [ADR 0005](adr/0005-memory.md). |
 
 | D-030 | Accepted | Save ordinary useful memories selectively when enabled; sensitive memories require explicit prior approval. | The user can inspect, delete and disable memories. |
 | D-031 | Accepted | Classify memory sensitivity from subject and context, asking permission when uncertain. | Ordinary preferences need not be treated like sensitive diagnoses, finances or intimate information; third-party privacy matters. |
 
 | D-032 | Accepted | Offer memory opt-in during setup. | User choice before persistent storage. |
-| D-033 | Accepted | Keep the primary memory database on Wanda's local host. | Household ownership; database and backup choices pending. |
+| D-033 | Accepted; V0 database selected under D-053 | Keep the primary memory database on Wanda's local host. | Household ownership; V0 uses SQLite and local encrypted backups (D-051/D-053). Encrypted working storage and automatic/offsite backup remain open. |
 
-| D-034 | Accepted evaluation process; backup method undecided | Have Codex evaluate and recommend a secure, portable backup and restore strategy for Wanda's locally stored memories before selecting one. | Compare local backups, encrypted optional cloud backups, and manual export; assess recoverability, encryption, key ownership, complexity, cost and tested restores. Primary memory remains local. |
+| D-034 | Accepted evaluation process; V0 selection completed by D-051/D-053 | Have Codex evaluate and recommend a secure, portable backup and restore strategy for Wanda's locally stored memories before selecting one. | Comparison and tested local recovery are recorded in ADR 0009. Automatic/offsite backup remains undecided. Primary memory remains local. |
 
-| D-035 | Accepted | Use context-aware memory retention: durable facts persist; temporary ones can expire with user override. | Exact expiration rules undecided. |
+| D-035 | Accepted; V0 defaults selected under D-053 | Use context-aware memory retention: durable facts persist; temporary memories can expire with user override. | V0 defaults and user overrides are documented in [Memory](MEMORY.md). Richer household retention policy remains open. |
 | D-036 | Accepted | Design P0 memory and identity schemas for multiple residents and shared household context, while implementing full multi-user support gradually. | Prevent accidental cross-person memory access; P0 may initially offer one authenticated user. |
 
 | D-037 | Accepted identity experience; implementation deferred | Use voice recognition as the primary, low-friction way Wanda identifies speakers for everyday household personalization. | Recognized voice is not sufficient proof for revealing private memories or performing privileged actions; use step-up authorization, handle uncertainty as guest access, and evaluate spoofing and false matches. Voice enrollment and recognition implementation not yet selected. See [ADR 0002](adr/0002-trust-boundaries.md). |
@@ -74,23 +74,22 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-049 | Accepted architecture priority | Privacy and independence take precedence when they conflict with convenience, experience or cloud optimization. | Favor local data, auditable permissions, portable/replaceable services and honest provider exposure; any departure must be explicitly approved and documented. |
 
 | D-050 | Accepted current implementation boundary | Keep all saved memories local for now; do not connect saved-memory recall to cloud voice, even with a stored category grant. | Owner selected this boundary during the overnight V0 review on 2026-10-15. Live microphone audio remains a separately disclosed cloud flow. Revisit only through a new explicit decision. |
-| D-051 | Accepted recovery scope; implemented, awaiting PR review | Add password-encrypted local memory backup and explicit restore. The owner chooses and keeps the password; losing it prevents recovery. | Extends D-034's evaluation into an approved local recovery feature. No cloud backup vendor, automatic upload or key escrow selected. [ADR 0009](adr/0009-encrypted-memory-backup.md) records provisional technical details; [PR #9](https://github.com/arthurlorente/wanda/pull/9) contains tested implementation. |
+| D-051 | Accepted, implemented and merged; technical design accepted for V0 under D-053 | Add password-encrypted local memory backup and explicit restore. The owner chooses and keeps the password; losing it prevents recovery. | Extends D-034's evaluation into an approved local recovery feature. No cloud backup vendor, automatic upload or key escrow selected. [ADR 0009](adr/0009-encrypted-memory-backup.md) records the design; [PR #9](https://github.com/arthurlorente/wanda/pull/9) contains tested implementation. Updated 2026-10-15 after owner approval. |
 | D-052 | Accepted session-specific testing authorization | Permit at most US$10 total for synthetic voice API tests during the 2026-10-15 overnight session; no real device actions. | Requires a privately configured key, bounded requests, conservative local spending accounting and the 11:00 a.m. America/New_York cutoff. Owner increased the original US$5 ceiling to US$10 before any paid test. This is not an ongoing billing or household-data authorization. |
+| D-053 | Accepted and implemented V0 baseline | Accept the current V0 design and merge PRs #8–#12 into main after demo review. Python/native JavaScript/SQLite, one local OS-user access, plaintext working storage with encrypted backups, optional OpenAI voice, local-only saved memory and simulated home defaults are accepted for V0. | Owner explicitly approved on 2026-10-15 after review of test evidence and limitations. [Final V0 merge](https://github.com/arthurlorente/wanda/commit/dec8f8a6f03ee408071ce7e23c1eb2f0c4987bd1), [ADR 0008](adr/0008-v0-portable-stack.md), [ADR 0009](adr/0009-encrypted-memory-backup.md). V1 remains incomplete; no production deployment, saved-memory cloud transmission, additional paid tests, real device operation or future automatic merge is authorized. |
 
 ## How to append decisions
 
-Before the normal process below, note the 2026-10-15 **provisional unattended
-implementation**: under [UNATTENDED_DEVELOPMENT](UNATTENDED_DEVELOPMENT.md),
-[ADR 0008](adr/0008-v0-portable-stack.md) implements a reversible Python/native-JS
-V0 with local SQLite, loopback OS-user access, optional WebRTC and bounded home
-adapters. **Implemented and locally tested; not accepted production policy.**
-This does not promote D-016/D-023 choices to owner-approved decisions or change
-D-048's real V1 exit criteria. Accept, revise or revert through the feature PR
-linked in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
+The initial implementation used [unattended discretion](UNATTENDED_DEVELOPMENT.md)
+and provisional ADRs. D-053 now records owner acceptance of that tested design for
+V0 and the completed merges. This does not change D-048's V1 exit criteria or
+accept production deployment policy. Further changes and rollback use reviewed PRs.
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: After reviewing the demo and known limitations, the owner explicitly approved merging V0. D-053 accepts the V0 stack and recovery design; D-016, D-023 and D-051 statuses are reconciled without changing V1 requirements. PRs #8–#12 were merged in order; future merges still require human approval.
 
 - 2026-10-15: D-034 accepted: delegate backup and restore recommendation to Codex; no backup architecture selected.
 

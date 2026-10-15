@@ -1,4 +1,6 @@
-# V0 integration contract (provisional)
+# V0 integration contract
+
+Accepted V0 implementation under D-053; future interface changes require review.
 
 Python 3.11+ standard library only. Native JS browser, no external assets/packages.
 Owner account server-side is `local-owner`; requests never select their owner.

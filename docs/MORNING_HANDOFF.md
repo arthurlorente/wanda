@@ -1,9 +1,12 @@
 # Wanda V0 — morning handoff
 
 You have a local browser app to try. **It is a demonstration, not the completed V1.**
+The owner reviewed the demo and explicitly approved merging V0 on 2026-10-15.
+PRs #8–#12 are merged into `main`; no Git or GitHub action is required from the owner.
 It includes real private local memory and permission checks, simulated home lights,
 and an optional cloud voice connection verified with synthetic generated audio.
-Actual microphone use and conversational quality still need your listening test.
+The owner's quick voice-demo feedback was positive; a documented evaluation of
+pauses, interruptions, languages and cost still remains.
 
 ## Start Wanda
 
@@ -70,6 +73,8 @@ The current demo passed **180 Python checks** across Windows, macOS and Linux
 with Python 3.11 and 3.14, plus encryption checks and **47 browser workflows**.
 Two OS-specific tests skip on Windows. The [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38746282007)
 also produced the downloadable ZIP. A local rebuild matched its checksum exactly.
+After the approved merge, [main CI](https://github.com/arthurlorente/wanda/actions/runs/38749589357)
+passed the same eight jobs. Main's implementation tree matches the approved demo.
 An extracted earlier build passed startup, memory persistence/deletion, simulated
 light permissions and shutdown without Git installed in its runtime PATH.
 
@@ -88,7 +93,8 @@ download a password-encrypted file, preview it locally, and approve a merge. Kee
 the password separately: Wanda cannot recover it if lost. Restoring preserves
 existing memories and never restores old permissions or keys. Saved memories remain
 local as requested. Its 126 Python tests and six encryption tests passed across
-Windows, macOS and Linux; 20 browser workflows passed. All PRs remain unmerged.
+Windows, macOS and Linux; 20 browser workflows passed. This increment is now merged
+and its technical design accepted for V0 under D-053.
 
 ## Optional live voice
 
@@ -126,33 +132,37 @@ not application encryption. Anyone with sufficient OS access can read it. The V0
 browser session represents one local user, not a fully secured multi-resident home.
 An exported JSON file contains plaintext memories: keep it private or delete it.
 
-## Decisions for your review
+## Accepted V0 decisions and future review
 
 [ADR 0008](adr/0008-v0-portable-stack.md) compares TypeScript end to end, Python
 plus TypeScript, and the selected Python plus native JavaScript approach. The
-provisional choice keeps launch simple and providers replaceable. SQLite local
-memory, conservative extraction, single local-user access, ephemeral device
-permissions and optional WebRTC are provisional engineering choices.
+choice keeps launch simple and providers replaceable. The owner accepted the
+current design for V0, including SQLite local memory, conservative extraction,
+single local-user access, ephemeral device permissions, optional WebRTC and
+encrypted local recovery. See D-053 and ADR 0009.
 
-You can accept them in the PR review, request changes, or leave the branch
-unmerged. Nothing was merged automatically. Reverting code does not delete your
-private data folder. The data locations are described in [Memory](MEMORY.md).
+V1 and production use remain separate review gates. Future changes or rollback
+go through reviewed PRs; this approval is not permission for future automatic
+merges. Reverting code does not delete your private data folder. Preserve a reader
+for existing encrypted backups. Data locations are described in [Memory](MEMORY.md).
 
-Development branch: [codex/wanda-v0](https://github.com/arthurlorente/wanda/tree/codex/wanda-v0).
-Reviewable, unmerged change: [PR #8](https://github.com/arthurlorente/wanda/pull/8).
-Encrypted recovery: [PR #9](https://github.com/arthurlorente/wanda/pull/9), based on PR #8.
-Verified synthetic voice and connection fixes: [PR #10](https://github.com/arthurlorente/wanda/pull/10), based on PR #9.
-Conversation sequencing and recovery: [PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10.
-Draft/stop recovery and portable ZIP: [PR #12](https://github.com/arthurlorente/wanda/pull/12), based on PR #11.
-The current checkout includes all five increments; use it for the demo without
-merging anything. The cumulative branch is [codex/wanda-demo-recovery](https://github.com/arthurlorente/wanda/tree/codex/wanda-demo-recovery).
+Accepted development baseline: [main](https://github.com/arthurlorente/wanda/tree/main).
+Merged in order: [V0 foundation #8](https://github.com/arthurlorente/wanda/pull/8),
+[encrypted recovery #9](https://github.com/arthurlorente/wanda/pull/9),
+[synthetic voice fixes #10](https://github.com/arthurlorente/wanda/pull/10),
+[conversation sequencing #11](https://github.com/arthurlorente/wanda/pull/11), and
+[draft/stop recovery and ZIP #12](https://github.com/arthurlorente/wanda/pull/12).
+The original branches remain available as historical references. The review
+instance remains running; merging did not restart it or change private data.
 Assignment: [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 The final PR and verification evidence are recorded in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
 ## Next useful step
 
-Try the local walkthrough first, then review the provider disclosure and perform
-the manual voice test. Next configure a single safe Home Assistant light and
-verify its real state yourself. Keep Issue #7 open until its actual V1 criteria
+Continue the local walkthrough and the documented manual voice evaluation.
+Home Assistant setup is deferred to a later owner-led session. It must be installed
+and connected to a compatible light before the real test; Wanda's Home panel uses
+buttons, and spoken device commands are not connected yet. No real device action
+is authorized for unattended development. Keep Issue #7 open until its actual V1 criteria
 have evidence. [Acceptance map](testing/V0_ACCEPTANCE.md) separates implemented,
 simulated and pending work.

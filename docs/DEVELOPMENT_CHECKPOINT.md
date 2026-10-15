@@ -1,10 +1,33 @@
 # Development checkpoint
 
-2026-10-15 — Runnable V0 and encrypted recovery published; bounded synthetic
-voice connection verified for [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
-V1 is not complete. Main has not been changed or merged.
+2026-10-15 — Owner-approved runnable V0 merged into `main`; encrypted recovery and
+bounded synthetic voice connection verified for [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
+V1 is not complete. D-053 records the owner's explicit merge approval after demo
+review and explanation of the remaining limitations.
 
-## Branches and delivery
+## Completed integration
+
+All five PRs were merged in order with expected-head checks. Successors were
+retargeted to `main` only after their predecessors merged. Merge commits:
+
+| PR | Merge commit |
+| --- | --- |
+| [#8](https://github.com/arthurlorente/wanda/pull/8) | `96e11ab531038a912e10a18dd0333f00d4bc5854` |
+| [#9](https://github.com/arthurlorente/wanda/pull/9) | `1f6e064408075f7e376913f76bbc2eb91e03a4f4` |
+| [#10](https://github.com/arthurlorente/wanda/pull/10) | `55f3ffa32ce6b3dcf440b090fcf219948cc3eeec` |
+| [#11](https://github.com/arthurlorente/wanda/pull/11) | `b9556c296c4e1b50dae38aba30d0b7e1959c3d81` |
+| [#12](https://github.com/arthurlorente/wanda/pull/12) | `dec8f8a6f03ee408071ce7e23c1eb2f0c4987bd1` |
+
+`git diff --exit-code cffcfb8172237e5cea9f1504ba7a86529770d4fa origin/main`
+passed immediately after the final merge: the entire approved demo tree was
+preserved. [Main CI](https://github.com/arthurlorente/wanda/actions/runs/38749589357)
+passed all eight jobs: six OS/Python combinations, 47 browser workflows and ZIP
+delivery. [Basic checks](https://github.com/arthurlorente/wanda/actions/runs/38749589275)
+also passed. Documentation reconciliation uses `codex/wanda-v0-accepted`; it changes
+no runtime, tests, credentials or privacy permissions. The review service remains
+running without a restart.
+
+## Original implementation branches and delivery history
 
 - [PR #8](https://github.com/arthurlorente/wanda/pull/8): `codex/wanda-v0`, base main.
   Latest handoff commit `2d965315af263fa027207ea598e599719b117ec1`.
@@ -19,7 +42,7 @@ V1 is not complete. Main has not been changed or merged.
   review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`;
   final handoff `17d71d547c8075535715daa2414b2aa971731b92` passed
   [all CI jobs](https://github.com/arthurlorente/wanda/actions/runs/38709876678).
-- [PR #12](https://github.com/arthurlorente/wanda/pull/12): active cumulative branch
+- [PR #12](https://github.com/arthurlorente/wanda/pull/12): original cumulative branch
   `codex/wanda-demo-recovery`, based on PR #11. Local draft-loss/stop recovery and
   a committed-source ZIP builder. Implementation commit
   `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525`; Windows configuration repair
@@ -27,7 +50,9 @@ V1 is not complete. Main has not been changed or merged.
   artifact delivery. Final deletion fix `0e9f2856b27a571bda1bacf3b973c2d7c7d1d660`
   passed all eight CI jobs with 47 browser workflows. Local integration and
   extracted startup passed.
-- Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
+- PRs #8–#12 are now merged under explicit owner approval. Preserve the branches
+  as historical references and private runtime state outside Git. Future PRs still
+  require human approval; the V0 approval is not a standing merge authorization.
 
 ## Implemented state
 
@@ -148,16 +173,18 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Authorization, limits and blockers
 
+- D-053: current V0 design accepted and PRs #8–#12 merged. Real Home Assistant
+  setup and owner-operated testing are deferred to a later session.
 - D-050: all saved memories stay local. D-051: encrypted local recovery approved.
   D-052: **US$10 total** synthetic voice test ceiling, replacing the original US$5
   before paid calls. No real devices, new accounts, billing changes or automatic merges.
 - Stop starting new work/calls at **2026-10-15 15:00 UTC (11am New York)** or an
-  actual usage limit. Last usage check reported 38% of the account window used;
+  actual usage limit. Last usage check reported 43% of the account window used;
   ordinary usage was allowed. Do not consume reset credits or bypass limits.
 - Supported hourly chat continuation is active through that cutoff under
   `wanda-overnight-development-until-11am`. It cannot bypass usage limits.
 - No additional owner decision blocks current development. Later owner work:
-  listening/manual voice acceptance, real light acceptance, provisional ADR review,
+  formal listening/manual voice acceptance, real light setup and acceptance,
   household identity/privacy policy and license selection.
 - Live attempt 1: provider HTTP 400 before any SDP answer or response creation.
   Exact SDP preservation fixed a protocol mutation. The failed attempt was explicitly
@@ -174,28 +201,29 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. The final implementation CI and replacement ZIP above are verified. Check any
-   subsequent evidence-only documentation CI before further work. All agents are
-   done and their code is integrated; all PRs remain unmerged. A local review
-   instance was started from the final implementation commit. Keep it available
-   during owner review; do not restart it or operate the microphone/devices.
-   Continue with read-only review, documentation or user-reported fixes until
-   the cutoff, preserving the tested demo.
-2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
-   attempts are complete and live microphone/physical-device acceptance is deferred.
-3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
-   acceptance remains deferred rather than fabricated. Update handoff/checkpoint.
+1. The approved V0 is on main and its CI passed. Finish/verify the documentation
+   reconciliation, then use current main as the base for later scoped changes.
+   All implementation agents' work is integrated. Preserve the running review
+   instance; do not restart it or operate the microphone/devices.
+2. Do not repeat paid tests; both planned attempts are complete. Positive quick
+   owner feedback is not the full multilingual/latency/persona acceptance protocol.
+   Home Assistant setup and physical-device acceptance remain deferred.
+3. Keep Issue #7 and the remaining milestone/license issues open. V0 merge approval
+   does not accept V1 completion, production hosting or expanded privacy permissions.
+   Follow the existing cutoff for unattended work and preserve the handoff.
 
 Continuation instruction:
-“Continue Issue #7 on `codex/wanda-demo-recovery` from this checkpoint. Read
+“Continue Issue #7 from the accepted V0 on current main, using a new scoped feature
+branch when implementation is requested. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
-and the private synthetic-test accounting without exposing credentials. Preserve
-unfinished work and keep PRs #8/#9/#10/#11/#12 unmerged. Native subagents are available and
+without exposing credentials. PRs #8/#9/#10/#11/#12 are merged under the owner's
+2026-10-15 approval; preserve their history and unfinished local work. Native subagents are available and
 explicitly authorized; use bounded ownership. Follow the approved US$10 total
 session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
-no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved
+no further paid inference is authorized, and no ledger reset/refund is permitted. Keep saved
 memories local and use synthetic data only. Run `python3 scripts/check.py` and
-appropriate browser/crypto checks; loopback/browser permissions may be needed.
+appropriate browser/crypto checks for behavior changes; loopback/browser permissions may be needed.
 Update this checkpoint, PROJECT_STATE and MORNING_HANDOFF with evidence and exact
 next steps before a limit or interruption. Do not claim mocked audio or devices
-are verified live.”
+are verified live. Future PRs still need human approval; leave the current review
+service running unless the owner requests otherwise.”

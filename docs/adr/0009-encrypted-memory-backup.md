@@ -1,7 +1,8 @@
 # ADR 0009 — Password-encrypted local memory recovery
 
-2026-10-15. **Feature scope accepted (D-051); technical design provisional and
-implementation under test.** All saved memories remain local (D-050).
+2026-10-15. **Feature scope accepted (D-051); tested technical design accepted for
+V0 (D-053) and merged in [PR #9](https://github.com/arthurlorente/wanda/pull/9).**
+All saved memories remain local (D-050).
 
 ## Choice and alternatives
 
@@ -61,9 +62,10 @@ Tests cover actual encryption/decryption and independent Node crypto interoperab
 wrong passwords, tampering, bounded parameters, malformed records, current consent,
 owner boundaries, duplicates, expiration, capacity changes and rollback after an
 injected partial-insert failure. Browser and HTTP tests exercise the complete flow.
-Final evidence belongs in the checkpoint and feature PR after all checks pass.
+Successful verification is recorded in the [checkpoint](../DEVELOPMENT_CHECKPOINT.md)
+and [feature PR](https://github.com/arthurlorente/wanda/pull/9).
 
 Revert this increment to remove the new UI/routes; existing memory and its plaintext
 export remain unchanged. Preserve the documented encrypted format and a compatible
-decoder for existing archives before replacing the implementation. Owner may accept
-or revise the design in PR review; no merge is automatic.
+decoder for existing archives before replacing the implementation. Future changes
+or rollback require a reviewed PR; V0 acceptance does not authorize automatic merges.

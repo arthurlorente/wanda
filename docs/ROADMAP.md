@@ -1,8 +1,9 @@
 # Roadmap
 
 **V0 progress (2026-10-15):** local browser, memory and permissioned mock-home
-demonstration implemented on a review branch. Optional real adapters are present;
-live voice and genuine Home Assistant evidence are still needed for P0/V1 gates.
+demonstration accepted by the owner and merged into `main` through PRs #8–#12.
+Optional real adapters are present; formal live-voice acceptance and genuine
+Home Assistant evidence are still needed for P0/V1 gates.
 See [current state](PROJECT_STATE.md) and [acceptance map](testing/V0_ACCEPTANCE.md).
 
 - **P0 Voice + memory foundation:** Portable browser-based real-time conversational voice, multilingual switching, and private persistent cross-session memory; measure interruption, natural pauses, turn-taking, latency, and authorized recall/deletion. No permanent host selected.

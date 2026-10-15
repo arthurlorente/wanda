@@ -1,6 +1,6 @@
 # V0 home control
 
-**Status:** Mock home control is implemented and covered by automated tests. The Home Assistant REST adapter is implemented against a synthetic transport, but has **not** been connected to a real household or device. This is a provisional implementation under [ADR 0008](adr/0008-v0-portable-stack.md), not a claim that Wanda has met the V1 home integration gate.
+**Status:** Mock home control is implemented and covered by automated tests. The Home Assistant REST adapter is implemented against a synthetic transport, but has **not** been connected to a real household or device. This implementation is accepted for V0 under [ADR 0008](adr/0008-v0-portable-stack.md), not a claim that Wanda has met the V1 home integration gate. Real setup and owner-operated acceptance are deferred; they are not prerequisites for using V0.
 
 ## What the demo does
 

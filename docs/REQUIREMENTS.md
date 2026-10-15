@@ -2,6 +2,10 @@
 
 **Status:** Product requirements and test intentions; not implementation status. Reviewed 2026-10-15.
 
+V0 implementation evidence and remaining gates are mapped in
+[testing/V0_ACCEPTANCE.md](testing/V0_ACCEPTANCE.md). The implementation does not
+change these accepted requirements or establish V1 completion.
+
 Labels: **Must** = important to envisioned product; **P0** = required for initial prototype; **Later** = still desired but deliberately deferred.
 
 | ID | Requirement | Priority | Verification approach |

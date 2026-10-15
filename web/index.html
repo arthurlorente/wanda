@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="referrer" content="no-referrer">
+  <title>Wanda · Make yourself at home</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="wordmark" href="/" aria-label="Wanda home"><span class="brand-mark" aria-hidden="true">w</span>wanda<span class="version">V0</span></a>
+      <div class="sidebar-caption">A LITTLE HELP. ON YOUR TERMS.</div>
+      <nav aria-label="Main navigation">
+        <button class="nav-button active" data-panel="conversation" aria-current="page"><span aria-hidden="true">◌</span> Conversation</button>
+        <button class="nav-button" data-panel="memory"><span aria-hidden="true">▤</span> Memory <span id="memory-count" class="count">0</span></button>
+        <button class="nav-button" data-panel="home"><span aria-hidden="true">⌂</span> Home</button>
+        <button class="nav-button" data-panel="privacy"><span aria-hidden="true">◇</span> Privacy & permissions</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="local-note"><span class="status-dot"></span><strong>Yours to understand.</strong><p>Local memory. Visible permissions.<br>You decide what connects.</p></div>
+        <button id="shutdown" class="text-button">Stop Wanda <span aria-hidden="true">↗</span></button>
+      </div>
+    </aside>
+    <main>
+      <header class="topbar"><span id="page-label">YOUR EVERYDAY COMPANION</span><div class="top-status"><span id="connection-dot" class="status-dot"></span><span id="connection-label">Connecting locally…</span><span class="divider"></span><span id="microphone-label">Mic off</span></div></header>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section id="conversation-panel" class="panel">
+        <div class="welcome"><div><p class="eyebrow">ORDINARY HOME. EXTRAORDINARY POSSIBILITIES.</p><h1>Make yourself<br><em>at home.</em></h1><p class="intro">A curious mind, a little common sense,<br>and room for your next idea.</p></div><div class="wanda-orbit" aria-hidden="true"><div class="orbit-ring ring-one"></div><div class="orbit-ring ring-two"></div><div class="wanda-core"><span></span><span></span><span></span><span></span><span></span></div><span class="orbit-label">HERE WHEN YOU NEED ME</span></div></div>
+        <div class="mode-banner"><span class="pill">LOCAL DEMO</span><p>Scripted conversation, real local memory, and practice home devices. <button class="inline-link" data-panel="privacy">See what connects ↗</button></p></div>
+        <div class="conversation-grid">
+          <section class="chat-card" aria-labelledby="chat-title">
+            <div class="card-heading"><h2 id="chat-title">A conversation starts here.</h2><button id="clear-chat" class="text-button">Clear chat</button></div>
+            <div id="messages" class="messages" role="log" aria-label="Conversation" aria-live="polite"></div>
+            <div id="suggestions" class="suggestions"><button data-suggestion="Hello, Wanda">Say hello <span>↗</span></button><button data-suggestion="How does privacy work?">What stays private? <span>↗</span></button><button data-suggestion="How do I try the lights?">Try the home demo <span>↗</span></button></div>
+            <form id="chat-form" class="composer"><label class="sr-only" for="chat-input">Message Wanda in the local demo</label><textarea id="chat-input" rows="1" maxlength="4000" placeholder="What's on your mind?" required></textarea><button id="send-chat" class="send-button" type="submit" aria-label="Send message">↑</button></form>
+            <p class="fine-print">Text stays local. Chat clears on reload. Consented memories are separate.</p>
+          </section>
+          <aside class="conversation-tools">
+            <section class="voice-card"><div class="card-heading"><h2>Make room for a voice.</h2><span class="small-symbol" aria-hidden="true">≋</span></div><p id="voice-description">Optional live voice uses OpenAI. It needs separate API configuration and your consent.</p><div id="voice-state" class="voice-state" role="status">Microphone is off</div><button id="connect-voice" class="primary-button" disabled>Connect live voice</button><div class="button-row"><button id="interrupt" class="secondary-button">Interrupt</button><button id="disconnect" class="danger-outline" disabled>Disconnect</button></div><p class="fine-print">Live audio is experimental and requires manual testing. No saved memories or device tools are sent.</p></section>
+            <section class="style-card"><h2>Your conversation, your style.</h2><div class="form-row"><label for="language">Language</label><select id="language"><option value="en">English</option><option value="pt">Português</option><option value="es">Español</option></select></div><div class="form-row"><label for="tone">Tone</label><select id="tone"><option value="warm">Warm & thoughtful</option><option value="neutral">Neutral & direct</option></select></div><label class="check-label"><input id="read-aloud" type="checkbox"> Read demo replies aloud</label><p class="fine-print">Uses only voices your browser reports as local. This is browser speech, not live AI voice.</p></section>
+          </aside>
+        </div>
+      </section>
+      <section id="memory-panel" class="panel" hidden>
+        <div class="section-heading"><p class="eyebrow">A LITTLE CONTEXT. ONLY WITH YOUR SAY-SO.</p><h1>Remember what <em>matters.</em></h1><p>Keep useful details on this computer. Review, change, export, or forget them whenever you choose.</p></div>
+        <section class="consent-card"><div><h2>Local memory <span id="memory-status" class="pill">OFF</span></h2><p>When enabled, the local text demo can selectively save simple preferences. Sensitive or uncertain details need review. Disabling stops new saves; existing memories remain until you delete them.</p></div><label class="switch-label"><input id="memory-enabled" type="checkbox"> Enable memory</label></section>
+        <div class="two-column"><section class="card"><h2 id="memory-form-title">Add a memory</h2><form id="memory-form"><label for="memory-text">What would you like Wanda to remember?</label><textarea id="memory-text" rows="4" maxlength="1000" placeholder="For example: I prefer jasmine tea." required></textarea><div class="two-column"><div><label for="memory-category">Kind of memory</label><select id="memory-category"><option value="preference">Preference</option><option value="project">Project</option><option value="temporary">Temporary</option><option value="sensitive">Sensitive</option></select></div><div><label for="memory-expiry">Keep until</label><input id="memory-expiry" type="datetime-local"></div></div><label class="check-label"><input id="memory-approved" type="checkbox" required> I approve saving this detail locally.</label><p class="fine-print">Only save information you have permission to store. An empty date keeps durable memories. Temporary memories expire in 24 hours by default; choose another category to keep one indefinitely.</p><div class="button-row"><button class="primary-button" type="submit">Save memory</button><button id="cancel-memory-edit" class="secondary-button" type="button" hidden>Cancel edit</button></div></form></section><section class="card"><div class="card-heading"><h2>Your memories</h2><button id="refresh-memory" class="text-button">Refresh</button></div><label class="sr-only" for="memory-search">Search memories</label><input id="memory-search" type="search" placeholder="Find a memory…"><div id="memory-list" class="item-list"></div><div class="button-row"><button id="export-memory" class="secondary-button">Export</button><button id="clear-memory" class="danger-outline">Delete all memories</button></div><p class="fine-print">Exports contain private data. Store them somewhere you trust. Local storage is not encrypted by Wanda.</p></section></div>
+      </section>
+      <section id="home-panel" class="panel" hidden>
+        <div class="section-heading"><p class="eyebrow">USEFUL HELP. CLEAR BOUNDARIES.</p><h1>Your home. <em>Your rules.</em></h1><p id="home-description">Practice with simulated devices. Permissions start denied and each action is checked on the server.</p></div>
+        <div class="section-toolbar"><span id="home-mode" class="pill">MOCK HOME</span><label id="outage-control" class="check-label"><input id="home-outage" type="checkbox"> Simulate home connection outage</label><button id="refresh-home" class="text-button">Refresh devices</button></div>
+        <div id="devices" class="device-grid"></div>
+        <div class="two-column"><section class="card"><h2>Give a specific permission</h2><p>These permissions apply to this local owner session. They reset when Wanda restarts.</p><form id="home-grant-form"><label for="grant-device">Device</label><select id="grant-device" required></select><label for="grant-action">Action</label><select id="grant-action"><option value="turn_on">Turn on</option><option value="turn_off">Turn off</option></select><label for="grant-duration">Permission duration</label><select id="grant-duration"><option value="900">15 minutes</option><option value="3600">1 hour</option></select><label class="check-label"><input id="grant-confirmation" type="checkbox" checked> Require a separate confirmation for every action</label><button class="primary-button" type="submit">Grant this permission</button></form></section><section class="card"><h2>Active permissions</h2><div id="home-grants" class="item-list"></div></section></div>
+        <section class="card audit-card"><div class="card-heading"><h2>What actually happened</h2><span class="pill subtle">SESSION ACTIVITY</span></div><div id="home-audit" class="item-list"></div></section>
+      </section>
+      <section id="privacy-panel" class="panel" hidden>
+        <div class="section-heading"><p class="eyebrow">NOT A BLACK BOX.</p><h1>Nothing hidden. <em>You decide.</em></h1><p>A useful assistant should be easy to understand—and easy to switch off.</p></div>
+        <div class="privacy-grid"><section class="card privacy-card"><span class="privacy-icon" aria-hidden="true">⌂</span><h2>On this computer</h2><p>Demo text processing and consented memory are local. Your chat isn't archived. Memory is stored outside Wanda's source folder.</p><span class="pill">LOCAL</span></section><section class="card privacy-card"><span class="privacy-icon" aria-hidden="true">≋</span><h2>Only if you connect</h2><p>Live microphone audio and connection metadata go to OpenAI. Audio may include other people nearby. Provider processing and retention policies apply; local memory permissions cannot filter spoken audio.</p><span class="pill warm-pill">OPTIONAL CLOUD</span></section><section class="card privacy-card"><span class="privacy-icon" aria-hidden="true">◇</span><h2>You hold the controls</h2><p>Disconnect stops this microphone stream. Device actions need their own permission. A spoken request cannot grant one. This V0 has one local owner, not household authentication.</p><span class="pill">EXPLICIT CHOICE</span></section></div>
+        <div class="two-column"><section class="card"><h2>Cloud memory permissions</h2><p>Record a rule for a category of your saved memory. <strong>No saved memory is sent to cloud voice in V0, even with a grant.</strong> Rules do not cover live microphone audio. Enable local memory before adding an allow rule.</p><form id="disclosure-form"><label for="disclosure-category">Information category</label><select id="disclosure-category"><option value="preference">Preferences</option><option value="project">Projects</option><option value="temporary">Temporary context</option><option value="sensitive">Sensitive details</option></select><label for="disclosure-allowed">OpenAI permission</label><select id="disclosure-allowed"><option value="false">Deny disclosure</option><option value="true">Allow this category</option></select><label for="disclosure-duration">Expires</label><select id="disclosure-duration"><option value="3600">In 1 hour</option><option value="86400">In 1 day</option></select><label class="check-label"><input id="disclosure-one-time" type="checkbox" checked> One use only</label><button class="primary-button" type="submit">Save permission rule</button></form></section><section class="card"><h2>Your recorded rules</h2><div id="disclosure-list" class="item-list"></div><p class="fine-print">Missing permission means denied. Rules belong to this local owner account and can be revoked here.</p></section></div>
+      </section>
+      <footer>Wanda is a work in progress. <span>Built for ordinary people. Accountable to you.</span></footer>
+    </main>
+  </div>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title"><form method="dialog"><div class="dialog-mark" aria-hidden="true">◇</div><h2 id="confirm-title">Your choice</h2><p id="confirm-description"></p><label id="audio-consent-label" class="check-label" hidden><input id="audio-consent" type="checkbox"> I consent to sending microphone audio to OpenAI for this session and understand API charges may apply.</label><div class="button-row"><button value="cancel" class="secondary-button">Cancel</button><button id="confirm-accept" value="confirm" class="primary-button">Confirm</button></div></form></dialog>
+  <audio id="remote-audio" autoplay></audio>
+</body>
+</html>

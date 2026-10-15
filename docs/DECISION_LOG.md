@@ -75,6 +75,15 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 ## How to append decisions
 
+Before the normal process below, note the 2026-10-15 **provisional unattended
+implementation**: under [UNATTENDED_DEVELOPMENT](UNATTENDED_DEVELOPMENT.md),
+[ADR 0008](adr/0008-v0-portable-stack.md) implements a reversible Python/native-JS
+V0 with local SQLite, loopback OS-user access, optional WebRTC and bounded home
+adapters. **Implemented and locally tested; not accepted production policy.**
+This does not promote D-016/D-023 choices to owner-approved decisions or change
+D-048's real V1 exit criteria. Accept, revise or revert through the feature PR
+linked in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
+
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History

@@ -31,3 +31,9 @@ build/
 .DS_Store
 .idea/
 .vscode/
+coverage/
+test-results/
+playwright-report/
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm

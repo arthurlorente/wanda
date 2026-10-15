@@ -1,0 +1,534 @@
+/* Wanda V0. No external dependencies, analytics, or implicit microphone access. */
+"use strict";
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const state = {status: null, memories: [], home: null, editId: null, busy: false, chatEpoch: 0, homePending: new Set()};
+  const fragment = new URLSearchParams(location.hash.slice(1));
+  let capability = fragment.get("token") || "";
+  // Remove the launch capability before any requests or UI navigation.
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+  try {
+    if (capability) sessionStorage.setItem("wanda-capability", capability);
+    else capability = sessionStorage.getItem("wanda-capability") || "";
+  } catch (_) { /* A fragment launch still works if session storage is unavailable. */ }
+  let noticeTimer;
+  const voice = {epoch: 0, pc: null, stream: null, channel: null, abort: null,
+    phase: "off", responseActive: false, playing: false, timer: null, handshakeTimer: null,
+    healthTimer: null, healthAbort: null, transcripts: new Map()};
+
+  function tell(message, error = false) {
+    $("notice").textContent = message;
+    $("notice").classList.toggle("error", error);
+    $("notice").hidden = false;
+    clearTimeout(noticeTimer);
+    if (!error) noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 7000);
+  }
+  function guard(handler) {
+    return async (event) => {
+      try { await handler(event); }
+      catch (error) { tell(error.message || "Something did not complete. Please try again.", true); }
+    };
+  }
+  async function api(path, options = {}) {
+    if (!capability) throw new Error("Open Wanda using the launcher to start a private local session.");
+    const controller = options.signal ? null : new AbortController();
+    const timeout = controller && setTimeout(() => controller.abort(), 35000);
+    try {
+      const response = await fetch(path, {
+        method: options.method || "GET", credentials: "omit", cache: "no-store",
+        headers: {"Authorization": "Bearer " + capability, "Content-Type": "application/json"},
+        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+        signal: options.signal || controller.signal,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Wanda could not complete that request.");
+      return data;
+    } catch (error) {
+      if (error.name === "AbortError") throw new Error("The request stopped or timed out. You can try again.");
+      if (error instanceof TypeError) throw new Error("Wanda is not reachable. Start the launcher again if it has stopped.");
+      throw error;
+    } finally { clearTimeout(timeout); }
+  }
+  function node(tag, text, className) {
+    const element = document.createElement(tag);
+    if (text !== undefined) element.textContent = text;
+    if (className) element.className = className;
+    return element;
+  }
+  function action(label, callback, className = "text-button") {
+    const button = node("button", label, className);
+    button.type = "button";
+    button.addEventListener("click", guard(callback));
+    return button;
+  }
+  function empty(element, text) {
+    element.replaceChildren(node("p", text, "empty-state"));
+  }
+  function timeLabel(value) {
+    return value ? new Date(value * 1000).toLocaleString() : "No expiry";
+  }
+  function categoryLabel(value) { return String(value || "memory").replaceAll("_", " "); }
+  function changePanel(panel) {
+    for (const section of document.querySelectorAll(".panel")) section.hidden = section.id !== panel + "-panel";
+    for (const button of document.querySelectorAll(".nav-button")) {
+      const current = button.dataset.panel === panel;
+      button.classList.toggle("active", current);
+      if (current) button.setAttribute("aria-current", "page"); else button.removeAttribute("aria-current");
+    }
+    $("page-label").textContent = {conversation: "YOUR EVERYDAY COMPANION", memory: "YOUR LOCAL MEMORY", home: "YOUR HOME, YOUR RULES", privacy: "YOUR PRIVACY CONTROLS"}[panel];
+    if (panel === "memory") refreshMemory().catch((error) => tell(error.message, true));
+    if (panel === "home") refreshHome().catch((error) => tell(error.message, true));
+    if (panel === "privacy") refreshDisclosures().catch((error) => tell(error.message, true));
+  }
+  document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => changePanel(button.dataset.panel)));
+
+  function confirmChoice(title, description, label = "Confirm", audio = false) {
+    const dialog = $("confirm-dialog");
+    if (dialog.open) return Promise.resolve(false);
+    $("confirm-title").textContent = title;
+    $("confirm-description").textContent = description;
+    $("confirm-accept").textContent = label;
+    $("audio-consent-label").hidden = !audio;
+    $("audio-consent").checked = false;
+    $("confirm-accept").disabled = audio;
+    $("audio-consent").onchange = () => { $("confirm-accept").disabled = audio && !$("audio-consent").checked; };
+    dialog.returnValue = "cancel";
+    dialog.showModal();
+    return new Promise((resolve) => dialog.addEventListener("close", () => {
+      resolve(dialog.returnValue === "confirm" && (!audio || $("audio-consent").checked));
+    }, {once: true}));
+  }
+
+  function addMessage(who, text, mode = "demo") {
+    const row = node("article", undefined, "message " + who);
+    const avatar = node("span", who === "user" ? "YOU" : "w", "message-avatar");
+    avatar.setAttribute("aria-hidden", "true");
+    const body = node("div", undefined, "message-body");
+    body.append(node("strong", who === "user" ? "You" : mode === "live" ? "Wanda · cloud voice" : "Wanda · local demo"));
+    const paragraph = node("p", text);
+    body.append(paragraph); row.append(avatar, body); $("messages").append(row);
+    $("messages").scrollTop = $("messages").scrollHeight;
+    return {body, paragraph};
+  }
+  function greeting() {
+    addMessage("assistant", "Hello. I'm Wanda. This local demo is a small beginning: a place to try privacy controls, local memory, and home permissions. What shall we explore?");
+  }
+  function browserSpeak(text) {
+    if (voice.phase !== "off" || !$("read-aloud").checked || !("speechSynthesis" in window)) return;
+    const localVoice = speechSynthesis.getVoices().find((item) => item.localService && item.lang.toLowerCase().startsWith($("language").value));
+    if (!localVoice) { tell("No local browser voice is available for this language. Text replies still work."); return; }
+    speechSynthesis.cancel();
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.voice = localVoice; speech.lang = localVoice.lang; speech.rate = 0.97;
+    speechSynthesis.speak(speech);
+  }
+  function stopBrowserSpeech() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+  async function sendChat(text) {
+    if (state.busy || !text.trim()) return;
+    if (voice.phase === "connecting") { tell("Wait for live voice to connect, or disconnect to use the local demo."); return; }
+    const clean = text.trim().slice(0, 4000);
+    $("chat-input").value = "";
+    $("suggestions").hidden = true;
+    if (voice.phase === "live") {
+      addMessage("user", clean, "live");
+      interruptVoice();
+      sendLive({type: "conversation.item.create", item: {type: "message", role: "user", content: [{type: "input_text", text: clean}]}});
+      sendLive({type: "response.create"});
+      return;
+    }
+    state.busy = true; $("send-chat").disabled = true; $("connect-voice").disabled = true;
+    const chatEpoch = state.chatEpoch;
+    addMessage("user", clean);
+    try {
+      const data = await api("/api/chat", {method: "POST", body: {text: clean, language: $("language").value, tone: $("tone").value}});
+      if (chatEpoch !== state.chatEpoch) return;
+      const message = addMessage("assistant", data.reply);
+      if (data.memory_saved?.length) message.body.append(node("span", "A consented detail was saved locally. Review it in Memory.", "message-note"));
+      if (data.memory_candidates?.length) {
+        message.body.append(node("span", "There is a detail to review before saving.", "message-note"));
+        for (const candidate of data.memory_candidates) {
+          const item = typeof candidate === "string" ? {text: candidate, category: "sensitive"} : candidate;
+          if (!item.text) continue;
+          message.body.append(action("Review proposed memory", () => {
+            changePanel("memory"); resetMemoryForm();
+            $("memory-text").value = item.text;
+            $("memory-category").value = item.category || "sensitive";
+            $("memory-approved").checked = false;
+            $("memory-text").focus();
+          }));
+        }
+      }
+      browserSpeak(data.reply);
+      await refreshMemory();
+    } finally {
+      state.busy = false; $("send-chat").disabled = false;
+      $("connect-voice").disabled = voice.phase !== "off" || !state.status?.voice?.configured;
+    }
+  }
+  $("chat-form").addEventListener("submit", guard(async (event) => { event.preventDefault(); await sendChat($("chat-input").value); }));
+  $("chat-input").addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); $("chat-form").requestSubmit(); }
+  });
+  document.querySelectorAll("[data-suggestion]").forEach((button) => button.addEventListener("click", guard(() => sendChat(button.dataset.suggestion))));
+  $("clear-chat").addEventListener("click", guard(async () => {
+    if (voice.phase !== "off") {
+      if (!await confirmChoice("Clear this conversation?", "This disconnects live voice and clears the chat from this page. It cannot erase data already processed by the cloud provider. Saved local memories are separate.", "Disconnect and clear")) return;
+      disconnectVoice();
+    }
+    ++state.chatEpoch;
+    stopBrowserSpeech(); $("messages").replaceChildren(); $("suggestions").hidden = false; greeting();
+    tell("Chat cleared from this page. Saved memories are unchanged.");
+  }));
+  $("read-aloud").addEventListener("change", () => {
+    if (!$("read-aloud").checked) stopBrowserSpeech();
+    else if (!("speechSynthesis" in window)) { $("read-aloud").checked = false; tell("This browser does not provide speech synthesis."); }
+  });
+
+  async function refreshMemory() {
+    const data = await api("/api/memory");
+    state.memories = data.memories || [];
+    $("memory-enabled").checked = data.enabled;
+    $("memory-status").textContent = data.enabled ? "ON" : "OFF";
+    $("memory-count").textContent = state.memories.length;
+    $("memory-form").querySelector('button[type="submit"]').disabled = !data.enabled;
+    $("memory-form-title").textContent = data.enabled ? (state.editId ? "Edit this memory" : "Add a memory") : "Enable memory to add or edit";
+    renderMemories();
+  }
+  function renderMemories() {
+    const list = $("memory-list"); list.replaceChildren();
+    const query = $("memory-search").value.toLocaleLowerCase();
+    const memories = state.memories.filter((memory) => memory.text.toLocaleLowerCase().includes(query));
+    if (!memories.length) { empty(list, query ? "No matching memories." : "A fresh page. Nothing is saved yet."); return; }
+    for (const memory of memories) {
+      const item = node("article", undefined, "list-item");
+      item.append(node("p", memory.text), node("div", categoryLabel(memory.category) + " · " + timeLabel(memory.expires_at), "item-meta"));
+      if (memory.disclosure_categories?.length) item.append(node("div", "Disclosure rules required: " + memory.disclosure_categories.map(categoryLabel).join(" + ") + ". V0 does not send memories to voice.", "item-meta"));
+      const controls = node("div", undefined, "item-actions");
+      controls.append(action("Edit", () => editMemory(memory)), action("Delete", async () => {
+        if (!await confirmChoice("Forget this memory?", memory.text, "Delete memory")) return;
+        await api("/api/memory/" + encodeURIComponent(memory.id), {method: "DELETE"});
+        if (state.editId === memory.id) resetMemoryForm();
+        await refreshMemory(); tell("Memory deleted.");
+      }));
+      item.append(controls); list.append(item);
+    }
+  }
+  function resetMemoryForm() {
+    state.editId = null; $("memory-form").reset();
+    $("memory-form-title").textContent = "Add a memory"; $("cancel-memory-edit").hidden = true;
+  }
+  function editMemory(memory) {
+    state.editId = memory.id; $("memory-form-title").textContent = "Edit this memory";
+    $("memory-text").value = memory.text; $("memory-category").value = memory.category;
+    $("memory-approved").checked = false;
+    const date = memory.expires_at ? new Date(memory.expires_at * 1000) : null;
+    $("memory-expiry").value = date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16) : "";
+    $("cancel-memory-edit").hidden = false; $("memory-text").focus();
+  }
+  $("memory-enabled").addEventListener("change", guard(async () => {
+    const enabled = $("memory-enabled").checked;
+    try { await api("/api/memory/consent", {method: "POST", body: {enabled}}); tell(enabled ? "Local memory is enabled. You can review and delete saved details here." : "New memory saving is paused. Existing memories remain available for review or deletion."); }
+    finally { await refreshMemory(); }
+  }));
+  $("memory-form").addEventListener("submit", guard(async (event) => {
+    event.preventDefault();
+    const body = {text: $("memory-text").value, category: $("memory-category").value, approved: $("memory-approved").checked,
+      expires_at: $("memory-expiry").value ? Math.floor(new Date($("memory-expiry").value).getTime() / 1000) : null};
+    await api(state.editId ? "/api/memory/" + encodeURIComponent(state.editId) : "/api/memory", {method: state.editId ? "PATCH" : "POST", body});
+    resetMemoryForm(); await refreshMemory(); tell("Memory saved on this computer.");
+  }));
+  $("cancel-memory-edit").addEventListener("click", resetMemoryForm);
+  $("memory-search").addEventListener("input", renderMemories);
+  $("refresh-memory").addEventListener("click", guard(refreshMemory));
+  $("clear-memory").addEventListener("click", guard(async () => {
+    if (!await confirmChoice("Delete every saved memory?", "This removes all memories for this local owner. You can export a copy first. This cannot remove copies you exported or cloud-provider data.", "Delete all memories")) return;
+    await api("/api/memory", {method: "DELETE"}); resetMemoryForm(); await refreshMemory(); tell("All local memories deleted.");
+  }));
+  $("export-memory").addEventListener("click", guard(async () => {
+    const data = await api("/api/memory/export");
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], {type: "application/json"}));
+    const link = node("a"); link.href = url; link.download = "wanda-private-memory-export.json"; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000); tell("Memory export prepared. It contains private information; keep it somewhere you trust.");
+  }));
+
+  async function refreshDisclosures() {
+    const data = await api("/api/disclosures"); const list = $("disclosure-list"); list.replaceChildren();
+    if (!data.grants?.length) { empty(list, "No disclosure rules. Saved memory stays local."); return; }
+    for (const grant of data.grants) {
+      const item = node("article", undefined, "list-item");
+      item.append(node("p", `${grant.provider} · ${categoryLabel(grant.category)} · ${grant.allowed ? "Allowed" : "Denied"}`),
+        node("div", `${grant.one_time ? "One use" : "Reusable"} · ${timeLabel(grant.expires_at)}`, "item-meta"),
+        action("Revoke rule", async () => { await api("/api/disclosures/" + encodeURIComponent(grant.id), {method: "DELETE"}); await refreshDisclosures(); tell("Disclosure rule revoked."); }));
+      list.append(item);
+    }
+  }
+  $("disclosure-form").addEventListener("submit", guard(async (event) => {
+    event.preventDefault();
+    await api("/api/disclosures", {method: "POST", body: {provider: "openai", category: $("disclosure-category").value,
+      allowed: $("disclosure-allowed").value === "true", one_time: $("disclosure-one-time").checked,
+      expires_at: Math.floor(Date.now() / 1000) + Number($("disclosure-duration").value)}});
+    await refreshDisclosures(); tell("Permission rule saved. V0 still sends no saved memories to cloud voice.");
+  }));
+
+  async function requestHomeAction(device, actionName) {
+    if (state.homePending.has(device.entity_id)) return;
+    state.homePending.add(device.entity_id);
+    document.querySelectorAll("[data-device-action]").forEach((button) => {
+      if (button.dataset.deviceAction === device.entity_id) button.disabled = true;
+    });
+    try {
+    const body = {entity_id: device.entity_id, action: actionName, request_id: crypto.randomUUID()};
+    let result = await api("/api/home/action", {method: "POST", body});
+    if (result.status === "confirmation_required") {
+      const accepted = await confirmChoice("Approve this home action?", `${device.name}: ${actionName.replaceAll("_", " ")}\n${state.home?.mode === "mock" ? "This operates a simulated device." : "This may operate a real configured device."}\nPermission and device state will be checked again.`, "Approve this action");
+      if (!accepted) { tell("Action cancelled. No confirmation was sent."); return; }
+      result = await api("/api/home/action", {method: "POST", body: {...body, confirmation_id: result.confirmation_id}});
+    }
+    tell(result.message || result.status, result.status !== "verified"); await refreshHome();
+    } finally {
+      state.homePending.delete(device.entity_id);
+      document.querySelectorAll("[data-device-action]").forEach((button) => {
+        if (button.dataset.deviceAction === device.entity_id) button.disabled = false;
+      });
+    }
+  }
+  async function refreshHome() {
+    const data = await api("/api/home"); state.home = data;
+    $("home-mode").textContent = data.mode === "mock" ? "MOCK HOME · SIMULATED DEVICES" : "HOME ASSISTANT · REAL ADAPTER";
+    $("outage-control").hidden = data.mode !== "mock";
+    $("home-description").textContent = data.mode === "mock" ? "Practice with simulated devices. Permissions start denied and each action is checked on the server." : "Home Assistant adapter configured. These controls may operate real allowlisted devices; verify reported state before proceeding. Live behavior needs manual verification.";
+    const grid = $("devices"), selector = $("grant-device"); const selected = selector.value;
+    grid.replaceChildren(); selector.replaceChildren();
+    for (const device of data.devices || []) {
+      const card = node("section", undefined, "device-card" + (device.state === "on" ? " on" : ""));
+      card.append(node("span", "☼", "device-icon"), node("h2", device.name), node("p", "Reported state: " + device.state));
+      const controls = node("div", undefined, "button-row");
+      controls.append(action("Turn on", () => requestHomeAction(device, "turn_on"), "secondary-button"), action("Turn off", () => requestHomeAction(device, "turn_off"), "secondary-button"));
+      for (const button of controls.children) { button.dataset.deviceAction = device.entity_id; button.disabled = state.homePending.has(device.entity_id); }
+      card.append(controls); grid.append(card);
+      const option = node("option", device.name); option.value = device.entity_id; selector.append(option);
+    }
+    if ([...selector.options].some((option) => option.value === selected)) selector.value = selected;
+    if (!data.devices?.length) empty(grid, "No device state is available. The home adapter may be offline; no action is assumed successful.");
+    const grants = $("home-grants"); grants.replaceChildren();
+    for (const grant of data.grants || []) {
+      const item = node("article", undefined, "list-item");
+      const name = data.devices?.find((device) => device.entity_id === grant.entity_id)?.name || grant.entity_id;
+      item.append(node("p", `${name} · ${String(grant.action).replaceAll("_", " ")}`), node("div", `${grant.confirmation ? "Confirmation required" : "No extra confirmation"} · ${timeLabel(grant.expires_at)}`, "item-meta"),
+        action("Revoke permission", async () => { await api("/api/home/grants/" + encodeURIComponent(grant.id), {method: "DELETE"}); await refreshHome(); tell("Device permission revoked."); }));
+      grants.append(item);
+    }
+    if (!data.grants?.length) empty(grants, "No permissions yet. Device actions are denied until you grant a scope.");
+    const audit = $("home-audit"); audit.replaceChildren();
+    for (const entry of (data.audit || []).slice().reverse().slice(0, 20)) {
+      const item = node("article", undefined, "list-item");
+      item.append(node("p", `${entry.entity_id || "Home"} · ${String(entry.action || "request").replaceAll("_", " ")} · ${entry.status || entry.result || "Recorded"}`));
+      if (entry.message) item.append(node("div", entry.message, "item-meta"));
+      audit.append(item);
+    }
+    if (!data.audit?.length) empty(audit, "Actions and denied requests will appear here. This activity list resets on restart.");
+  }
+  $("home-grant-form").addEventListener("submit", guard(async (event) => {
+    event.preventDefault();
+    await api("/api/home/grants", {method: "POST", body: {entity_id: $("grant-device").value, action: $("grant-action").value,
+      confirmation: $("grant-confirmation").checked, expires_at: Math.floor(Date.now() / 1000) + Number($("grant-duration").value)}});
+    await refreshHome(); tell("Permission granted for this device and action.");
+  }));
+  $("home-outage").addEventListener("change", guard(async () => {
+    const offline = $("home-outage").checked;
+    try { await api("/api/home/outage", {method: "POST", body: {offline}}); await refreshHome(); tell(offline ? "Simulated home outage enabled. Memory and the local chat still work." : "Simulated home connection restored."); }
+    catch (error) { $("home-outage").checked = !offline; throw error; }
+  }));
+  $("refresh-home").addEventListener("click", guard(refreshHome));
+
+  function setVoiceState(phase, text) {
+    voice.phase = phase;
+    $("voice-state").textContent = text;
+    $("voice-state").classList.toggle("listening", phase === "live");
+    $("microphone-label").textContent = phase === "live" ? "Mic on · OpenAI" : phase === "connecting" ? "Mic connecting" : "Mic off";
+    $("connect-voice").disabled = phase !== "off" || state.busy || !state.status?.voice?.configured;
+    $("disconnect").disabled = phase === "off";
+    $("chat-input").placeholder = phase === "live" ? "Message cloud voice (sent to OpenAI)…" : "What's on your mind?";
+    document.body.classList.toggle("live", phase === "live");
+    const banner = document.querySelector(".mode-banner");
+    const localSummary = state.status?.home?.mode === "homeassistant" ? "Scripted local conversation and real local memory. A real Home Assistant adapter is configured; device states need verification." : "Scripted conversation, real local memory, and practice home devices.";
+    banner.replaceChildren(node("span", phase === "live" ? "LIVE CLOUD VOICE" : "LOCAL DEMO", "pill"), node("p", phase === "live" ? "Microphone audio and typed messages go to OpenAI. No saved memories or home tools are connected. Session ends automatically after 5 minutes." : localSummary));
+  }
+  function sendLive(event) {
+    if (voice.channel?.readyState !== "open") throw new Error("Live voice is not connected. Disconnect and try again.");
+    voice.channel.send(JSON.stringify(event));
+  }
+  function interruptVoice() {
+    stopBrowserSpeech();
+    if (voice.channel?.readyState === "open") {
+      if (voice.responseActive) sendLive({type: "response.cancel"});
+      if (voice.playing || voice.responseActive) sendLive({type: "output_audio_buffer.clear"});
+      $("remote-audio").muted = true;
+      voice.responseActive = false; voice.playing = false;
+      $("voice-state").textContent = "Interrupted · microphone still on";
+    }
+  }
+  function disconnectVoice(message = "Microphone is off") {
+    ++voice.epoch;
+    clearTimeout(voice.timer); clearTimeout(voice.handshakeTimer);
+    clearInterval(voice.healthTimer); voice.healthTimer = null;
+    voice.healthAbort?.abort(); voice.healthAbort = null;
+    voice.abort?.abort(); voice.abort = null;
+    const channel = voice.channel, pc = voice.pc, stream = voice.stream;
+    voice.channel = null; voice.pc = null; voice.stream = null;
+    // Release capture first. Closing peer/data channels also ends remote audio.
+    stream?.getTracks().forEach((track) => track.stop());
+    if (channel) { channel.onclose = null; channel.onerror = null; channel.onmessage = null; channel.close(); }
+    if (pc) { pc.onconnectionstatechange = null; pc.ontrack = null; pc.close(); }
+    const audio = $("remote-audio"); audio.pause(); audio.srcObject = null; audio.muted = false;
+    voice.responseActive = false; voice.playing = false; voice.transcripts.clear(); stopBrowserSpeech(); setVoiceState("off", message);
+  }
+  function monitorLocalServer(epoch) {
+    const check = async () => {
+      if (voice.epoch !== epoch || voice.healthAbort) return;
+      const controller = new AbortController(); voice.healthAbort = controller;
+      const timer = setTimeout(() => controller.abort(), 2000);
+      try { await api("/api/status", {signal: controller.signal}); }
+      catch (_) {
+        if (voice.epoch === epoch) {
+          disconnectVoice("Local app stopped · microphone off");
+          tell("The local Wanda service is unavailable. Live voice was disconnected and the microphone is off.", true);
+        }
+      } finally {
+        clearTimeout(timer);
+        if (voice.healthAbort === controller) voice.healthAbort = null;
+      }
+    };
+    check();
+    voice.healthTimer = setInterval(check, 3000);
+  }
+  function liveEvent(event, epoch) {
+    if (voice.epoch !== epoch) return;
+    let data; try { data = JSON.parse(event.data); } catch (_) { return; }
+    if (data.type === "error") {
+      // A cancel can race a completed response. This error is harmless.
+      if (data.error?.code === "response_cancel_not_active") return;
+      disconnectVoice("Voice stopped after a provider error"); tell("The voice provider reported an error. The microphone is off; the local demo still works.", true); return;
+    }
+    if (data.type === "input_audio_buffer.speech_started") $("voice-state").textContent = "Listening · audio goes to OpenAI";
+    if (data.type === "output_audio_buffer.started") voice.playing = true;
+    if (["output_audio_buffer.stopped", "output_audio_buffer.cleared"].includes(data.type)) voice.playing = false;
+    if (data.type === "response.created") { voice.responseActive = true; $("remote-audio").muted = false; $("voice-state").textContent = "Wanda is responding · mic on"; }
+    if (data.type === "response.done") {
+      voice.responseActive = false;
+      if (data.response?.status === "failed") {
+        disconnectVoice("Voice response failed · mic off"); tell("The provider could not complete its response. The microphone is off; local features remain available.", true); return;
+      }
+      $("voice-state").textContent = "Connected · ready for your next thought";
+    }
+    if (data.type === "response.output_audio_transcript.delta") {
+      const id = data.item_id || data.response_id || "current";
+      if (!voice.transcripts.has(id)) voice.transcripts.set(id, addMessage("assistant", "", "live").paragraph);
+      const paragraph = voice.transcripts.get(id);
+      paragraph.textContent = (paragraph.textContent + String(data.delta || "")).slice(0, 20000);
+      $("messages").scrollTop = $("messages").scrollHeight;
+    }
+  }
+  function preferencesPrompt() {
+    const language = {en: "English", pt: "Portuguese", es: "Spanish"}[$("language").value];
+    return `Please use ${language} to start, with a ${$("tone").value === "neutral" ? "neutral, direct" : "warm, thoughtful"} tone. Follow me if I switch languages. Keep replies brief.`;
+  }
+  async function connectVoice() {
+    if (voice.phase !== "off" || state.busy || !state.status?.voice?.configured) return;
+    if (!navigator.mediaDevices?.getUserMedia || !window.RTCPeerConnection) throw new Error("This browser cannot start WebRTC audio. Use a supported browser on this computer.");
+    if (!await confirmChoice("Start a cloud voice conversation?", "Microphone audio, including voices nearby, and connection metadata will reach OpenAI. Typed messages during this session also go to OpenAI. Saved local memories are not sent. No model device tools are enabled.\n\nProvider processing and retention policies apply. Use non-sensitive examples for this experimental demo. This session ends after 5 minutes; API usage may cost money.", "Connect microphone", true)) return;
+    if (state.busy || voice.phase !== "off") return;
+    const epoch = ++voice.epoch;
+    stopBrowserSpeech(); setVoiceState("connecting", "Waiting for microphone permission…");
+    voice.abort = new AbortController();
+    voice.handshakeTimer = setTimeout(() => {
+      if (voice.epoch === epoch) { disconnectVoice("Connection timed out · mic off"); tell("Voice connection timed out. The local demo remains available.", true); }
+    }, 40000);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}, video: false});
+      if (voice.epoch !== epoch) { stream.getTracks().forEach((track) => track.stop()); return; }
+      voice.stream = stream;
+      monitorLocalServer(epoch);
+      const pc = new RTCPeerConnection(); voice.pc = pc;
+      for (const track of stream.getTracks()) {
+        pc.addTrack(track, stream);
+        track.addEventListener("ended", () => { if (voice.epoch === epoch) disconnectVoice("Microphone ended · mic off"); });
+      }
+      pc.ontrack = (event) => {
+        if (voice.epoch !== epoch) return;
+        const audio = $("remote-audio"); audio.srcObject = event.streams[0] || new MediaStream([event.track]);
+        audio.play().catch(() => { if (voice.epoch === epoch) { disconnectVoice("Playback blocked · mic off"); tell("The browser blocked audio playback. Reconnect after allowing audio.", true); } });
+      };
+      pc.onconnectionstatechange = () => {
+        if (voice.epoch === epoch && ["failed", "closed", "disconnected"].includes(pc.connectionState)) {
+          disconnectVoice("Connection lost · mic off"); tell("Live voice disconnected. The microphone is off and local features remain available.", true);
+        }
+      };
+      const channel = pc.createDataChannel("oai-events"); voice.channel = channel;
+      channel.onmessage = (event) => liveEvent(event, epoch);
+      channel.onclose = () => { if (voice.epoch === epoch) disconnectVoice("Voice channel closed · mic off"); };
+      channel.onerror = () => { if (voice.epoch === epoch) disconnectVoice("Voice connection failed · mic off"); };
+      channel.onopen = () => {
+        if (voice.epoch !== epoch) return;
+        clearTimeout(voice.handshakeTimer); setVoiceState("live", "Connected · audio goes to OpenAI");
+        voice.timer = setTimeout(() => { if (voice.epoch === epoch) { disconnectVoice("Five-minute session ended · mic off"); tell("Live voice ended at the five-minute limit. Connect again only when you're ready."); } }, 5 * 60 * 1000);
+        try {
+          sendLive({type: "conversation.item.create", item: {type: "message", role: "user", content: [{type: "input_text", text: preferencesPrompt() + " Briefly introduce yourself and your current limits."}]}});
+          sendLive({type: "response.create"});
+        } catch (_) { disconnectVoice("Connection failed · mic off"); }
+      };
+      await pc.setLocalDescription(await pc.createOffer());
+      if (voice.epoch !== epoch) return;
+      const answer = await api("/api/voice/session", {method: "POST", body: {sdp: pc.localDescription.sdp, audio_consent: true}, signal: voice.abort.signal});
+      if (voice.epoch !== epoch) return;
+      await pc.setRemoteDescription({type: "answer", sdp: answer.sdp});
+    } catch (error) {
+      if (voice.epoch !== epoch) return;
+      disconnectVoice("Could not connect · microphone off");
+      if (error.name === "NotAllowedError") throw new Error("Microphone permission was declined. The local text demo still works.");
+      if (error.name === "NotFoundError") throw new Error("No microphone is available. The local text demo still works.");
+      throw new Error(error.message || "Live voice could not connect. The microphone is off.");
+    }
+  }
+  $("connect-voice").addEventListener("click", guard(connectVoice));
+  $("disconnect").addEventListener("click", () => { disconnectVoice(); tell("Disconnected. The microphone is off."); });
+  $("interrupt").addEventListener("click", guard(() => { interruptVoice(); if (voice.phase === "off") tell("Browser speech stopped. The microphone is off."); }));
+  for (const id of ["language", "tone"]) $(id).addEventListener("change", guard(() => {
+    stopBrowserSpeech();
+    if (voice.phase === "live") {
+      interruptVoice();
+      sendLive({type: "conversation.item.create", item: {type: "message", role: "user", content: [{type: "input_text", text: preferencesPrompt()}]}});
+      sendLive({type: "response.create"});
+    }
+  }));
+  window.addEventListener("pagehide", () => disconnectVoice());
+  window.addEventListener("beforeunload", () => disconnectVoice());
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && voice.phase !== "off") disconnectVoice("Tab hidden · microphone off");
+  });
+  $("shutdown").addEventListener("click", guard(async () => {
+    if (!await confirmChoice("Stop Wanda on this computer?", "This disconnects voice and stops the local app. Saved memories remain. No home devices will be changed. Run the launcher to start again.", "Stop Wanda")) return;
+    disconnectVoice(); await api("/api/shutdown", {method: "POST", body: {}});
+    $("connection-label").textContent = "Wanda is stopped"; $("connection-dot").classList.add("error");
+    $("send-chat").disabled = true; $("connect-voice").disabled = true; capability = "";
+    try { sessionStorage.removeItem("wanda-capability"); } catch (_) { /* Optional session storage. */ }
+    tell("Wanda has stopped. Start the launcher when you want to return.");
+  }));
+
+  async function initialize() {
+    greeting();
+    try {
+      state.status = await api("/api/status");
+      setVoiceState("off", "Microphone is off");
+      $("connection-label").textContent = "Running on this computer";
+      $("connect-voice").disabled = !state.status.voice?.configured;
+      $("voice-description").textContent = state.status.voice?.configured ? "OpenAI is configured. Connecting sends microphone audio to its cloud service, with separate consent for every session." : "Live voice is not configured. The local text demo works without an account or API key. See the morning handoff to enable optional cloud voice.";
+      const results = await Promise.allSettled([refreshMemory(), refreshHome(), refreshDisclosures()]);
+      for (const result of results) if (result.status === "rejected") tell(result.reason.message, true);
+    } catch (error) {
+      $("connection-label").textContent = "Session not connected"; $("connection-dot").classList.add("error");
+      $("send-chat").disabled = true; tell(error.message, true);
+    }
+  }
+  initialize();
+})();

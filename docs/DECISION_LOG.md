@@ -26,6 +26,10 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-018 | Accepted character foundation; implementation pending | Preserve Wanda's first-person manifesto as the foundation of her future personality, with a distinct behavioral specification. | [MANIFESTO](MANIFESTO.md) and [PERSONALITY](PERSONALITY.md); future runtime prompts and memory systems must reflect them without claiming consciousness or overriding safety. |
 | D-019 | Accepted P0 implementation constraint | Develop Wanda as a **portable application**; choose the permanent always-on host after validating the prototype. | Avoid coupling initial code to the RTX desktop or older gaming laptop; keep setup and tests reproducible across supported host machines. |
 
+| D-020 | Accepted | P0 uses a browser interface as a client to an independently designed portable voice service. | Eases testing and later satellite integration. |
+| D-021 | Accepted | During project planning, multiple-choice questions include an optional free-text alternative. | Allows clarification and alternatives to suggested responses. |
+| D-022 | Accepted | P0 begins with click-to-connect, followed by natural hands-free conversation; the intended household interface uses a Wanda wake word. | Decouples conversational quality testing from wake-word recognition. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

@@ -50,11 +50,16 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-032 | Accepted | Offer memory opt-in during setup. | User choice before persistent storage. |
 | D-033 | Accepted | Keep the primary memory database on Wanda's local host. | Household ownership; database and backup choices pending. |
 
+| D-034 | Accepted evaluation process; backup method undecided | Have Codex evaluate and recommend a secure, portable backup and restore strategy for Wanda's locally stored memories before selecting one. | Compare local backups, encrypted optional cloud backups, and manual export; assess recoverability, encryption, key ownership, complexity, cost and tested restores. Primary memory remains local. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-034 accepted: delegate backup and restore recommendation to Codex; no backup architecture selected.
+
 
 - 2026-10-15: D-029 accepted: selective automatic memory with user controls; detailed sensitivity and retention rules remain open.
 

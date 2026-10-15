@@ -6,4 +6,8 @@
 - **P3 Satellite:** Affordable mic array with full-duplex streaming, echo cancellation, and far-field performance.
 - **P4 Multi-room:** Handoff, shared context, simultaneous-speaker arbitration, and privacy separation.
 
+**V1 release gate (D-048):** V1 is reached after combining P0 voice/memory with a verified, permissioned **P1 Home Assistant integration** and user-defined device/action permissions, plus a usable persona and graceful degradation. The P0 prototype is not itself V1. Full guest voice identification, satellites, room handoff and general OpenClaw autonomy remain later unless separately prioritized. Controlled autonomy and proactive suggestions can begin with safe bounded actions and grow incrementally.
+
+**Priority (D-049):** Privacy and user independence supersede convenience, lowest latency or provider convenience where they conflict; document exceptions for review.
+
 Milestones require reproducible acceptance criteria and links to implementation issues/PRs.

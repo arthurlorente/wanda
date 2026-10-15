@@ -23,6 +23,10 @@ This protocol is expected at the conclusion of every meaningful decision or mile
 4. **Confirm:** Verify the GitHub write actually succeeded. Tell the user what changed with links. If tools fail or no repository access exists, explicitly state what **was not** recorded and provide a proposed patch instead.
 5. **Never invent evidence:** An accepted requirement is not the same as a working feature. An idea is not an approved architecture.
 
+## Planning questions
+
+When offering choices about Wanda's development, include an optional open-text field so the project owner can add nuance, combine suggestions or propose a different approach. Treat this text as part of the answer. For simple conversational questions, no formal options are required.
+
 ## End of a meaningful work session
 
 Review the session for unrecorded decisions, updated assumptions, open questions, risks and implementation outcomes. Consolidate minimally. A **full context-consolidation audit** is warranted after major pivots, long gaps, or when documentation becomes contradictory—not after every minor choice.

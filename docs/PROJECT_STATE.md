@@ -22,6 +22,7 @@
 - D-023: Codex will evaluate and propose the P0 technology stack; none has been selected.
 - D-024: Codex can implement scoped issues autonomously on branches; changes require human-reviewed PRs before merge.
 - D-025: Codex will research licensing options and propose a recommendation for review. No license has been chosen.
+- D-026: Conversational naturalness is the primary P0 success criterion; speed and cost remain benchmarking constraints.
 
 ## Decision status
 

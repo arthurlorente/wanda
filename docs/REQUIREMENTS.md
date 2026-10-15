@@ -46,6 +46,13 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 
 | R-30 | Store cloud disclosure grants by person, provider and information type, with review, expiration/revocation and one-time grants | Must / P0 design + staged UX | Verify authorization does not transfer across people, providers or categories; denied requests do not disclose information |
 
+| R-31 | Persona implementation is grounded in the accepted manifesto, with distinctive but adaptive warmth, humor and considered disagreement | Must / P0 design + V1 validation | Evaluate persona conversation samples for character fidelity, user tone preferences and privacy boundaries |
+| R-32 | Proactive suggestions plus bounded autonomous routine actions within explicit permissions | Must / V1 design; expand later | Test suggestion-only mode, authorized low-risk execution, approval for higher-impact actions and stop/revocation |
+| R-33 | Residents can define device/action permissions and confirmation levels; guests have narrower temporary grants | Must / V1 Home | Test per-person profiles, deny by default, confirmations, authorization and audit records |
+| R-34 | Graceful degraded behavior with local safe functions when available and clear disclosure of failures | Must / V1 | Disconnect API/network and verify safe fallback, no false success, no unauthorized retries or duplicate actions |
+| R-35 | V1 succeeds only with natural multilingual voice, durable user-controlled memory and verified home-device control | Must / V1 | End-to-end demo with a real Home Assistant integration and authorized state verification |
+| R-36 | Privacy and independence outrank convenience and marginal conversational improvements in trade-off decisions | Must / ongoing | Architecture reviews document local-first boundaries, portability, provider exposure and explicitly approved exceptions |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

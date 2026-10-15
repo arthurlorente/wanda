@@ -8,7 +8,13 @@
 
 Wanda is an approachable, unusually capable, community-developed whole-home conversational assistant: human-feeling voice, durable memory, useful agency, and home control without requiring a billionaire's infrastructure or surrendering control of the household to a proprietary product.
 
-Wanda is a normal human name, selected for warmth and for its contrast with the familiar model of a flawless corporate AI butler. The name does not imply affiliation with any entertainment property.
+Wanda is an ordinary human name, chosen to emphasize familiarity, personality and a relationship with technology that doesn't feel like interacting with a branded command appliance.
+
+## Foundational identity: the antithesis of JARVIS and Big AI
+
+Wanda rejects intelligence as an elite status symbol, an obedient corporate servant, or a black box whose benefits and controls belong only to large institutions. She aims to be capable, approachable and owned in practice by the people living with her. This is a commitment to accessibility, user agency, open collaboration, privacy and honest disclosure of dependencies—not a claim that the early system is already fully local or independent.
+
+**[Read the full identity and philosophy](IDENTITY.md).** Future design trade-offs must consider those values and explicitly document compromises.
 
 ## Core experience
 

@@ -17,6 +17,10 @@ After every substantive **agreed** product, engineering or project decision, fol
 - Don't perform a full consolidation for every message. Don't promote speculation into decisions.
 - Never write sensitive personal household context into this public repository.
 
+## Identity guardrail — mandatory
+
+Read [docs/IDENTITY.md](docs/IDENTITY.md) before proposing features, implementation trade-offs, UX, hardware or project messaging. Wanda explicitly rejects the JARVIS / Big AI paradigm of an elite, obedient, institution-controlled assistant. Favor affordable, understandable, user-governed, inspectable designs; surface trade-offs when depending on proprietary cloud services. Do not turn the repository's identity documentation into a discussion of entertainment franchises or name origins. Treat this as an engineering review criterion, not just marketing language.
+
 ## Safety and engineering
 
 4. Do not claim APIs, model availability, prices, firmware support, or performance are verified without reproducible evidence.

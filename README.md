@@ -2,6 +2,12 @@
 
 Wanda is a community-oriented, privacy-conscious **experimental** platform for natural conversational voice, home automation, and permissioned computer agents. This is an early design, **not a working or production-ready assistant**.
 
+## Why Wanda exists
+
+**Wanda is the antithesis of the JARVIS-style, Big AI vision of a private, obedient intelligence built for the powerful.** She is intended to make extraordinarily capable assistance accessible to ordinary households: personal rather than productized, community-built rather than gatekept, and accountable to the people who use her rather than an opaque platform. Our current prototype plans may still depend on proprietary cloud APIs; we will make those dependencies and costs explicit.
+
+Read [Wanda's identity and philosophy](docs/IDENTITY.md) for the commitments this makes to affordability, privacy, agency, open development, and engineering decisions.
+
 ## Principles
 - Built for households and tinkerers, with user-controlled configurations.
 - Public source; private memory, transcripts, household data, and credentials stay outside Git.

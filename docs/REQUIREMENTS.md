@@ -15,7 +15,7 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-07 | Allowlisted household voice commands via Home Assistant | Must / Later | Mock and real-world safe-state tests |
 | R-08 | Restrict access to private data and sensitive machine tools | Must / Later | Untrusted-speaker and prompt-injection tests |
 | R-09 | Research, file and computer workflows through a permissioned agent | Must / Later | Sandboxed integration tests and approvals |
-| R-10 | Searchable, user-inspectable and deletable cross-session memory | Must / Later | Persistence, per-person access, removal, export tests |
+| R-10 | Persistent cross-session memory from P0, with private storage and user inspect/delete controls; progressively add full search, export, per-person household isolation and structured memory | Must / P0 foundation + Later expansion | Restart session and verify authorized recall, review and deletion; evaluate access control, retention and export as they mature |
 | R-11 | User-controlled deployments and safe offline home functions where feasible | Must / Later | Internet-disconnect tests |
 | R-12 | Reproducible, public hardware/software docs without exposing user data | Must / ongoing | Repo review and contribution checklist |
 | R-13 | Operate within hardware + monthly budget targets when practical | Target / ongoing | Bill of materials and real usage measurements |
@@ -26,12 +26,13 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 
 | R-17 | P0 supports multilingual speech conversation without an English-only application restriction and tests code-switching | Must / P0 | Evaluate multiple model-supported languages plus mid-conversation switching; record language-specific limitations rather than asserting universal support |
 
+| R-18 | Ensure persistent memory is opt-in/controlled, stored outside the public repository, and raw audio is not retained by default | Must / P0 | Inspect storage configuration, test disabling/deleting stored information, and verify no recordings or credentials leak into Git |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording
 - Automatic room tracking and resident voice authentication
 - Full Home Assistant or OpenClaw production integration
-- Private long-term memory storage
 - Custom electronics or hardware purchases
 
 ## Interpretation

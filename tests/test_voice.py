@@ -3,6 +3,8 @@ import io
 import json
 import unittest
 import urllib.error
+import urllib.request
+from unittest.mock import patch
 
 from wanda.voice import ENDPOINT, MAX_SDP_BYTES, VoiceProvider, _NoRedirect
 
@@ -44,6 +46,49 @@ class VoiceTests(unittest.TestCase):
         for value in (None, "", "hello", "v=0" + "x" * MAX_SDP_BYTES):
             with self.subTest(value=str(value)[:30]), self.assertRaises(ValueError):
                 provider.create_session(value)
+
+    def test_default_transport_uses_verified_https_context(self):
+        with patch("wanda.voice.create_https_context") as context, \
+                patch("wanda.voice.urllib.request.HTTPSHandler") as https_handler, \
+                patch("wanda.voice.urllib.request.build_opener") as opener:
+            provider = VoiceProvider("synthetic")
+            context.assert_called_once_with()
+            https_handler.assert_called_once_with(context=context.return_value)
+            handlers = opener.call_args.args
+            self.assertIsInstance(handlers[0], urllib.request.ProxyHandler)
+            self.assertEqual(handlers[0].proxies, {})
+            self.assertIsInstance(handlers[1], _NoRedirect)
+            self.assertIs(handlers[2], https_handler.return_value)
+            self.assertIs(provider._transport, opener.return_value.open)
+
+    def test_trusted_test_subclass_controls_session_without_browser_overrides(self):
+        class SmokeProvider(VoiceProvider):
+            def _session_config(self):
+                config = super()._session_config()
+                config["max_output_tokens"] = 128
+                config["audio"]["input"]["turn_detection"] = None
+                config["reasoning"] = {"effort": "minimal"}
+                config["tool_choice"] = "none"
+                config["tracing"] = None
+                return config
+
+        requests = []
+        def transport(request, timeout):
+            requests.append(request)
+            return Response(b"v=0\r\nmock-answer\r\n")
+        SmokeProvider("synthetic", transport=transport).create_session("v=0\r\nmock-offer\r\n")
+        request = requests[0]
+        mime = email.parser.BytesParser().parsebytes(("Content-Type: " + request.get_header("Content-type") + "\r\n\r\n").encode() + request.data)
+        parts = {part.get_param("name", header="content-disposition"): part.get_payload(decode=True).decode() for part in mime.get_payload()}
+        session = json.loads(parts["session"])
+        self.assertEqual(session["max_output_tokens"], 128)
+        self.assertIsNone(session["audio"]["input"]["turn_detection"])
+        self.assertEqual(session["reasoning"], {"effort": "minimal"})
+        self.assertEqual(session["tool_choice"], "none")
+        self.assertIsNone(session["tracing"])
+        default = VoiceProvider("synthetic", transport=transport)._session_config()
+        self.assertEqual(default["max_output_tokens"], 1024)
+        self.assertEqual(default["audio"]["input"]["turn_detection"]["type"], "semantic_vad")
 
     def test_missing_key_never_uses_transport(self):
         provider = VoiceProvider("", transport=lambda *args, **kwargs: self.fail("No transport without key"))

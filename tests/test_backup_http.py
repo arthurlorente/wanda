@@ -237,23 +237,24 @@ class BackupHttpTests(unittest.TestCase):
         self.assertEqual((result["total"], result["restorable"]), (160, 160))
         self.assertEqual(self.app.memory.list_memories(OWNER), [])
 
-        status, result, _, _ = self.request("POST", "/api/chat", encoded, raw=True)
-        self.assertEqual((status, result["code"]), (413, "body_too_large"))
-        # Declare an oversized length without sending the body. The server must
-        # reject from headers; sending 8 MiB races its early connection close.
-        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
-        try:
-            connection.putrequest("POST", "/api/memory/restore/preview", skip_host=True)
-            connection.putheader("Host", f"127.0.0.1:{self.port}")
-            connection.putheader("Authorization", "Bearer " + self.app.token)
-            connection.putheader("Content-Type", "application/json")
-            connection.putheader("Content-Length", str(8 * 1024 * 1024 + 1))
-            connection.endheaders()
-            response = connection.getresponse()
-            result = json.loads(response.read())
-            self.assertEqual((response.status, result["code"]), (413, "body_too_large"))
-        finally:
-            connection.close()
+        # Declare oversized lengths without sending bodies. Both routes reject
+        # from headers; sending bytes races the server's early close on macOS.
+        for path, length in (("/api/chat", len(encoded)),
+                             ("/api/memory/restore/preview", 8 * 1024 * 1024 + 1)):
+            with self.subTest(path=path):
+                connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=10)
+                try:
+                    connection.putrequest("POST", path, skip_host=True)
+                    connection.putheader("Host", f"127.0.0.1:{self.port}")
+                    connection.putheader("Authorization", "Bearer " + self.app.token)
+                    connection.putheader("Content-Type", "application/json")
+                    connection.putheader("Content-Length", str(length))
+                    connection.endheaders()
+                    response = connection.getresponse()
+                    result = json.loads(response.read())
+                    self.assertEqual((response.status, result["code"]), (413, "body_too_large"))
+                finally:
+                    connection.close()
 
 
 if __name__ == "__main__":

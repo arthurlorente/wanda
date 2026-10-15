@@ -2,6 +2,7 @@
 import tempfile
 from pathlib import Path
 import unittest
+from unittest.mock import Mock
 
 from wanda.config import Config
 from wanda.server import Application, ApiError, OWNER
@@ -97,6 +98,28 @@ class AppTests(unittest.TestCase):
             self.assertEqual(voice.offers, ["v=0"])
         finally:
             app.close()
+
+    def test_voice_offer_preserves_final_crlf_and_attribute_whitespace(self):
+        voice = Mock()
+        voice.create_session.return_value = "v=0\r\nsynthetic-answer\r\n"
+        app = Application(Config(data_dir=Path(self.directory.name), voice_enabled=True,
+                                 api_key="synthetic"), voice=voice)
+        self.addCleanup(app.close)
+        offer = ("v=0\r\no=- 12345 1 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\n"
+                 "a=x-synthetic-note:keep these trailing spaces  \r\n")
+        result = app.dispatch("POST", "/api/voice/session", {"sdp": offer, "audio_consent": True})
+        voice.create_session.assert_called_once_with(offer)
+        self.assertEqual(result["sdp"], "v=0\r\nsynthetic-answer\r\n")
+
+    def test_voice_offer_validation_precedes_provider_call(self):
+        voice = Mock()
+        app = Application(Config(data_dir=Path(self.directory.name), voice_enabled=True,
+                                 api_key="synthetic"), voice=voice)
+        self.addCleanup(app.close)
+        for offer in (None, False, 123, "", " \r\n", "v=0" + "x" * 99998):
+            with self.subTest(kind=type(offer).__name__), self.assertRaises(ValueError):
+                app.dispatch("POST", "/api/voice/session", {"sdp": offer, "audio_consent": True})
+        voice.create_session.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -1,63 +1,113 @@
 # Development checkpoint
 
-2026-10-15 — V0 delivered; approved recovery increment active for [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
+2026-10-15 — Runnable V0 and encrypted recovery published; bounded synthetic
+voice connection verified for [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
+V1 is not complete. Main has not been changed or merged.
 
-- Baseline branch: `codex/wanda-v0`, based on `3faec4222fc0093c925e660218229d1c1f79da11`.
-- Active increment: `codex/wanda-v0-next`, based on delivered PR #8 commit
-  `2d965315af263fa027207ea598e599719b117ec1`; adds encrypted recovery.
-- Recovery increment local gate: **126 Python tests passed** (9.67s),
-  **6 Web Crypto/interoperability tests passed**, and **20 browser workflows
-  passed**. Integrated feature is awaiting remote CI and reviewable publication.
-- Owner decisions: keep saved memories local; add password-encrypted local
-  backup/restore; allow up to US$10 total in synthetic voice API tests only.
-  No real devices. Stop starting work/calls at 2026-10-15 15:00 UTC (11am New York).
-- Implemented: stdlib Python local server, SQLite memory, scoped consent,
-  permissions/confirmations, mock home, real HA REST adapter behind explicit config,
-  optional OpenAI WebRTC proxy, launch/stop/doctor/private-key setup scripts;
-  browser interface integrated and desktop/mobile layouts visually inspected.
-- Delegation: native subagents verified; voice/UI and memory use inherited lead model;
-  bounded home/HTTP quality work uses explicitly selectable `gpt-6-sol`.
-- Latest completed integration gate: **89 Python tests passed** (5.45s), Python
-  3.14.5 on macOS; **11 browser workflows passed** using installed Chrome and
-  Playwright 1.62.1. Includes actual loopback HTTP security and launcher subprocess
-  tests after configured sandbox approval. Microphone/WebRTC APIs were synthetic.
-- Runtime: Git 2.50.1; Python 3.14.5/SQLite 3.50.4. Node 24.19.0 available through
-  bundled tooling for browser checks; no Node requirement to run Wanda. `gh` absent;
-  connected GitHub API available. Remote baseline verified matches local HEAD base.
-- No live provider, microphone, home devices or paid service calls used.
-- No secrets/private household content in source; tests use synthetic temp data.
-- Published [PR #8](https://github.com/arthurlorente/wanda/pull/8); no merge.
-  Initial code commit: `ab79b2bb358e7556c43fa15ec36ab5b96c86fbb4`.
-- First remote CI passed Linux Python 3.11/3.14 and all browser workflows. It
-  exposed eager home-directory fallback on Windows and reverse-DNS startup delay
-  on macOS. Both are fixed with regression coverage.
-  [Initial run](https://github.com/arthurlorente/wanda/actions/runs/38696896207).
-- Verified application commit: `7e522d18859c3c94d57d727de93564bd9ae1a84f`.
-  [Successful CI](https://github.com/arthurlorente/wanda/actions/runs/38697725609):
-  all six Python 3.11/3.14 jobs on macOS, Linux and Windows passed, each running
-  the 89-test suite, doctor and JS syntax check; Linux Chromium browser job passed.
-  Basic repository checks also passed. Later handoff-only changes do not change
-  the tested application code.
-- Blockers: owner provider/key/account/privacy approval and human audio/device tests.
-- Pending decisions: ADR0008 and local security/storage tradeoffs; provider handling,
-  backup/encryption and licenses remain review items, not silently accepted policies.
-- Next: owner walkthrough,
-  architecture/privacy review and optional live voice/physical light acceptance.
-- Supported hourly chat continuation is active through the cutoff under automation
-  `wanda-overnight-development-until-11am`. It cannot bypass usage limits; none has
-  been reached. Owner privately configured the API key; doctor confirms configured voice
-  without showing credentials. Bounded synthetic live test preparation is active. Paid call spend so far: US$0. Metadata-only API access check succeeded after
-  diagnosing missing Python CA configuration; OS trust bundle validated HTTPS.
-  Production TLS fallback fix and bounded Realtime smoke tests are next.
+## Branches and delivery
 
-## Exact continuation
+- [PR #8](https://github.com/arthurlorente/wanda/pull/8): `codex/wanda-v0`, base main.
+  Latest handoff commit `2d965315af263fa027207ea598e599719b117ec1`.
+- [PR #9](https://github.com/arthurlorente/wanda/pull/9): `codex/wanda-v0-next`,
+  stacked on PR #8. Encrypted memory recovery. Latest verified commit
+  `4d02c03c3e073fc4ebeff22ba9b24537889c180f`.
+- [PR #10](https://github.com/arthurlorente/wanda/pull/10): `codex/wanda-voice-validation`,
+  stacked on PR #9. HTTPS trust repair, exact SDP preservation and bounded live
+  evidence. Initial commit `ea42f21a6d26026e80700888f5218bae27b3bcd7`.
+- Active follow-up branch: `codex/wanda-live-turns`, based on PR #10. Separate
+  browser response-sequencing work is in progress; preserve any unstaged edits.
+- Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
-“Continue Issue #7 on `codex/wanda-v0-next`. Preserve baseline PR #8. Read AGENTS.md, canonical context,
-docs/DEVELOPMENT_CHECKPOINT.md and docs/MORNING_HANDOFF.md, inspect git status and
-open PRs. Preserve local work. Run `python3 scripts/check.py` (loopback permission
-may be needed in sandbox). Confirm PR #8 status and use the V0 acceptance map for the next scoped increment;
-do not merge or contact live devices. Only use the explicitly configured Wanda
-key for approved synthetic voice tests within the session-wide US$10 cap; otherwise
-use mocks. Keep saved memories local, implement encrypted recovery, and honor the
-11am New York cutoff. Check private test accounting before any paid request.
-Keep simulated and verified features clearly distinguished.”
+## Implemented state
+
+- Python standard-library loopback server, native browser UI, scripted EN/PT/ES
+  persona, real opt-in local SQLite memory with review/deletion/expiry, scoped
+  disclosure policy records, mock home and deny-default light permissions.
+- Optional OpenAI WebRTC and Home Assistant REST adapters. Cloud voice has no saved
+  memory, home or computer tools. Home Assistant is transport-mock tested only.
+- Portable launch/stop/doctor/private-key configuration scripts; no runtime packages
+  or GPU. Local OS-user boundary, plaintext working database/config, no resident
+  authentication or wake word. Home grants/audit reset on restart.
+- Encrypted local memory download, password-based browser decryption, paged preview
+  and explicit atomic merge. Backups exclude credentials, identities and grants.
+  See ADR 0009 and BACKUP.md; the working database remains unencrypted.
+- Private key is configured. The second bounded synthetic WebRTC attempt completed
+  one response with audio packets/transcript, zero microphone/input audio, and
+  confirmed provider hangup. No real microphone or listening quality is claimed.
+- Missing Python CA configuration on the development Mac was diagnosed. Narrow
+  fallback to the OS certificate bundle preserves certificate/hostname checks;
+  voice and HA adapters share the helper. No TLS verification bypass exists.
+
+## Tests and evidence
+
+- Baseline: 89 Python tests plus 11 browser workflows; all six Windows/macOS/Linux
+  Python 3.11/3.14 jobs and Linux browser job passed.
+  [Baseline CI](https://github.com/arthurlorente/wanda/actions/runs/38697725609).
+- Recovery: 126 Python tests, six actual Web Crypto/interoperability tests and
+  20 browser workflows passed locally. All six platform/version jobs and Linux
+  browser job passed [recovery CI](https://github.com/arthurlorente/wanda/actions/runs/38702654185).
+- Initial recovery CI exposed a macOS test-client race during correct early HTTP
+  413 rejection. The test now sends an oversized Content-Length without its body;
+  the expected rejection remains asserted. The corrected run above passed.
+- Final TLS/SDP/harness gate: **160 Python tests passed** in 10.987s, including
+  real loopback auth/cleanup with fake provider, budget limits and SDP preservation.
+  **Six crypto and five child-input tests passed**; **20 browser workflows passed**
+  before the final SDP change (covered by Python and actual live smoke). Remote CI
+  for PR #10 passed Linux/macOS and browser checks. Windows found a test assertion
+  using POSIX separators while mocking macOS on Windows. The assertion now uses
+  the host path representation; six targeted TLS tests pass. Corrected CI pending.
+  [Initial run](https://github.com/arthurlorente/wanda/actions/runs/38707650624).
+- Actual microphone, listening quality, natural pauses, spoken interruptions and
+  physical device behavior still require human testing. No household data used.
+
+## Authorization, limits and blockers
+
+- D-050: all saved memories stay local. D-051: encrypted local recovery approved.
+  D-052: **US$10 total** synthetic voice test ceiling, replacing the original US$5
+  before paid calls. No real devices, new accounts, billing changes or automatic merges.
+- Stop starting new work/calls at **2026-10-15 15:00 UTC (11am New York)** or an
+  actual usage limit. Last usage check reported 20% of the account window used;
+  ordinary usage was allowed. Do not consume reset credits or bypass limits.
+- Supported hourly chat continuation is active through that cutoff under
+  `wanda-overnight-development-until-11am`. It cannot bypass usage limits.
+- No additional owner decision blocks current development. Later owner work:
+  listening/manual voice acceptance, real light acceptance, provisional ADR review,
+  household identity/privacy policy and license selection.
+- Live attempt 1: provider HTTP 400 before any SDP answer or response creation.
+  Exact SDP preservation fixed a protocol mutation. The failed attempt was explicitly
+  reconciled as `setup_rejected`, estimated usage zero, retaining its full US$3 hold.
+- Live attempt 2: **PASS**: session HTTP 201, one completed response, 38 input / 98
+  output tokens, no input audio/image, 53 RTP packets/3433 bytes, transcript observed,
+  zero microphone calls, both browser cleanup checks true, provider hangup HTTP 200.
+  Conservative usage estimate **US$0.006424**, not a verified invoice.
+- **Two-attempt limit exhausted; no further paid inference planned.** Private ledger
+  holds **US$6**, not US$6 billed. Do not reset or refund the reservations.
+- Harness reserves US$3 per attempt, at most two attempts, retaining reservations
+  after failures. Never reset its ledger, silently refund a hold, or retry after
+  uncertain usage/termination. See [live test protocol](testing/LIVE_VOICE.md).
+
+## Next actions and exact continuation
+
+1. Verify corrected PR #10 CI, then record its evidence. Do not merge.
+2. Voice subagent is preparing a separate browser fix in web/app.js and
+   scripts/browser-check.cjs: serialize requested/active/cancelling responses and
+   await cancellation acknowledgement before typed follow-ups/style changes.
+   Two races were reproduced offline; no additional live API tests are planned.
+   Keep those unstaged changes out of the current TLS/SDP/harness commit, carry
+   them onto a successor branch, integrate and test before publishing.
+3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
+   acceptance remains deferred rather than fabricated. Update handoff/checkpoint.
+
+Continuation instruction:
+“Continue Issue #7 on `codex/wanda-live-turns` from this checkpoint. Read
+AGENTS.md and required canonical context; inspect git status, current Issues/PRs
+and the private synthetic-test accounting without exposing credentials. Preserve
+unfinished work and keep PRs #8/#9/#10 unmerged. Native subagents are available and
+explicitly authorized; use bounded ownership. Follow the approved US$10 total
+session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
+no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved
+memories local and use synthetic data only. Run `python3 scripts/check.py` and
+appropriate browser/crypto checks; loopback/browser permissions may be needed.
+Update this checkpoint, PROJECT_STATE and MORNING_HANDOFF with evidence and exact
+next steps before a limit or interruption. Do not claim mocked audio or devices
+are verified live.”

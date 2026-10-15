@@ -3,8 +3,11 @@
 **Provisional implementation, 2026-10-15.** The default text conversation is a
 small deterministic script, not open-domain AI. Optional live cloud voice has an
 implemented connection path and mocked transport tests. Actual audio quality,
-account access, pauses, interruption quality, multilingual performance and cost
+pauses, interruption quality, multilingual performance and realistic cost
 remain **unverified** until the manual checks below pass.
+A synthetic WebRTC response with generated audio/transcript and confirmed server
+hangup passed using the private key. No microphone or personal data was used.
+See [bounded live validation](testing/LIVE_VOICE.md) for exact evidence and cost limits.
 
 ## What the browser does
 
@@ -55,7 +58,9 @@ directly between browser and provider once connected. WebRTC negotiates its audi
 format; the session does not override it.
 
 The provisional configurable default is `gpt-realtime-2.1`, documented in the
-current guide. This is not evidence that the owner's account can access it.
+current guide. A metadata request accepted the configured account/key for this
+model. The subsequent bounded synthetic connection passed; this does not establish
+perceived conversational quality.
 Session configuration uses semantic turn detection with low eagerness, automatic
 response and interruption, voice `marin`, at most 1024 output tokens per response,
 and no tools. The browser disconnects after five minutes and caps connection setup
@@ -96,7 +101,14 @@ timer throttling. The in-page Disconnect and Stop controls stop capture immediat
 
 The adapter rejects redirects, ignores environment proxy configuration, times
 out requests, limits response size and returns generic errors without provider
-bodies, credentials or SDP. It does not retry paid calls automatically.
+bodies, credentials or SDP. It does not retry paid calls automatically. The local
+HTTP boundary preserves the browser SDP exactly, including its final CRLF; generic
+chat-text trimming must never be applied to this protocol payload.
+HTTPS preserves Python's verified default trust. If a macOS Python distribution
+loads no certificate authorities, Wanda tries the fixed OS certificate bundle at
+`/etc/ssl/cert.pem`. Missing or invalid trust still fails closed; certificate and
+hostname verification are never disabled. The Home Assistant adapter uses the
+same helper, while retaining its separate URL and permission restrictions.
 
 ## Persona and review
 

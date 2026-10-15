@@ -32,11 +32,16 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-023 | Accepted process delegation; technical selection pending | Let Codex research, compare, and propose the P0 development stack rather than preselecting Python or TypeScript. | Compare portable deployment, WebRTC/browser integration, long-term Home Assistant and agent adapters, developer ergonomics, ecosystem maturity, maintenance, testability and complexity. Record alternatives and rationale before implementing. |
 
+| D-024 | Accepted development workflow | Codex may independently research, implement and test scoped work on feature branches, but must open PRs for human review before merging to main. | Preserve momentum without surrendering architectural, privacy, security or integration approvals. See [WORKFLOW](WORKFLOW.md). |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-024 adopted: autonomous Codex implementation through reviewed pull requests; no automatic merges.
+
 
 - 2026-10-15: D-023 accepted: delegate stack assessment to Codex; no programming language or framework has yet been selected.
 

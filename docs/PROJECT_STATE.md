@@ -23,6 +23,7 @@
 - D-024: Codex can implement scoped issues autonomously on branches; changes require human-reviewed PRs before merge.
 - D-025: Codex will research licensing options and propose a recommendation for review. No license has been chosen.
 - D-026: Conversational naturalness is the primary P0 success criterion; speed and cost remain benchmarking constraints.
+- D-027: Multilingual P0 and mid-session language switching are accepted targets; actual model coverage unverified.
 
 ## Decision status
 

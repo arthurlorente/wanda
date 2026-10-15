@@ -44,6 +44,8 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-28 | Cloud AI receives only necessary task context; identity and detailed memory stay local | Must / P0 design + ongoing | Inspect and minimize provider payloads; document unavoidable voice/audio exposure |
 | R-29 | Ask before cloud disclosure of identifiable or sensitive information and store person-specific approvals or denials by information type | Must / P0 design + Later multi-user UX | Test category grants, denials, missing permission prompts, updates/revocation and isolation across residents |
 
+| R-30 | Store cloud disclosure grants by person, provider and information type, with review, expiration/revocation and one-time grants | Must / P0 design + staged UX | Verify authorization does not transfer across people, providers or categories; denied requests do not disclose information |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

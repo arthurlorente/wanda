@@ -38,11 +38,16 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-026 | Accepted P0 success priority | Evaluate conversational naturalness first: turn-taking, pauses, interruptions, barge-in and seamless follow-ups. | Response latency and per-session cost remain measured constraints, not ignored or automatically optimized above naturalness. See [Issue #1](https://github.com/arthurlorente/wanda/issues/1). |
 
+| D-027 | Accepted P0 capability target; model support unvalidated | Design Wanda for multilingual speech conversation from P0, including switching languages during a session, without an English-only gate. | Actual language coverage and quality depend on the chosen voice model; benchmark supported languages and mixed-language conversations rather than promising universal fluency. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.
 
 ## History
+
+- 2026-10-15: D-027 accepted: multilingual-first P0, including in-session language switching, subject to actual model support and tests.
+
 
 - 2026-10-15: D-026 accepted: conversational naturalness is P0's primary quality criterion; benchmark latency and cost alongside it.
 

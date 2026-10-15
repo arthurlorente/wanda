@@ -33,6 +33,8 @@
 15. Can long-term conversation memory avoid storing private third-party content by default?
 16. How do we recover from agent errors and revoke all active tokens/devices quickly?
 
+**Assigned to Codex:** Evaluate local automated backups, optional client-side-encrypted offsite backups, and manual export/restore. Recommend a P0 recovery baseline and later enhancements, covering backup encryption and key custody, loss of the host, portability/migration, integrity verification, automated restore testing, retention, complexity and cost. Do not choose a vendor or implementation before review.
+
 ## Community and governance
 
 17. Choose software, documentation and hardware licenses (Issue #6).

@@ -66,6 +66,13 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-043 | Accepted | Remember cloud disclosure consent separately for each person, cloud provider and information type. | Approval for one provider/category does not authorize other providers or data categories; allow one-time grants, review and revocation. |
 
+| D-044 | Accepted character direction | Wanda has a distinctive, warm, witty, appropriately opinionated personality, adaptive to people and context; her accepted manifesto remains the north star. | Distinctive character never overrides truth, privacy, consent or user preference. See [PERSONALITY](PERSONALITY.md). |
+| D-045 | Accepted autonomy direction | Controlled autonomy with proactive suggestions: independently perform permitted low-risk routine tasks; suggest opportunities, request approval for consequential or out-of-scope actions. | Least-privilege scopes, visibility, stop/revoke and action logs. |
+| D-046 | Accepted home-control policy | Household members configure device- and action-specific permissions and confirmation thresholds. | Sensitive actions need stronger controls; guest grants remain scoped and temporary by default. See [ADR 0002](adr/0002-trust-boundaries.md). |
+| D-047 | Accepted recovery direction | Graceful degradation when uncertain or disconnected: use available safe local capabilities, preserve authorized context, disclose unavailable features, and avoid fabricated outcomes. | Retry only when safe; prevent duplicate side effects and uncontrolled disclosure. |
+| D-048 | Accepted V1 exit criterion | A useful home assistant: natural multilingual voice with interruptions, persistent consented local memory, and working permissioned home-device controls with at least one genuine integration. | P0 remains the earlier voice-plus-memory technical milestone; V1 includes the P1 Home vertical slice. Do not claim V1 achieved until real tests pass. |
+| D-049 | Accepted architecture priority | Privacy and independence take precedence when they conflict with convenience, experience or cloud optimization. | Favor local data, auditable permissions, portable/replaceable services and honest provider exposure; any departure must be explicitly approved and documented. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

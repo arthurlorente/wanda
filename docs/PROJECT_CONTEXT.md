@@ -49,7 +49,7 @@ The [first-person manifesto](MANIFESTO.md) captures how Wanda introduces herself
 
 ## Development and deployment approach
 
-P0's first interaction is a **browser-based interface**, implemented as one client of an independently designed service. For P0, a person **clicks to connect** and then converses naturally, including interruptions and follow-ups. The intended household experience uses a **Wanda wake word**; its detection mechanism is deferred. P0 will be developed as a **portable application**, runnable on an ordinary development machine without depending on the RTX 4080 Super or committing to the older gaming laptop. The permanent always-on host will be chosen after voice experiments and measured resource requirements. Document cross-platform setup and isolate device-specific code and configuration where practical.
+P0's first interaction is a **browser-based interface**, implemented as one client of an independently designed service. For P0, a person **clicks to connect** and then converses naturally, including interruptions and follow-ups. The intended household experience uses a **Wanda wake word**; its detection mechanism is deferred. P0 includes a private **persistent cross-session memory foundation** with inspectability and deletion; exact retention/automatic capture rules still need a decision. P0 will be developed as a **portable application**, runnable on an ordinary development machine without depending on the RTX 4080 Super or committing to the older gaming laptop. The permanent always-on host will be chosen after voice experiments and measured resource requirements. Document cross-platform setup and isolate device-specific code and configuration where practical.
 
 ## Initial constraints (planning targets; not measured)
 
@@ -62,7 +62,7 @@ P0's first interaction is a **browser-based interface**, implemented as one clie
 
 ## Boundaries and deferred features
 
-The P0 prototype does not need satellite hardware, always-on deployment, Home Assistant, OpenClaw, comprehensive persistent memory or seamless room tracking. Those are subsequent milestones; do not mistake their absence from P0 for cancellation of the final requirements.
+The P0 prototype does not need satellite hardware, always-on deployment, Home Assistant, OpenClaw, advanced multi-user memory features or seamless room tracking. Basic persistent cross-session memory **is required** in P0; more sophisticated memory capabilities remain staged later. Those are subsequent milestones; do not mistake their absence from P0 for cancellation of the final requirements.
 
 ## Source of truth and uncertainty
 

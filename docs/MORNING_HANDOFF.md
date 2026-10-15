@@ -135,8 +135,9 @@ Reviewable, unmerged change: [PR #8](https://github.com/arthurlorente/wanda/pull
 Encrypted recovery: [PR #9](https://github.com/arthurlorente/wanda/pull/9), based on PR #8.
 Verified synthetic voice and connection fixes: [PR #10](https://github.com/arthurlorente/wanda/pull/10), based on PR #9.
 Conversation sequencing and recovery: [PR #11](https://github.com/arthurlorente/wanda/pull/11), based on PR #10.
-The current checkout includes all four increments; use it for the demo without
-merging anything. The cumulative branch is [codex/wanda-live-turns](https://github.com/arthurlorente/wanda/tree/codex/wanda-live-turns).
+Draft/stop recovery and portable ZIP: [PR #12](https://github.com/arthurlorente/wanda/pull/12), based on PR #11.
+The current checkout includes all five increments; use it for the demo without
+merging anything. The cumulative branch is [codex/wanda-demo-recovery](https://github.com/arthurlorente/wanda/tree/codex/wanda-demo-recovery).
 Assignment: [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 The final PR and verification evidence are recorded in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 

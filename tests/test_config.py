@@ -1,3 +1,5 @@
+from contextlib import redirect_stderr
+from io import StringIO
 import json
 import tempfile
 from pathlib import Path
@@ -57,6 +59,35 @@ class ConfigTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, patch("wanda.config.Path.home", side_effect=RuntimeError("No home directory")):
             config = Config.load({"WANDA_DATA_DIR": directory, "WANDA_CONFIG": ""})
             self.assertEqual(config.data_dir, Path(directory).resolve())
+
+    def test_explicit_selected_config_data_folder_needs_no_home_environment(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            selected = root / "selected.json"
+            selected.write_text(json.dumps({"WANDA_DATA_DIR": str(root / "private")}), encoding="utf-8")
+            with patch("wanda.config.Path.home", side_effect=RuntimeError("No home directory")):
+                config = Config.load({"WANDA_CONFIG": str(selected)})
+                self.assertEqual(config.data_dir, (root / "private").resolve())
+                self.assertEqual(stop_data_dir({"WANDA_CONFIG": str(selected)}),
+                                 (root / "private").resolve())
+
+    def test_missing_default_home_and_malformed_selected_config_fail_without_traceback(self):
+        from wanda.__main__ import main
+        with tempfile.TemporaryDirectory() as directory:
+            selected = Path(directory) / "broken.json"
+            selected.write_text("{ malformed synthetic config", encoding="utf-8")
+            with patch("wanda.config.Path.home", side_effect=RuntimeError("No home directory")):
+                with patch.dict("os.environ", {}, clear=True), self.assertRaises(ValueError) as error:
+                    Config.load({"WANDA_CONFIG": ""})
+                self.assertIn("WANDA_DATA_DIR", str(error.exception))
+                for args in (("--doctor",), ("--stop",)):
+                    output = StringIO()
+                    with self.subTest(args=args), patch.dict("os.environ", {
+                        "WANDA_CONFIG": str(selected),
+                    }, clear=True), redirect_stderr(output):
+                        self.assertEqual(main(list(args)), 1)
+                    self.assertNotIn("Traceback", output.getvalue())
+                    self.assertNotIn("No home directory", output.getvalue())
 
     def test_doctor_checks_adapter_configuration_without_network(self):
         from wanda.__main__ import main

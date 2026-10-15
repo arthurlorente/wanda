@@ -19,9 +19,10 @@ V1 is not complete. Main has not been changed or merged.
   review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`;
   final handoff `17d71d547c8075535715daa2414b2aa971731b92` passed
   [all CI jobs](https://github.com/arthurlorente/wanda/actions/runs/38709876678).
-- Active branch: `codex/wanda-demo-recovery`, based on PR #11. Local draft-loss
-  and stop-recovery fixes plus a committed-source demo ZIP builder passed local
-  integration. Publication and extracted-start smoke verification remain pending.
+- [PR #12](https://github.com/arthurlorente/wanda/pull/12): active cumulative branch
+  `codex/wanda-demo-recovery`, based on PR #11. Local draft-loss/stop recovery and
+  a committed-source ZIP builder. Implementation commit
+  `7a6d452f6b4e21fc9746d68adfe9f6b69c07a525`; local integration and extracted startup passed.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -94,7 +95,21 @@ V1 is not complete. Main has not been changed or merged.
   exclusions, deterministic bytes, permissions, overwrite refusal and extracted
   doctor without Git. Eighteen launcher/config tests cover corrupt configuration,
   folder scoping and truthful shutdown. Node syntax and diff checks passed.
-  Full extracted-app startup and this increment's remote CI remain pending.
+  [Initial remote CI](https://github.com/arthurlorente/wanda/actions/runs/38712291597)
+  passed Linux/macOS and 41 browser workflows. Windows exposed eager home-directory
+  lookup before honoring an explicit private configuration file in an isolated
+  environment. Lazy config resolution now honors the explicit file before requiring a home
+  directory; 20 focused tests passed, including missing-home regressions and safe
+  error reporting. Corrected remote CI is pending. Artifact upload correctly
+  stayed blocked on the initial failed CI. The full corrected local suite passed
+  **180 Python tests** in 23.100s; browser code is unchanged from the 41-workflow pass.
+- The exact PR #12 commit ZIP (65 files) was extracted with macOS `ditto`, preserving
+  executable launcher mode. With no Git in PATH and fresh external synthetic state,
+  the app started, served the UI, kept cloud voice disabled, captured a consented
+  preference, retained it after restart, deleted it, enforced deny/grant/mock-light
+  control and stopped cleanly. Zero external calls. ZIP SHA-256:
+  `96bf48ec21158f1cbbdbb5f9bcec434a043aa38f02b75a474baf63842d6c7a55`.
+  Local artifact: `dist/wanda-demo-7a6d452f6b4e.zip` (ignored, not committed).
 
 ## Authorization, limits and blockers
 
@@ -102,7 +117,7 @@ V1 is not complete. Main has not been changed or merged.
   D-052: **US$10 total** synthetic voice test ceiling, replacing the original US$5
   before paid calls. No real devices, new accounts, billing changes or automatic merges.
 - Stop starting new work/calls at **2026-10-15 15:00 UTC (11am New York)** or an
-  actual usage limit. Last usage check reported 30% of the account window used;
+  actual usage limit. Last usage check reported 37% of the account window used;
   ordinary usage was allowed. Do not consume reset credits or bypass limits.
 - Supported hourly chat continuation is active through that cutoff under
   `wanda-overnight-development-until-11am`. It cannot bypass usage limits.
@@ -124,10 +139,10 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. Commit/publish `codex/wanda-demo-recovery`, build its committed ZIP and verify
-   extracted app startup/local flows/shutdown. Local tests and review are complete;
-   no agent owns unfinished edits. Check remote CI/artifact delivery and record
-   links. Keep PR #11 intact and all PRs unmerged.
+1. Publish the tested lazy configuration lookup fix for Windows CI. Verify
+   corrected PR #12 remote CI/artifact
+   delivery and record the downloadable ZIP link. Root owns docs/Git; no other
+   agent owns unfinished edits. Keep this cumulative checkout and all PRs unmerged.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
@@ -137,7 +152,7 @@ Continuation instruction:
 “Continue Issue #7 on `codex/wanda-demo-recovery` from this checkpoint. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
 and the private synthetic-test accounting without exposing credentials. Preserve
-unfinished work and keep PRs #8/#9/#10/#11 unmerged. Native subagents are available and
+unfinished work and keep PRs #8/#9/#10/#11/#12 unmerged. Native subagents are available and
 explicitly authorized; use bounded ownership. Follow the approved US$10 total
 session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
 no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved

@@ -73,12 +73,14 @@ A durable private spending ledger, strict synthetic input, bounded output and
 server-side cleanup gate the tests; no real devices are authorized. New work
 stops at 11:00am New York (15:00 UTC) on 2026-10-15 or an actual usage limit.
 
-The next scoped increment on `codex/wanda-demo-recovery` preserves browser drafts
+The next scoped increment in [PR #12](https://github.com/arthurlorente/wanda/pull/12)
+on `codex/wanda-demo-recovery` preserves browser drafts
 across delayed/failed requests, stops the selected instance despite unrelated
-config errors, and provides a reproducible ZIP for launch without Git. **178 Python
-tests and 41 browser workflows passed locally**. Extracted full-app verification
-and publication are pending; no new privacy permission or provider commitment is
-introduced. Python is still required to run the ZIP.
+config errors, and provides a reproducible ZIP for launch without Git. **180 Python
+tests and 41 browser workflows passed locally**. The extracted app also passed
+startup, local memory persistence/deletion, mock-light permissions and shutdown
+with no Git in PATH. Remote CI/artifact delivery remains pending; no new privacy
+permission or provider commitment is introduced. Python is still required to run the ZIP.
 
 ## Next actions and blockers
 

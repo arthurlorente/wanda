@@ -18,11 +18,24 @@ def private_path(value):
 
 
 def default_data_dir():
-    if sys.platform == "win32":
-        return Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData/Local") / "Wanda"
-    if sys.platform == "darwin":
-        return Path.home() / "Library/Application Support/Wanda"
-    return Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "wanda"
+    try:
+        if sys.platform == "win32":
+            return Path(os.environ.get("LOCALAPPDATA") or Path.home() / "AppData/Local") / "Wanda"
+        if sys.platform == "darwin":
+            return Path.home() / "Library/Application Support/Wanda"
+        return Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "wanda"
+    except (OSError, RuntimeError):
+        raise ValueError("Default private data folder is unavailable; set WANDA_DATA_DIR.") from None
+
+
+def _read_private_config(selected):
+    path = private_path(selected)
+    if path.stat().st_size > 16384:
+        raise ValueError("Private configuration is too large.")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError("Private configuration must be a JSON object.")
+    return raw
 
 
 def stop_data_dir(environ=None):
@@ -33,27 +46,20 @@ def stop_data_dir(environ=None):
     replaced by a guessed folder.
     """
     env = os.environ if environ is None else environ
-    if "WANDA_DATA_DIR" in env and env["WANDA_DATA_DIR"]:
-        return private_path(env["WANDA_DATA_DIR"])
-    default = private_path(default_data_dir())
     if "WANDA_DATA_DIR" in env:
-        return default
+        return private_path(env["WANDA_DATA_DIR"] or default_data_dir())
     if "WANDA_CONFIG" in env:
         selected = env["WANDA_CONFIG"]
     else:
+        default = private_path(default_data_dir())
         candidate = default / "config.json"
         selected = str(candidate) if candidate.is_file() else ""
     if not selected:
-        return default
-    path = private_path(selected)
-    if path.stat().st_size > 16384:
-        raise ValueError("Private configuration is too large.")
-    raw = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(raw, dict):
-        raise ValueError("Private configuration must be a JSON object.")
+        return private_path(default_data_dir())
+    raw = _read_private_config(selected)
     configured = raw.get("WANDA_DATA_DIR")
     if not configured:
-        return default
+        return private_path(default_data_dir())
     if not isinstance(configured, str):
         raise ValueError("WANDA_DATA_DIR must be a folder path.")
     return private_path(configured)
@@ -76,16 +82,14 @@ class Config:
     def load(cls, environ=None):
         env = os.environ if environ is None else environ
         raw = {}
-        suggested = private_path(env.get("WANDA_DATA_DIR") or default_data_dir()) / "config.json"
         # Explicit empty WANDA_CONFIG disables file loading (useful for isolated tests).
-        selected = env.get("WANDA_CONFIG") if "WANDA_CONFIG" in env else str(suggested) if suggested.is_file() else None
+        if "WANDA_CONFIG" in env:
+            selected = env["WANDA_CONFIG"]
+        else:
+            suggested = private_path(env.get("WANDA_DATA_DIR") or default_data_dir()) / "config.json"
+            selected = str(suggested) if suggested.is_file() else None
         if selected:
-            path = private_path(selected)
-            if path.stat().st_size > 16384:
-                raise ValueError("Private configuration is too large.")
-            raw = json.loads(path.read_text(encoding="utf-8"))
-            if not isinstance(raw, dict):
-                raise ValueError("Private configuration must be a JSON object.")
+            raw = _read_private_config(selected)
 
         def value(name, default=""):
             return env.get(name, raw.get(name, default))

@@ -1435,3 +1435,80 @@ dialog .button-row {
   }
 
 }
+
+.backup-section {
+  margin-top: 24px;
+}
+
+.backup-section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.backup-column > p,
+.restore-preview > p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.backup-column {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.backup-column input[type="file"] {
+  font-size: 11px;
+  max-width: 100%;
+}
+
+.backup-column input::file-selector-button {
+  color: var(--ink);
+  background: var(--green-light);
+  border: 0;
+  border-radius: 4px;
+  margin-right: 9px;
+  padding: 6px 8px;
+}
+
+.backup-column form > button {
+  margin-top: 17px;
+}
+
+.backup-operation-status {
+  margin: 18px 0 0;
+  padding: 12px 15px;
+  border-radius: 6px;
+  background: var(--green-light);
+}
+
+.restore-preview {
+  border-top: 1px solid var(--line);
+  margin-top: 23px;
+  padding-top: 23px;
+}
+
+.restore-preview .card-heading h3 {
+  margin: 0;
+}
+
+#restore-memory-list {
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 8px;
+  margin-bottom: 15px;
+}
+
+@media(max-width:650px) {
+  .backup-section .card-heading {
+    align-items: flex-start;
+  }
+
+  .backup-section .card-heading h2 {
+    line-height: 1.5;
+  }
+
+  .backup-column form > button {
+    width: 100%;
+  }
+}

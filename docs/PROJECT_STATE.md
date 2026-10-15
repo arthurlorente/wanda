@@ -39,6 +39,14 @@ or computer tools. No raw audio or transcript archive exists. Provider costs and
 quality are not measured. No live key, physical device, private household data,
 account creation, billing change, purchase or automatic merge was used.
 
+## Authorized next increment in progress
+
+Owner approved encrypted local backup/restore (D-051) and retained all saved
+memories locally (D-050). Work continues on `codex/wanda-v0-next`, based on the
+verified V0 PR; the new feature is not yet a delivered release. Synthetic live
+voice testing has a session-specific US$5 ceiling (D-052), conditional on a private
+key and conservative spending accounting; no real devices are authorized.
+
 ## Next actions and blockers
 
 1. Owner: try [MORNING_HANDOFF](MORNING_HANDOFF.md); no account or key needed.

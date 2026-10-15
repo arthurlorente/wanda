@@ -8,6 +8,7 @@
     <title>Wanda · Make yourself at home</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="/styles.css">
+    <script src="/backup.js" defer></script>
     <script src="/app.js" defer></script>
   </head>
   <body>
@@ -150,10 +151,61 @@
               <label class="sr-only" for="memory-search">Search memories</label>
               <input id="memory-search" type="search" placeholder="Find a memory…">
               <div id="memory-list" class="item-list"></div>
-              <div class="button-row"><button id="export-memory" class="secondary-button">Export</button><button id="clear-memory" class="danger-outline">Delete all memories</button></div>
-              <p class="fine-print">Exports contain private data. Store them somewhere you trust. Local storage is not encrypted by Wanda.</p>
+              <div class="button-row"><button id="export-memory" class="secondary-button">Export plaintext JSON</button><button id="clear-memory" class="danger-outline">Delete all memories</button></div>
+              <p class="fine-print">Plaintext exports are readable without a password and contain private data. For a protected copy, use encrypted backup below. Wanda's active local database is not encrypted.</p>
             </section>
           </div>
+          <section id="backup-section" class="card backup-section" aria-labelledby="backup-heading">
+            <div class="card-heading">
+              <h2 id="backup-heading">A copy you can take with you.</h2>
+              <span class="pill">LOCAL ONLY</span>
+            </div>
+            <p>Encrypt a memory backup with your own password, or review one before restoring. Passwords stay in this browser and are cleared after each attempt. Live voice disconnects before you use these controls. No backup content is sent to a cloud service.</p>
+            <div class="two-column">
+              <section class="backup-column" aria-labelledby="backup-create-heading">
+                <h3 id="backup-create-heading">Create an encrypted backup</h3>
+                <p>Keep the password separately in a place you trust. <strong>If you lose it, Wanda cannot recover this backup.</strong></p>
+                <form id="backup-form" autocomplete="off">
+                  <label for="backup-password">Backup password</label>
+                  <input id="backup-password" type="password" minlength="12" maxlength="1024" autocomplete="off" required aria-describedby="backup-password-hint">
+                  <p id="backup-password-hint" class="fine-print">Use at least 12 characters. A long, unique passphrase is easier to remember.</p>
+                  <label for="backup-password-confirm">Repeat the password</label>
+                  <input id="backup-password-confirm" type="password" minlength="12" maxlength="1024" autocomplete="off" required>
+                  <button id="create-backup" class="primary-button" type="submit">Download encrypted backup</button>
+                </form>
+                <p class="fine-print">The file includes memories and their dates. It does not restore permissions or enable memory automatically.</p>
+              </section>
+              <section class="backup-column" aria-labelledby="backup-restore-heading">
+                <h3 id="backup-restore-heading">Restore from an encrypted backup</h3>
+                <p>Open your file, inspect the memories, then choose whether to merge them. Existing memories stay in place; duplicates and expired entries are skipped.</p>
+                <form id="restore-form" autocomplete="off">
+                  <label for="restore-file">Encrypted Wanda backup file</label>
+                  <input id="restore-file" type="file" accept=".json,application/json" required>
+                  <label for="restore-password">Backup password</label>
+                  <input id="restore-password" type="password" maxlength="1024" autocomplete="off" required>
+                  <button id="preview-backup" class="secondary-button" type="submit">Decrypt and preview</button>
+                </form>
+                <p class="fine-print">The file is decrypted here in your browser and validated by Wanda on this computer. Nothing is saved until you explicitly approve the merge.</p>
+              </section>
+            </div>
+            <p id="backup-operation-status" class="backup-operation-status" role="status" hidden></p>
+            <section id="restore-preview" class="restore-preview" aria-labelledby="restore-preview-heading" hidden>
+              <div class="card-heading">
+                <h3 id="restore-preview-heading">Review before restoring</h3>
+                <button id="discard-backup-preview" class="text-button" type="button">Discard preview</button>
+              </div>
+              <p id="restore-summary"></p>
+              <p id="restore-consent-note" class="fine-print"></p>
+              <div id="restore-memory-list" class="item-list" aria-label="Memories in the backup"></div>
+              <p id="restore-preview-limit" class="fine-print" hidden></p>
+              <div id="restore-preview-pages" class="button-row" hidden>
+                <button id="restore-previous-page" class="secondary-button" type="button">Previous memories</button>
+                <button id="restore-next-page" class="secondary-button" type="button">Next memories</button>
+              </div>
+              <button id="merge-backup" class="primary-button" type="button">Review merge approval</button>
+              <p class="fine-print">Only restore information you have permission to store. Restoring does not add cloud-disclosure or device permissions.</p>
+            </section>
+          </section>
         </section>
         <section id="home-panel" class="panel" hidden>
           <div class="section-heading">

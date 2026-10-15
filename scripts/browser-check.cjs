@@ -111,6 +111,189 @@ async function main() {
     await page.getByText('No disclosure rules. Saved memory stays local.', {exact: true}).waitFor();
     passed++;
 
+    // Real Web Crypto with synthetic memories; only authenticated loopback APIs.
+    await page.locator('.nav-button[data-panel="memory"]').click();
+    await page.locator('#memory-enabled').check();
+    await page.locator('#memory-status').filter({hasText: 'ON'}).waitFor();
+    const backupText = '<img src=x onerror=window.__backupInjected=1> encrypted synthetic memory';
+    const password = 'synthetic backup passphrase 2026';
+    await page.locator('#memory-text').fill(backupText);
+    await page.locator('#memory-category').selectOption('project');
+    await page.locator('#memory-approved').check();
+    await page.getByRole('button', {name: 'Save memory', exact: true}).click();
+    await page.locator('#memory-list').getByText(backupText, {exact: true}).waitFor();
+    await page.locator('#backup-password').fill(password);
+    await page.locator('#backup-password-confirm').fill(password);
+    const encryptedDownload = page.waitForEvent('download');
+    await page.locator('#create-backup').click();
+    const encryptedFile = await encryptedDownload;
+    const encrypted = fs.readFileSync(await encryptedFile.path(), 'utf8');
+    assert.equal(JSON.parse(encrypted).format, 'wanda-encrypted-backup');
+    assert.equal(encrypted.includes(backupText), false);
+    const decrypted = await page.evaluate(async ({serialized, password}) => {
+      return window.WandaBackup.decrypt(serialized, password);
+    }, {serialized: encrypted, password});
+    assert.equal(decrypted.memories[0].text, backupText);
+    assert.deepEqual(Object.keys(decrypted).sort(), ['created_at', 'format', 'memories', 'version']);
+    for (const id of ['backup-password', 'backup-password-confirm', 'restore-password']) {
+      assert.equal(await page.locator('#' + id).inputValue(), '');
+    }
+    passed++;
+
+    let restorePosts = 0, previewPosts = 0;
+    page.on('request', request => {
+      const pathname = new URL(request.url()).pathname;
+      if (request.method() === 'POST' && pathname === '/api/memory/restore') restorePosts++;
+      if (request.method() === 'POST' && pathname === '/api/memory/restore/preview') previewPosts++;
+    });
+    async function loadBackup(serialized, secret = password) {
+      await page.locator('#restore-file').setInputFiles({
+        name: 'synthetic-encrypted-backup.json', mimeType: 'application/json', buffer: Buffer.from(serialized),
+      });
+      await page.locator('#restore-password').fill(secret);
+      await page.locator('#preview-backup').click();
+    }
+    async function waitForBackupIdle() {
+      await page.waitForFunction(() => document.getElementById('backup-section').getAttribute('aria-busy') === 'false');
+    }
+    await page.locator('#clear-memory').click();
+    await page.locator('#confirm-accept').click();
+    await page.getByText('A fresh page. Nothing is saved yet.', {exact: true}).waitFor();
+    await loadBackup(encrypted, 'incorrect synthetic passphrase');
+    await waitForBackupIdle();
+    await page.locator('#notice').filter({hasText: 'password is incorrect'}).waitFor();
+    assert.equal(await page.locator('#restore-preview').isVisible(), false);
+    assert.equal(await page.locator('#restore-password').inputValue(), '');
+    assert.equal(await page.locator('#restore-file').inputValue(), '');
+    const tampered = JSON.parse(encrypted);
+    tampered.ciphertext = (tampered.ciphertext[0] === 'A' ? 'B' : 'A') + tampered.ciphertext.slice(1);
+    await loadBackup(JSON.stringify(tampered));
+    await waitForBackupIdle();
+    await page.locator('#notice').filter({hasText: 'password is incorrect'}).waitFor();
+    assert.equal(restorePosts, 0);
+    assert.equal(previewPosts, 0);
+    assert.equal(await page.locator('#memory-list .list-item').count(), 0);
+    passed++;
+
+    await loadBackup(encrypted);
+    await page.locator('#restore-summary').filter({hasText: '1 can be merged'}).waitFor();
+    await page.locator('#restore-memory-list').getByText(backupText, {exact: true}).waitFor();
+    assert.equal(await page.locator('#restore-memory-list img').count(), 0);
+    assert.equal(await page.evaluate(() => window.__backupInjected), undefined);
+    assert.equal(await page.locator('#restore-password').inputValue(), '');
+    await page.locator('#merge-backup').click();
+    await page.locator('#confirm-dialog').getByRole('button', {name: 'Cancel', exact: true}).click();
+    await page.locator('#notice').filter({hasText: 'Restore cancelled'}).waitFor();
+    assert.equal(restorePosts, 0);
+    assert.equal(await page.locator('#restore-preview').isVisible(), false);
+    assert.equal(await page.locator('#memory-list .list-item').count(), 0);
+    passed++;
+
+    await loadBackup(encrypted);
+    await page.locator('#restore-summary').filter({hasText: '1 can be merged'}).waitFor();
+    await page.locator('#merge-backup').click();
+    await page.locator('#confirm-accept').filter({hasText: 'Approve memory merge'}).click();
+    await page.locator('#memory-list').getByText(backupText, {exact: true}).waitFor();
+    assert.equal(restorePosts, 1);
+    await loadBackup(encrypted);
+    await page.locator('#restore-summary').filter({hasText: '0 can be merged · 1 duplicates'}).waitFor();
+    assert.equal(await page.locator('#merge-backup').isDisabled(), true);
+    assert.equal(await page.locator('#memory-list .list-item').count(), 1);
+    await page.locator('#discard-backup-preview').click();
+    assert.equal(restorePosts, 1);
+    passed++;
+
+    const manyEncrypted = await page.evaluate(async ({password}) => {
+      const created = Math.floor(Date.now() / 1000);
+      const memories = Array.from({length: 51}, (_, index) => ({
+        id: crypto.randomUUID(), text: `Synthetic recovery record ${index + 1}`,
+        category: 'project', created_at: created, expires_at: null,
+      }));
+      return window.WandaBackup.encrypt({format: 'wanda-memory-backup', version: 1, created_at: created, memories}, password);
+    }, {password});
+    await loadBackup(manyEncrypted);
+    await page.locator('#restore-summary').filter({hasText: '51 can be merged'}).waitFor();
+    assert.equal(await page.locator('#restore-memory-list .list-item').count(), 50);
+    await page.locator('#restore-next-page').click();
+    await page.locator('#restore-memory-list').getByText('Synthetic recovery record 51', {exact: true}).waitFor();
+    assert.equal(await page.locator('#restore-memory-list .list-item').count(), 1);
+    assert.equal(await page.locator('#restore-next-page').isDisabled(), true);
+    await page.locator('#restore-previous-page').click();
+    await page.locator('#restore-memory-list').getByText('Synthetic recovery record 1', {exact: true}).waitFor();
+    await page.setViewportSize({width: 390, height: 844});
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'Backup layout overflows mobile viewport');
+    await page.setViewportSize({width: 1440, height: 1000});
+    await page.locator('#discard-backup-preview').click();
+    assert.equal(restorePosts, 1);
+    passed++;
+
+    // A delayed preview must stay discarded after leaving Memory and returning
+    // before the response arrives. The decrypted text must not reappear.
+    let releasePreview, previewReachedResolve;
+    const previewReached = new Promise(resolve => { previewReachedResolve = resolve; });
+    await page.route('**/api/memory/restore/preview', async route => {
+      previewReachedResolve();
+      await new Promise(resolve => { releasePreview = resolve; });
+      await route.continue();
+    });
+    await loadBackup(manyEncrypted);
+    await previewReached;
+    await page.locator('.nav-button[data-panel="privacy"]').click();
+    await page.locator('.nav-button[data-panel="memory"]').click();
+    assert.equal(await page.locator('#restore-preview').isVisible(), false);
+    assert.equal(await page.locator('#restore-memory-list .list-item').count(), 0);
+    assert.equal(await page.locator('#restore-password').inputValue(), '');
+    assert.equal(await page.locator('#restore-file').inputValue(), '');
+    releasePreview();
+    await waitForBackupIdle();
+    await page.locator('#notice').filter({hasText: 'Backup preview discarded'}).waitFor();
+    assert.equal(await page.locator('#restore-preview').isVisible(), false);
+    assert.equal(await page.locator('#restore-memory-list .list-item').count(), 0);
+    await page.unroute('**/api/memory/restore/preview');
+    passed++;
+
+    // Once approval submits a merge, navigation must clear the hidden preview
+    // without claiming to cancel the server request. A later error stays honest.
+    await loadBackup(manyEncrypted);
+    await page.locator('#restore-summary').filter({hasText: '51 can be merged'}).waitFor();
+    let releaseRestore, restoreReachedResolve;
+    const restoreReached = new Promise(resolve => { restoreReachedResolve = resolve; });
+    await page.route('**/api/memory/restore', async route => {
+      restoreReachedResolve();
+      await new Promise(resolve => { releaseRestore = resolve; });
+      await route.fulfill({status: 503, json: {error: 'Synthetic restore failed'}});
+    });
+    await page.locator('#merge-backup').click();
+    await page.locator('#confirm-accept').filter({hasText: 'Approve memory merge'}).click();
+    await restoreReached;
+    await page.locator('.nav-button[data-panel="privacy"]').click();
+    assert.equal(await page.locator('#restore-preview').isVisible(), false);
+    assert.equal(await page.locator('#restore-memory-list .list-item').count(), 0);
+    releaseRestore();
+    await waitForBackupIdle();
+    await page.locator('#notice').filter({hasText: 'Synthetic restore failed'}).waitFor();
+    assert.equal((await page.locator('#notice').textContent()).includes('Restore cancelled'), false);
+    await page.locator('.nav-button[data-panel="memory"]').click();
+    assert.equal(await page.locator('#restore-preview').isVisible(), false);
+    assert.equal(await page.locator('#restore-memory-list .list-item').count(), 0);
+    assert.equal(await page.locator('#restore-password').inputValue(), '');
+    assert.equal(await page.locator('#restore-file').inputValue(), '');
+    await page.unroute('**/api/memory/restore');
+    passed++;
+
+    await page.locator('#backup-password').fill(password);
+    await page.locator('#backup-password-confirm').fill('different synthetic passphrase');
+    await page.locator('#create-backup').click();
+    await page.locator('#notice').filter({hasText: 'passwords do not match'}).waitFor();
+    assert.equal(await page.locator('#backup-password').inputValue(), '');
+    assert.equal(await page.locator('#backup-password-confirm').inputValue(), '');
+    assert.equal(await page.evaluate(() => {
+      return [...Object.keys(localStorage), ...Object.keys(sessionStorage)].some(key => /backup|password/i.test(key));
+    }), false);
+    await page.locator('.nav-button[data-panel="privacy"]').click();
+    await page.getByText('No disclosure rules. Saved memory stays local.', {exact: true}).waitFor();
+    passed++;
+
     await page.locator('.nav-button[data-panel="conversation"]').click();
     await page.locator('#language').selectOption('pt');
     await page.locator('#chat-input').fill('Olá');
@@ -230,7 +413,28 @@ async function main() {
     await vp.locator('#microphone-label').filter({hasText: 'Mic off'}).waitFor();
     assert.equal(await vp.evaluate(() => window.__probe.stops), 4);
     passed++;
-    console.log(`PASS: ${passed} browser workflows; local-only requests, memory CRUD/export, home permissions/outage, responsive layout, and mocked voice consent/cancellation/timeout.`);
+    await vp.unroute('**/api/status');
+    await vp.route('**/api/status', async route => {
+      const response = await route.fetch();
+      const data = await response.json(); data.voice.configured = true;
+      await route.fulfill({response, json: data});
+    });
+    await connect();
+    await vp.locator('#microphone-label').filter({hasText: 'Mic on · OpenAI'}).waitFor();
+    await vp.locator('#read-aloud').check();
+    await vp.locator('.nav-button[data-panel="memory"]').click();
+    await vp.locator('#backup-password').fill(password);
+    assert.equal(await vp.locator('#microphone-label').textContent(), 'Mic off');
+    assert.equal(await vp.evaluate(() => window.__probe.stops), 5);
+    assert.equal(await vp.locator('#connect-voice').isDisabled(), true);
+    assert.equal(await vp.locator('#read-aloud').isChecked(), false);
+    await vp.locator('.nav-button[data-panel="conversation"]').click();
+    assert.equal(await vp.locator('#backup-password').inputValue(), '');
+    assert.equal(await vp.locator('#connect-voice').isDisabled(), false);
+    assert.deepEqual(errors, []);
+    assert.deepEqual(external, []);
+    passed++;
+    console.log(`PASS: ${passed} browser workflows; local-only requests, memory CRUD/export, encrypted backup/restore, home permissions/outage, responsive layout, and mocked voice consent/cancellation/timeout.`);
   } finally {
     if (browser) await browser.close();
     child.kill('SIGTERM');

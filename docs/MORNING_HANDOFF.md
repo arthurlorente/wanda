@@ -55,6 +55,14 @@ denials, outages, mobile layout and microphone cleanup using simulated audio API
 This confirms the demo flows; it does not confirm real voice quality or devices.
 See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/38697725609).
 
+## Encrypted recovery increment
+
+The next branch adds [encrypted backup and restore](BACKUP.md). Use Memory to
+download a password-encrypted file, preview it locally, and approve a merge. Keep
+the password separately: Wanda cannot recover it if lost. Restoring preserves
+existing memories and never restores old permissions or keys. Saved memories remain
+local as requested. See the checkpoint for the next PR and verification evidence.
+
 ## Optional live voice
 
 The microphone remains off until you choose live voice, consent to the audio
@@ -77,8 +85,8 @@ Live latency, voice quality, language coverage and cost are **not measured yet**
 - Live voice and real Home Assistant acceptance evidence; V1 is not achieved.
 - General offline language intelligence, broad automatic memory extraction,
   and cloud voice recall of saved memory.
-- Separate resident authentication, guests/voiceprints, encrypted database/backup
-  recovery, wake word, satellites, room handoff and computer agents.
+- Separate resident authentication, guests/voiceprints, encrypted working database,
+  automated/offsite backups, wake word, satellites, room handoff and computer agents.
 - Production hosting, hard provider spending caps and broad platform/audio tests.
 - Approved software, documentation and hardware licenses.
 

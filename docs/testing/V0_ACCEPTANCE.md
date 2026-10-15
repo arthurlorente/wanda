@@ -97,3 +97,14 @@ Never infer a successful state change from an HTTP dispatch alone.
   Python 3.11/3.14 macOS/Linux/Windows jobs and Linux Chromium browser job passed
   in [CI run 38697725609](https://github.com/arthurlorente/wanda/actions/runs/38697725609).
   CI does not validate physical audio devices or live provider availability.
+
+## Approved encrypted recovery increment
+
+D-050 retains saved-memory locality. D-051 adds R-37 local encrypted recovery;
+D-052 permits bounded synthetic API testing and does not change household privacy.
+Current local evidence: 126 Python tests, 6 real cryptographic tests and 20 browser
+workflows passed. Crypto tests independently decrypt/encrypt with Node's crypto
+implementation; browser tests perform an actual encrypted download and restore.
+Run `node --test tests/backup_crypto.test.cjs` alongside `python3 scripts/check.py`
+and the existing browser test command. Remote CI and review status are tracked
+in the checkpoint. No live provider or real microphone has been tested yet.

@@ -35,6 +35,8 @@
 
 **Assigned to Codex:** Evaluate local automated backups, optional client-side-encrypted offsite backups, and manual export/restore. Recommend a P0 recovery baseline and later enhancements, covering backup encryption and key custody, loss of the host, portability/migration, integrity verification, automated restore testing, retention, complexity and cost. Do not choose a vendor or implementation before review.
 
+**Final V1 implementation investigations (D-044–D-049):** How will the real Home Assistant integration verify state changes and authorization, how will user-defined permission/confirmation profiles be represented, which local capabilities can survive outages, and how will persona fidelity to the manifesto be tested? These are engineering questions for Codex, not reasons to reopen accepted product decisions.
+
 ## Community and governance
 
 17. Choose software, documentation and hardware licenses (Issue #6).

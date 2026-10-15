@@ -44,6 +44,9 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-029 | Accepted P0 memory policy direction; defaults pending | Use **selective automatic memory with user controls**, not save-only-on-command and not blanket transcript archival. | Extract useful context and preferences from conversations under consented settings, with inspect/delete/disable controls; sensitive information, retention defaults, confirmation policy, and identity scope require separate decisions. See [ADR 0005](adr/0005-memory.md). |
 
+| D-030 | Accepted | Save ordinary useful memories selectively when enabled; sensitive memories require explicit prior approval. | The user can inspect, delete and disable memories. |
+| D-031 | Accepted | Classify memory sensitivity from subject and context, asking permission when uncertain. | Ordinary preferences need not be treated like sensitive diagnoses, finances or intimate information; third-party privacy matters. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

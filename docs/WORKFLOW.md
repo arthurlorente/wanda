@@ -23,6 +23,10 @@ This protocol is expected at the conclusion of every meaningful decision or mile
 4. **Confirm:** Verify the GitHub write actually succeeded. Tell the user what changed with links. If tools fail or no repository access exists, explicitly state what **was not** recorded and provide a proposed patch instead.
 5. **Never invent evidence:** An accepted requirement is not the same as a working feature. An idea is not an approved architecture.
 
+## Development and pull-request policy
+
+Codex may autonomously research, edit code, run tests, improve documentation and open pull requests within an agreed issue's scope and acceptance criteria. Work on a feature branch, never directly on main. Every implementation change must go through a human-reviewed pull request before merge; **do not auto-merge**. Escalate material architecture or provider choices, access-control/security/privacy changes, new recurring costs and destructive operations before implementing irreversible or high-impact changes. PRs must link relevant issues/ADRs, report test evidence and risks, and update project state and decision records when appropriate. Human review is required for merging; no specific reviewer count or branch protection settings have yet been configured.
+
 ## Planning questions
 
 When offering choices about Wanda's development, include an optional open-text field so the project owner can add nuance, combine suggestions or propose a different approach. Treat this text as part of the answer. For simple conversational questions, no formal options are required.

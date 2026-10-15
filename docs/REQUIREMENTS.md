@@ -6,7 +6,7 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 
 | ID | Requirement | Priority | Verification approach |
 | --- | --- | --- | --- |
-| R-01 | Low-latency speech-to-speech, natural turns, pauses and barge-in | Must / P0 | Benchmark multiple conversations with interruption and silence cases |
+| R-01 | Natural speech-to-speech conversation is the **primary P0 success criterion**: comfortable turn-taking, pauses, barge-in and interruption handling | Must / P0 / top priority | Benchmark unscripted multi-turn conversations with interruption and silence cases against a reference voice experience; measure latency and cost separately |
 | R-02 | Follow-up conversation without repeating the wake word during an active session | Must / P0 | Multi-turn dialogue tests |
 | R-03 | Microphone state visible; user can immediately disconnect | Must / P0 | UI and session shutdown tests |
 | R-04 | Secrets remain server-side; no raw audio retained by default | Must / P0 | Review flow, network traffic and storage behavior |

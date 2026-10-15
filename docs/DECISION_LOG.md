@@ -55,6 +55,8 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 | D-035 | Accepted | Use context-aware memory retention: durable facts persist; temporary ones can expire with user override. | Exact expiration rules undecided. |
 | D-036 | Accepted | Design P0 memory and identity schemas for multiple residents and shared household context, while implementing full multi-user support gradually. | Prevent accidental cross-person memory access; P0 may initially offer one authenticated user. |
 
+| D-037 | Accepted identity experience; implementation deferred | Use voice recognition as the primary, low-friction way Wanda identifies speakers for everyday household personalization. | Recognized voice is not sufficient proof for revealing private memories or performing privileged actions; use step-up authorization, handle uncertainty as guest access, and evaluate spoofing and false matches. Voice enrollment and recognition implementation not yet selected. See [ADR 0002](adr/0002-trust-boundaries.md). |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

@@ -24,6 +24,8 @@ Labels: **Must** = important to envisioned product; **P0** = required for initia
 | R-15 | Browser voice interface independent from underlying portable session service | Must / P0 | Browser client and documented non-browser interface boundary |
 | R-16 | Click-to-connect conversation with interruptions and follow-ups in P0; wake-word activation is a later household goal | Must / P0 + Later | P0 hands-free session test; later wake-word detection evaluation |
 
+| R-17 | P0 supports multilingual speech conversation without an English-only application restriction and tests code-switching | Must / P0 | Evaluate multiple model-supported languages plus mid-conversation switching; record language-specific limitations rather than asserting universal support |
+
 ## Deliberately not in P0
 
 - Always-on microphones or continuous household recording

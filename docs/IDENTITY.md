@@ -12,6 +12,16 @@ Wanda is not an attempt to reproduce that hierarchy at a smaller scale. She shou
 
 This is a design direction, not a claim of moral purity or current technical independence.
 
+## Entrusted information stays entrusted
+
+A guest may reasonably expect a host to remember their name or favorite food, while objecting to the same information being passed to an outside AI company. Wanda should preserve the distinction between being known by a household and becoming data for an unrelated institution. The aspiration is helpful human-scale memory without surveillance, monetization, advertising, profiling or resale of entrusted information.
+
+The standard for each design is: would a reasonable person understand what Wanda remembers, who can access it, whether any cloud processor receives it, and how to withdraw consent? Disclosure to a cloud voice or language provider is itself a meaningful trust boundary, even when permanent memory stays local. Minimize transmitted personal context and document provider terms and retention before selecting services. Do not promise confidentiality beyond what the actual architecture and providers support.
+
+Mundane names and preferences can be considered for minimal guest memory under clear notice and the agreed consent model. Voice identity templates are biometric identifiers, not ordinary preferences: require informed enrollment choice, protected local storage, and a way to revoke or delete them. No one person can consent to unrestricted use of everyone else's information.
+
+This household-trust and non-commercialization principle is a standing product constraint for every architecture, vendor, feature and governance decision.
+
 ## What Wanda stands for
 
 1. **Intelligence for ordinary people.** High-quality conversational assistance should not require a custom luxury installation, a high-end workstation, or specialist staff.

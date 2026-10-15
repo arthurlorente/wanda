@@ -1,6 +1,6 @@
 # V0 conversation and voice
 
-**Provisional implementation, 2026-10-15.** The default text conversation is a
+**Accepted V0 implementation, 2026-10-15 (D-053).** The default text conversation is a
 small deterministic script, not open-domain AI. Optional live cloud voice has an
 implemented connection path and mocked transport tests. Actual audio quality,
 pauses, interruption quality, multilingual performance and realistic cost
@@ -62,7 +62,7 @@ a session configuration as multipart form data to the fixed OpenAI
 directly between browser and provider once connected. WebRTC negotiates its audio
 format; the session does not override it.
 
-The provisional configurable default is `gpt-realtime-2.1`, documented in the
+The accepted V0 configurable default is `gpt-realtime-2.1`, documented in the
 current guide. A metadata request accepted the configured account/key for this
 model. The subsequent bounded synthetic connection passed; this does not establish
 perceived conversational quality.
@@ -133,9 +133,10 @@ Prompts describe boundaries; executable permissions enforce authority separately
 Tests check privacy disclosure, private-message refusal, honest home limits,
 constructive challenge, neutral tone, language scripts, invalid inputs and the
 provider request envelope. These deterministic tests cannot prove model behavior.
-Accept the provisional persona and transport through the implementation PR;
-modify the versioned instructions or replace the `VoiceProvider` adapter; revert
-the implementation PR to remove this experiment. See [ADR 0008](adr/0008-v0-portable-stack.md).
+The owner accepted the current V0 implementation under D-053; this does not replace
+human persona/audio evaluation. Modify the versioned instructions or replace the
+`VoiceProvider` adapter through a reviewed PR; rollback also requires review.
+See [ADR 0008](adr/0008-v0-portable-stack.md).
 
 ## Manual audio acceptance procedure
 

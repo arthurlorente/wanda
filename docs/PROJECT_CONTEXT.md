@@ -3,8 +3,8 @@
 **Last consolidated:** 2026-10-15
 **Status:** Authoritative summary of the project's intent, not a claim that the described software exists.
 
-**V0 implementation note:** A provisional branch now contains a runnable local
-demonstration. See [PROJECT_STATE](PROJECT_STATE.md) for tested capabilities and
+**V0 implementation note:** The owner-approved runnable local demonstration is
+merged into `main` (D-053). See [PROJECT_STATE](PROJECT_STATE.md) for tested capabilities and
 limits; the full vision below remains a target, not a completion claim.
 **Maintainers:** Project owner and contributors through reviewed changes.
 

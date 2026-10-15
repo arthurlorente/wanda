@@ -1,7 +1,9 @@
 # ADR 0008 — Portable V0 vertical slice
 
-Date: 2026-10-15. **Status: provisional implementation for owner review**, under
-[unattended discretion](../UNATTENDED_DEVELOPMENT.md); not an accepted V1 release.
+Date: 2026-10-15. **Status: accepted for V0 (D-053)** after owner demo review and
+explicit approval to merge PRs #8–#12. Initially implemented under
+[unattended discretion](../UNATTENDED_DEVELOPMENT.md); not an accepted V1 release
+or production deployment policy.
 
 ## Alternatives and choice
 
@@ -37,9 +39,11 @@ double-click launch and physical audio still need owner walkthroughs.
 
 ## Review and reversal
 
-Accept by reviewing this ADR and its implementation PR. Modify by swapping service
-adapters or migrating the HTTP client to TypeScript. Revert the feature branch/PR
-without merging; private state remains outside Git. Keep licensing undecided.
+Owner acceptance is recorded in [D-053](../DECISION_LOG.md) and the merged
+[V0 delivery PR](https://github.com/arthurlorente/wanda/pull/12). Modify through a
+reviewed PR by swapping service adapters or migrating the client to TypeScript.
+Rollback also uses a reviewed revert PR; preserve private state outside Git and
+compatible memory/backup readers. Keep licensing undecided.
 V1 still needs real voice, privacy-policy and Home Assistant acceptance evidence.
 
 ## V0 delivery increment
@@ -47,8 +51,8 @@ V1 still needs real voice, privacy-policy and Home Assistant acceptance evidence
 A reproducible [source ZIP](../DEMO_BUNDLE.md) removes Git from the owner's launch
 path while retaining the same Python-only runtime. Developer packaging reads only
 committed Git blobs and records a commit/file-hash manifest; private runtime state
-is never copied from the workspace. This is a provisional delivery choice for PR
-review. A platform-specific bundled Python installer would remove one prerequisite
+is never copied from the workspace. This delivery choice is accepted for V0 under
+D-053. A platform-specific bundled Python installer would remove one prerequisite
 but add signing, updating, size and per-OS maintenance work; it is deferred. The ZIP
 does not install Python, bypass download/security prompts or imply release readiness.
 Removing the packaging script and CI artifact step leaves normal checkout launch

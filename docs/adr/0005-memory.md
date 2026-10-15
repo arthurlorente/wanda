@@ -1,14 +1,14 @@
 # ADR 0005 — Comprehensive persistent memory
 
-**Status:** Requirement accepted; implementation provisional. Updated 2026-10-15 under D-028.
+**Status:** Requirement accepted; V0 foundation accepted and merged under D-053. Updated 2026-10-15. Full household memory remains a target.
 
 **Milestone change:** A privacy-respecting persistent cross-session memory foundation is now required in P0, alongside the voice prototype. This supersedes the former P2-only staging of durable memory. P2 remains responsible for richer searchable/structured memory, advanced access control and agent-history integration.
 
 **Accepted P0 policy (D-029–D-033):** During setup, ask users to opt in before persistent memory is enabled. Once enabled, selectively save useful ordinary context; request explicit permission before storing sensitive context, interpreting sensitivity in context and asking when uncertain. Do not archive all conversations or raw audio by default. Store primary memory locally on Wanda's host, outside the public code repository. Users can inspect and delete saved memory and disable further saving.
 
-**Backup evaluation (D-034):** Codex will recommend a backup and restore approach, comparing on-device/local external backups, optional encrypted offsite backups, and export/import. No backup method or provider is selected. Recovery testing and user control over keys matter.
+**Backup evaluation (D-034, updated by D-051/D-053):** Password-encrypted local backup and explicit merge restore are implemented and accepted for V0; see [ADR 0009](0009-encrypted-memory-backup.md). Automatic/offsite backup and providers remain unselected. Recovery testing and user control over keys matter.
 
-**Retention (D-035):** Durable preferences and ongoing projects should persist; temporary memories should expire based on context. Users can review and override retention. Exact thresholds and enforcement remain to be designed.
+**Retention (D-035):** Durable preferences and ongoing projects should persist; temporary memories should expire based on context. Users can review and override retention. V0 defaults and enforcement are implemented and accepted under D-053; see [Memory](../MEMORY.md). Richer household retention policy remains to be designed.
 
 **Multi-user architecture (D-036):** Model private memories with an owner identity and distinguish them from explicitly shared household data from the beginning. P0 may initially expose a single authenticated account, but must not bake single-user access into the storage schema. Voice recognition alone is not sufficient to authorize access to another resident's memories. Full household onboarding and guest policy can be implemented later.
 
@@ -20,7 +20,9 @@
 
 **Cloud permissions (D-041/D-042):** Keep detailed memories and identity mappings local and share only task-relevant context. Before transmitting identifiable or sensitive memories or personal details to a cloud AI service, seek explicit permission; retain the individual's grant/denial per information type and scope for reuse. Users can inspect and revoke grants. Missing or ambiguous authorization means no disclosure. Another resident's permission never applies to someone else's data. Consent records are local and access-controlled; any unavoidable disclosure in live audio should be explained during onboarding.
 
-**Open:** Storage engine, encryption, backup choice, expiry thresholds, identity/authentication implementation and third-party privacy safeguards. A cloud voice provider may receive relevant context for processing, which does not make it the memory database.
+**V0 implementation:** Local SQLite, conservative expiry defaults and one local OS-user access boundary are accepted for V0; see [Memory](../MEMORY.md). The working database is not encrypted. Under D-050 all saved memories stay local; existing disclosure policy records do not authorize connecting saved memory to cloud voice. That requires a new explicit owner decision.
+
+**Open:** Encrypted working storage, automatic/offsite recovery, full household identity/authentication, richer retention rules and third-party privacy safeguards.
 
 Maintain searchable text conversation history, structured personal and household memories, and auditable agent tasks in private storage. Review, deletion, and consent controls are mandatory. Raw recordings are off by default.
 

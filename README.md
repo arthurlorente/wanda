@@ -1,6 +1,6 @@
 # Wanda — An Open Home Voice Agent
 
-Wanda is a community-oriented, privacy-conscious **experimental** platform for natural conversational voice, home automation, and permissioned computer agents. This branch contains a runnable **V0 demonstration**, not a completed V1 or a production assistant.
+Wanda is a community-oriented, privacy-conscious **experimental** platform for natural conversational voice, home automation, and permissioned computer agents. The owner-approved **V0 demonstration** is now on `main`, delivered through PRs #8–#12. It is not a completed V1 or a production assistant.
 
 ## Try V0
 
@@ -89,7 +89,7 @@ Optional browser regression checks are documented in [testing](docs/testing/V0_A
 Do not place real keys in `.env.example` or `config.example.json`.
 For optional integrations, copy the JSON template to a private folder **outside**
 this checkout and point `WANDA_CONFIG` to it. See [Voice](docs/VOICE.md),
-[Memory](docs/MEMORY.md), [Home](docs/HOME.md), and [provisional architecture](docs/adr/0008-v0-portable-stack.md).
+[Memory](docs/MEMORY.md), [Home](docs/HOME.md), and [accepted V0 architecture](docs/adr/0008-v0-portable-stack.md).
 
 ## License
 **Pending.** Software, documentation and hardware licenses have not been selected; public visibility alone does not grant open-source reuse rights.

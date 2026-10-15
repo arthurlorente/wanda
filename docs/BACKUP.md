@@ -1,6 +1,6 @@
 # Private memory backup and restore
 
-This feature is being added in the next V0 increment. See the
+This feature is implemented and accepted in V0 (D-051/D-053). See the
 [checkpoint](DEVELOPMENT_CHECKPOINT.md) for current verification status.
 
 In Memory, choose **Encrypted backup**, enter and confirm a unique password, then

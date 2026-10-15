@@ -1,7 +1,7 @@
 # Wanda — Personality specification
 
-**Status:** Foundational design specification accepted 2026-10-15. A provisional
-versioned prompt and scripted demo are implemented in `wanda/persona.py` with
+**Status:** Foundational design specification accepted 2026-10-15. The V0
+versioned prompt and scripted demo are implemented and accepted under D-053 in `wanda/persona.py` with
 deterministic tests; actual cloud-generated personality remains **unvalidated**.
 Version 0.1. See [VOICE](VOICE.md) and [V0 acceptance](testing/V0_ACCEPTANCE.md).
 **Source:** [First-person manifesto](MANIFESTO.md) and [project identity charter](IDENTITY.md).

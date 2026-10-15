@@ -25,9 +25,9 @@ Read [docs/IDENTITY.md](docs/IDENTITY.md) before proposing features, implementat
 
 Read [docs/MANIFESTO.md](docs/MANIFESTO.md) and [docs/PERSONALITY.md](docs/PERSONALITY.md) when implementing conversational behavior, prompt design, voice tuning, or memory. Preserve the manifesto as a character/design artifact; do not simply paste it as an unrestricted system prompt or pretend Wanda is sentient. Follow the concrete behavior and consent boundaries in PERSONALITY.md; test the actual results and record any changes through the decision workflow.
 
-## P0 stack evaluation
+## Accepted V0 stack and future changes
 
-The initial programming language/framework stack has **not** been selected. Before starting P0 implementation, compare TypeScript end-to-end with Python backend plus TypeScript frontend (and other compelling options). Recommend one based on portability, maintainability, real-time browser audio/API support, testing, future Home Assistant and agent integration, complexity and accessible contributor setup. Present a clear rationale and trade-offs; record the selected architecture in an ADR after review rather than treating the recommendation as already accepted.
+The owner accepted the V0 Python standard-library backend, native browser JavaScript and local SQLite design on 2026-10-15 (D-053). [ADR 0008](docs/adr/0008-v0-portable-stack.md) records the comparison with TypeScript alternatives and the V0 limitations. Do not repeat the initial stack decision as if it were unresolved. Evaluate consequential changes against portability, maintainability, browser audio, testing, Home Assistant/agent integration and accessible setup; record alternatives and obtain review. V0 acceptance is not production or V1 readiness.
 
 ## Coding autonomy and review
 

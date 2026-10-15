@@ -1,6 +1,6 @@
 # V0 local memory and privacy
 
-**Status: V0 implementation and local recovery increment for review, 2026-10-15.** This is the
+**Status: V0 implementation and local recovery accepted and merged, 2026-10-15 (D-053).** This is the
 small, locally testable memory foundation for [Issue #7](https://github.com/arthurlorente/wanda/issues/7),
 [D-028–D-043](DECISION_LOG.md), and requirements R-10, R-18–R-22 and R-28–R-30.
 The owner has approved password-encrypted local backup/restore and requires all
@@ -108,7 +108,7 @@ permission controls manage remembered grants and denials.
 
 ## Retention and size limits
 
-These are **provisional V0 defaults**, not newly accepted product policy:
+These implementation defaults are **accepted for V0 under D-053**, not permanent household retention policy:
 
 - Preferences, projects and explicitly reviewed sensitive records persist until
   deleted, unless a future expiry is supplied.
@@ -283,8 +283,8 @@ checks, not proof of live provider or multi-user authentication behavior. Browse
 crypto and integrated UI validation are recorded separately. The orchestrator records integrated test
 results in the [development checkpoint](DEVELOPMENT_CHECKPOINT.md).
 
-To accept the provisional defaults, review this document and ADR 0008 with the
-implementation PR. To change them, update this module and the boundary tests. To
-revert, do not merge the feature PR, or revert its code; existing private state
-stays outside Git. An unmerged/reverted feature does not erase private databases
-or exported files automatically.
+These defaults are accepted for V0 under D-053 and ADR 0008. Change them through
+a reviewed PR that updates the module, boundary tests and decision record. Rollback
+also uses a reviewed PR; existing private state stays outside Git. Reverting code
+does not erase private databases or exported files automatically. Preserve a
+compatible reader for encrypted backups when changing recovery code.

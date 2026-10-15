@@ -2,7 +2,8 @@
 
 You have a local browser app to try. **It is a demonstration, not the completed V1.**
 It includes real private local memory and permission checks, simulated home lights,
-and an optional cloud voice connection that still needs a live test.
+and an optional cloud voice connection verified with synthetic generated audio.
+Actual microphone use and conversational quality still need your listening test.
 
 ## Start Wanda
 
@@ -57,18 +58,21 @@ See the [successful CI run](https://github.com/arthurlorente/wanda/actions/runs/
 
 ## Encrypted recovery increment
 
-The next branch adds [encrypted backup and restore](BACKUP.md). Use Memory to
+The tested increment in [PR #9](https://github.com/arthurlorente/wanda/pull/9)
+adds [encrypted backup and restore](BACKUP.md). Use Memory to
 download a password-encrypted file, preview it locally, and approve a merge. Keep
 the password separately: Wanda cannot recover it if lost. Restoring preserves
 existing memories and never restores old permissions or keys. Saved memories remain
-local as requested. See the checkpoint for the next PR and verification evidence.
+local as requested. Its 126 Python tests and six encryption tests passed across
+Windows, macOS and Linux; 20 browser workflows passed. Both PRs remain unmerged.
 
 ## Optional live voice
 
 The microphone remains off until you choose live voice, consent to the audio
 disclosure, and allow browser microphone access. Live speech uses a proprietary
 OpenAI API and may incur API charges. The key stays on the local server. An API
-account/key, model access, billing decision, and human audio test are still needed.
+key is already privately configured, and a metadata request confirmed account
+access to the configured model. A human audio test is still needed.
 Follow [VOICE](VOICE.md) and [human actions](HUMAN_ACTIONS_REQUIRED.md).
 The optional **Configure Voice** launcher stores your key privately without
 editing source files. It makes no provider call; restart Wanda after using it.
@@ -78,11 +82,14 @@ reaches the provider. No local content filter can undo that disclosure. Use only
 synthetic speech until provider handling and household consent are reviewed.
 Saved memory is never attached, and cloud voice has no home or computer tools.
 The Disconnect control releases microphone tracks and the WebRTC connection.
-Live latency, voice quality, language coverage and cost are **not measured yet**.
+A synthetic live response completed and server shutdown was confirmed; its
+conservative usage estimate was under one cent. No microphone was used. Listening
+quality, natural pauses, spoken interruptions and language fluency remain
+**unverified**. See [exact evidence](testing/LIVE_VOICE.md).
 
 ## What remains incomplete
 
-- Live voice and real Home Assistant acceptance evidence; V1 is not achieved.
+- Human live-voice acceptance and real Home Assistant evidence; V1 is not achieved.
 - General offline language intelligence, broad automatic memory extraction,
   and cloud voice recall of saved memory.
 - Separate resident authentication, guests/voiceprints, encrypted working database,
@@ -109,6 +116,7 @@ private data folder. The data locations are described in [Memory](MEMORY.md).
 
 Development branch: [codex/wanda-v0](https://github.com/arthurlorente/wanda/tree/codex/wanda-v0).
 Reviewable, unmerged change: [PR #8](https://github.com/arthurlorente/wanda/pull/8).
+Encrypted recovery: [PR #9](https://github.com/arthurlorente/wanda/pull/9), based on PR #8.
 Assignment: [Issue #7](https://github.com/arthurlorente/wanda/issues/7).
 The final PR and verification evidence are recorded in [checkpoint](DEVELOPMENT_CHECKPOINT.md).
 

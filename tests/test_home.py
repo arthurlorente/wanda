@@ -1,8 +1,12 @@
 """Synthetic home-control tests. No real Home Assistant or devices are contacted."""
 
 from concurrent.futures import ThreadPoolExecutor
+import io
+import ssl
 import threading
 import unittest
+from unittest.mock import patch
+from urllib.request import ProxyHandler
 
 from wanda.home import HomeAssistantAdapter, HomeService, MockHomeAdapter, _NoRedirect
 
@@ -115,6 +119,54 @@ class IdempotencyTests(unittest.TestCase):
 
 
 class HomeAssistantTests(unittest.TestCase):
+    def test_default_transport_uses_verified_tls_without_proxies_or_redirects(self):
+        class Response(io.BytesIO):
+            status = 200
+
+        with patch("wanda.home.create_https_context") as context, \
+                patch("wanda.home.HTTPSHandler") as https_handler, \
+                patch("wanda.home.build_opener") as opener:
+            opener.return_value.open.return_value = Response(
+                b'{"entity_id":"light.test","state":"on"}')
+            adapter = HomeAssistantAdapter("https://example.invalid", "synthetic-token", ["light.test"])
+            self.assertEqual(adapter.list_devices()[0]["state"], "on")
+            context.assert_called_once_with()
+            https_handler.assert_called_once_with(context=context.return_value)
+            handlers = opener.call_args.args
+            self.assertIsInstance(handlers[0], ProxyHandler)
+            self.assertEqual(handlers[0].proxies, {})
+            self.assertIs(handlers[1], _NoRedirect)
+            self.assertIs(handlers[2], https_handler.return_value)
+            request = opener.return_value.open.call_args.args[0]
+            self.assertEqual(request.full_url, "https://example.invalid/api/states/light.test")
+            self.assertEqual(request.get_header("Authorization"), "Bearer synthetic-token")
+            self.assertEqual(opener.return_value.open.call_args.kwargs, {"timeout": 5})
+
+    def test_certificate_failure_does_not_retry_or_downgrade(self):
+        with patch("wanda.home.create_https_context"), \
+                patch("wanda.home.HTTPSHandler"), patch("wanda.home.build_opener") as opener:
+            opener.return_value.open.side_effect = ssl.SSLCertVerificationError("synthetic private details")
+            adapter = HomeAssistantAdapter("https://example.invalid", "synthetic-token", ["light.test"])
+            result = adapter.perform("light.test", "turn_on")
+            self.assertEqual(result["status"], "unverified")
+            self.assertNotIn("synthetic", result["message"])
+            opener.return_value.open.assert_called_once()
+            self.assertTrue(opener.return_value.open.call_args.args[0].full_url.startswith("https://"))
+
+    def test_injected_transport_does_not_create_tls_or_network_transport(self):
+        calls = []
+
+        def transport(*args):
+            calls.append(args)
+            return 200, {"entity_id": "light.test", "state": "off"}
+
+        with patch("wanda.home.create_https_context", side_effect=AssertionError("No TLS needed")), \
+                patch("wanda.home.build_opener", side_effect=AssertionError("No network permitted")):
+            adapter = HomeAssistantAdapter("https://example.invalid", "synthetic-token", ["light.test"],
+                                           transport=transport)
+            self.assertEqual(adapter.list_devices()[0]["state"], "off")
+            self.assertEqual(len(calls), 1)
+
     def test_exact_rest_calls_and_state_verification(self):
         calls = []
 

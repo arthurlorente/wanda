@@ -18,8 +18,10 @@ import time
 from typing import Callable
 from urllib.error import HTTPError
 from urllib.parse import quote, urlsplit
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request, build_opener
 from uuid import uuid4
+
+from wanda.tls import create_https_context
 
 
 _ENTITY = re.compile(r"^light\.[a-z0-9_]+$")
@@ -58,7 +60,8 @@ def _transport(method: str, url: str, headers: dict[str, str], payload: dict | N
     body = None if payload is None else json.dumps(payload).encode("utf-8")
     request = Request(url, data=body, headers=headers, method=method)
     try:
-        with build_opener(ProxyHandler({}), _NoRedirect).open(request, timeout=5) as response:
+        with build_opener(ProxyHandler({}), _NoRedirect,
+                          HTTPSHandler(context=create_https_context())).open(request, timeout=5) as response:
             data = response.read(1024 * 1024)
             return response.status, json.loads(data) if data else None
     except HTTPError as error:

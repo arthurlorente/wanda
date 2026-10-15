@@ -10,6 +10,7 @@ import urllib.error
 import urllib.request
 
 from wanda.persona import instructions
+from wanda.tls import create_https_context
 
 ENDPOINT = "https://api.openai.com/v1/realtime/calls"
 MAX_SDP_BYTES = 100_000
@@ -30,15 +31,13 @@ class VoiceProvider:
         self.model = model
         # Do not send credentials to an environment-configured proxy or redirect.
         self._transport = transport or urllib.request.build_opener(
-            urllib.request.ProxyHandler({}), _NoRedirect()
+            urllib.request.ProxyHandler({}), _NoRedirect(),
+            urllib.request.HTTPSHandler(context=create_https_context()),
         ).open
 
-    def create_session(self, sdp):
-        if not self._api_key:
-            raise RuntimeError("Cloud voice is not configured. The local demo is available.")
-        if not isinstance(sdp, str) or not sdp.startswith("v=0") or len(sdp.encode("utf-8")) > MAX_SDP_BYTES:
-            raise ValueError("Invalid voice connection offer.")
-        config = {
+    def _session_config(self):
+        """Return server-controlled settings; trusted test subclasses may override."""
+        return {
             "type": "realtime", "model": self.model, "instructions": instructions(),
             "output_modalities": ["audio"], "max_output_tokens": 1024,
             "audio": {
@@ -50,6 +49,13 @@ class VoiceProvider:
             },
             "tools": [],
         }
+
+    def create_session(self, sdp):
+        if not self._api_key:
+            raise RuntimeError("Cloud voice is not configured. The local demo is available.")
+        if not isinstance(sdp, str) or not sdp.startswith("v=0") or len(sdp.encode("utf-8")) > MAX_SDP_BYTES:
+            raise ValueError("Invalid voice connection offer.")
+        config = self._session_config()
         boundary = "wanda-" + secrets.token_hex(24)
         parts = []
         for name, value in (("sdp", sdp), ("session", json.dumps(config))):

@@ -151,7 +151,11 @@ class Application:
                 raise ApiError(503, "voice_not_configured", "Live cloud voice is not configured. Local demo remains available.")
             if not boolean(data, "audio_consent", False):
                 raise ApiError(403, "audio_consent_required", "Review and accept the cloud audio disclosure for this session.")
-            sdp = string(data, "sdp", 100000)
+            sdp = data.get("sdp")
+            if not isinstance(sdp, str) or not sdp.strip() or len(sdp) > 100000:
+                raise ValueError("sdp must be nonempty text, at most 100000 characters.")
+            # SDP line endings, including the final CRLF, are protocol data.
+            # Keep the original offer intact; the provider also checks its bytes.
             if not self.voice_lock.acquire(blocking=False):
                 raise ApiError(429, "voice_busy", "A voice connection is already starting.")
             try:

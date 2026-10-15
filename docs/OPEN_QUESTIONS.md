@@ -4,6 +4,13 @@
 
 ## Voice and cost — before implementing P0
 
+**2026-10-15 evidence update:** The privately configured OpenAI key successfully
+retrieved metadata for `gpt-realtime-2.1`. This establishes account/model metadata
+access; a subsequent synthetic WebRTC response also passed with audio packets,
+usage and server hangup. This does not close audio quality or realistic billing
+questions. The two planned live attempts are complete. No additional owner decision blocks
+that authorized work. See [checkpoint](DEVELOPMENT_CHECKPOINT.md).
+
 1. What OpenAI real-time speech-to-speech API/model(s) are actually available to the project, and how do they compare with the official ChatGPT Voice experience? Do not assume the ChatGPT Live model is separately exposed through the API.
 2. Does a local web app with backend-generated session credentials and WebRTC yield satisfactory latency, interruptibility and turn taking?
 3. What latency/quality test methodology and thresholds are meaningful (multiple speakers, device microphones, background speech, pause behavior)?
@@ -52,6 +59,8 @@ The last is implemented under unattended discretion. Owner acceptance remains op
 
 V0 evidence is mapped in [acceptance checks](testing/V0_ACCEPTANCE.md). Local
 storage/permission tests do not close live audio, real device, multi-user identity,
-provider retention, cost, encryption or backup questions.
+provider retention or realistic cost questions. [PR #9](https://github.com/arthurlorente/wanda/pull/9)
+adds tested encrypted local recovery; encrypted working storage, automatic/offsite
+backup and broader disaster recovery remain open.
 
 Provide a link to evidence, acceptance-test output, PR, or an ADR. Update the decision register and any affected requirements/architecture. No answer should silently transition from proposed to accepted.

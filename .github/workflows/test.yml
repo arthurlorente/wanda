@@ -25,7 +25,9 @@ jobs:
           node-version: '22'
       - run: node --check web/app.js
       - run: node --check web/backup.js
+      - run: node --check scripts/live-voice-check.cjs
       - run: node --test tests/backup_crypto.test.cjs
+      - run: node --test tests/live_voice_child.test.cjs
   browser:
     runs-on: ubuntu-latest
     steps:

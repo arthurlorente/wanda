@@ -3,7 +3,9 @@
 Updated 2026-10-15. **Nothing external is required for the default V0 demo.**
 Development uses synthetic fixtures and no real devices. The owner has now
 configured a private OpenAI key and authorized up to US$10 total in synthetic voice
-API tests for this overnight session; no paid calls have been made yet.
+API tests for this overnight session. One bounded synthetic response passed, with
+a conservative usage estimate below one cent. The two planned attempts are complete;
+US$6 remains reserved as a conservative hold, not a billed amount.
 See the checkpoint for updated evidence and limits.
 
 | Dependency | Why / tomorrow priority | Free tier and alternative | Exact owner action | Work that continues without it |
@@ -17,6 +19,6 @@ See the checkpoint for updated evidence and limits.
 | Windows/Linux hands-on launch and audio | Portability evidence beyond CI; not a Mac demo blocker | Existing ordinary computer; no GPU required | Run Start Wanda on Windows or `python3 -m wanda` on Linux and follow the walkthrough; note browser/mic versions | Portable stdlib code and CI matrix are provided |
 
 No registration, legal acceptance, billing, subscription changes or hardware purchases
-were performed. API model availability, effective prices, quotas and provider
-retention for the owner's specific account remain unverified. Saved-memory cloud
+were performed. Synthetic access to the configured model is verified. Actual invoiced prices,
+quotas and provider retention for the specific account remain unverified. Saved-memory cloud
 disclosure is not connected to voice; its local policy engine is tested separately.

@@ -2,7 +2,9 @@
 "use strict";
 (() => {
   const $ = (id) => document.getElementById(id);
-  const state = {status: null, memories: [], memoryEnabled: false, panel: "conversation", home: null, editId: null, busy: false, chatEpoch: 0, homePending: new Set()};
+  const state = {status: null, memories: [], memoryEnabled: false, panel: "conversation", home: null,
+    editId: null, memorySaving: false, memoryFormRevision: 0, busy: false, chatEpoch: 0,
+    chatDraftRevision: 0, homePending: new Set()};
   const backup = {busy: false, payload: null, summary: null, page: 0, generation: 0};
   const fragment = new URLSearchParams(location.hash.slice(1));
   let capability = fragment.get("token") || "";
@@ -34,11 +36,13 @@
   }
   async function api(path, options = {}) {
     if (!capability) throw new Error("Open Wanda using the launcher to start a private local session.");
+    const method = options.method || "GET";
+    const mutation = !["GET", "HEAD"].includes(method);
     const controller = options.signal ? null : new AbortController();
     const timeout = controller && setTimeout(() => controller.abort(), 35000);
     try {
       const response = await fetch(path, {
-        method: options.method || "GET", credentials: "omit", cache: "no-store",
+        method, credentials: "omit", cache: "no-store",
         headers: {"Authorization": "Bearer " + capability, "Content-Type": "application/json"},
         body: options.body === undefined ? undefined : JSON.stringify(options.body),
         signal: options.signal || controller.signal,
@@ -47,8 +51,12 @@
       if (!response.ok) throw new Error(data.error || "Wanda could not complete that request.");
       return data;
     } catch (error) {
-      if (error.name === "AbortError") throw new Error("The request stopped or timed out. You can try again.");
-      if (error instanceof TypeError) throw new Error("Wanda is not reachable. Start the launcher again if it has stopped.");
+      if (error.name === "AbortError") throw new Error(mutation
+        ? "The request stopped or timed out. It may already have completed. Check the current state before trying again."
+        : "The request stopped or timed out. You can refresh and try again.");
+      if (error instanceof TypeError) throw new Error(mutation
+        ? "The connection was interrupted. The request may already have completed. Check the current state before trying again."
+        : "Wanda is not reachable. Start the launcher again if it has stopped.");
       throw error;
     } finally { clearTimeout(timeout); }
   }
@@ -148,10 +156,20 @@
       return;
     }
     state.busy = true; $("send-chat").disabled = true; $("connect-voice").disabled = true;
-    const chatEpoch = state.chatEpoch;
-    addMessage("user", clean);
+    const chatEpoch = state.chatEpoch, draftRevision = state.chatDraftRevision;
+    const submitted = addMessage("user", clean);
     try {
-      const data = await api("/api/chat", {method: "POST", body: {text: clean, language: $("language").value, tone: $("tone").value}});
+      let data;
+      try {
+        data = await api("/api/chat", {method: "POST", body: {text: clean, language: $("language").value, tone: $("tone").value}});
+      } catch (error) {
+        if (chatEpoch !== state.chatEpoch) return;
+        submitted.body.append(node("span", "Response unconfirmed. Check local Memory before resending; approved details may already have been saved.", "message-note"));
+        // A late failure must not replace a newer draft or resurrect cleared
+        // text. Restoring a draft never retries the request automatically.
+        if (!$("chat-input").value && draftRevision === state.chatDraftRevision) $("chat-input").value = text.slice(0, 4000);
+        throw error;
+      }
       if (chatEpoch !== state.chatEpoch) return;
       const message = addMessage("assistant", data.reply);
       if (data.memory_saved?.length) message.body.append(node("span", "A consented detail was saved locally. Review it in Memory.", "message-note"));
@@ -170,13 +188,17 @@
         }
       }
       browserSpeak(data.reply);
-      await refreshMemory();
+      try { await refreshMemory(); }
+      catch (_) {
+        if (chatEpoch === state.chatEpoch) tell("Wanda replied, but the memory list could not refresh. Open Memory and choose Refresh to check saved details.", true);
+      }
     } finally {
       state.busy = false; $("send-chat").disabled = false;
       $("connect-voice").disabled = voice.phase !== "off" || backupPrivacyActive() || !state.status?.voice?.configured;
     }
   }
   $("chat-form").addEventListener("submit", guard(async (event) => { event.preventDefault(); await sendChat($("chat-input").value); }));
+  $("chat-input").addEventListener("input", () => { ++state.chatDraftRevision; });
   $("chat-input").addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); $("chat-form").requestSubmit(); }
   });
@@ -202,7 +224,7 @@
     $("memory-enabled").checked = data.enabled;
     $("memory-status").textContent = data.enabled ? "ON" : "OFF";
     $("memory-count").textContent = state.memories.length;
-    $("memory-form").querySelector('button[type="submit"]').disabled = !data.enabled;
+    $("memory-form").querySelector('button[type="submit"]').disabled = !data.enabled || state.memorySaving;
     $("memory-form-title").textContent = data.enabled ? (state.editId ? "Edit this memory" : "Add a memory") : "Enable memory to add or edit";
     renderMemories();
     updateBackupControls();
@@ -227,10 +249,12 @@
     }
   }
   function resetMemoryForm() {
+    ++state.memoryFormRevision;
     state.editId = null; $("memory-form").reset();
     $("memory-form-title").textContent = "Add a memory"; $("cancel-memory-edit").hidden = true;
   }
   function editMemory(memory) {
+    ++state.memoryFormRevision;
     state.editId = memory.id; $("memory-form-title").textContent = "Edit this memory";
     $("memory-text").value = memory.text; $("memory-category").value = memory.category;
     $("memory-approved").checked = false;
@@ -245,11 +269,26 @@
   }));
   $("memory-form").addEventListener("submit", guard(async (event) => {
     event.preventDefault();
+    if (state.memorySaving) return;
+    const editId = state.editId, revision = state.memoryFormRevision;
     const body = {text: $("memory-text").value, category: $("memory-category").value, approved: $("memory-approved").checked,
       expires_at: $("memory-expiry").value ? Math.floor(new Date($("memory-expiry").value).getTime() / 1000) : null};
-    await api(state.editId ? "/api/memory/" + encodeURIComponent(state.editId) : "/api/memory", {method: state.editId ? "PATCH" : "POST", body});
-    resetMemoryForm(); await refreshMemory(); tell("Memory saved on this computer.");
+    state.memorySaving = true;
+    $("memory-form").setAttribute("aria-busy", "true");
+    $("memory-form").querySelector('button[type="submit"]').disabled = true;
+    try {
+      await api(editId ? "/api/memory/" + encodeURIComponent(editId) : "/api/memory", {method: editId ? "PATCH" : "POST", body});
+      if (state.memoryFormRevision === revision && state.editId === editId) resetMemoryForm();
+      try { await refreshMemory(); }
+      catch (_) { tell("Memory saved, but the list could not refresh. Choose Refresh to check saved details.", true); return; }
+      tell("Memory saved on this computer.");
+    } finally {
+      state.memorySaving = false;
+      $("memory-form").setAttribute("aria-busy", "false");
+      $("memory-form").querySelector('button[type="submit"]').disabled = !state.memoryEnabled;
+    }
   }));
+  for (const type of ["input", "change"]) $("memory-form").addEventListener(type, () => { ++state.memoryFormRevision; });
   $("cancel-memory-edit").addEventListener("click", resetMemoryForm);
   $("memory-search").addEventListener("input", renderMemories);
   $("refresh-memory").addEventListener("click", guard(refreshMemory));

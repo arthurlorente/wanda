@@ -141,3 +141,20 @@ failure handling; actual conversational timing and spoken interruption still nee
 the manual protocol. All six platform/version jobs also passed in
 [CI](https://github.com/arthurlorente/wanda/actions/runs/38709595553) at implementation
 commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.
+
+## Demo recovery and delivery follow-up
+
+The `codex/wanda-demo-recovery` increment passed **178 Python tests** and **41
+local Chrome workflows**. R-10/R-18/R-34 regressions preserve newer memory/chat
+drafts through delays and failures, prevent duplicate pending saves, distinguish
+confirmed mutations from failed refreshes and disclose uncertain outcomes without
+automatic retries. R-03/R-14 recovery checks preserve data-folder scope and report
+unverifiable shutdown state honestly. A POSIX signal-cleanup case is skipped on
+Windows because process termination there bypasses Python's signal handler.
+
+R-12/R-14 delivery checks validate committed-only ZIP contents, deterministic
+output, private/runtime exclusions, executable modes, no overwrite and extracted
+`--doctor` without Git. A symlink test is skipped on Windows because creation may
+require additional OS privileges. Source review, full extracted-app smoke results,
+remote CI and artifact links are recorded in the checkpoint. Actual desktop
+download prompts and physical microphone use remain manual acceptance work.

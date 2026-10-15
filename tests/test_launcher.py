@@ -52,8 +52,9 @@ class LauncherTests(unittest.TestCase):
                 process.stdout.close()
         self.temp.cleanup()
 
-    def command(self, *args, timeout=10):
-        return subprocess.run([sys.executable, "-m", "wanda", *args], cwd=ROOT, env=self.env,
+    def command(self, *args, timeout=10, env=None):
+        return subprocess.run([sys.executable, "-m", "wanda", *args], cwd=ROOT,
+                              env=self.env if env is None else env,
                               text=True, capture_output=True, timeout=timeout, check=False)
 
     def start(self):
@@ -147,6 +148,97 @@ class LauncherTests(unittest.TestCase):
         stop = self.command("--stop")
         self.assertEqual(stop.returncode, 0)
         restarted.wait(timeout=10)
+
+    def test_stop_uses_explicit_data_folder_when_config_becomes_malformed(self):
+        process = self.start()
+        (Path(self.temp.name) / "config.json").write_text("{ malformed synthetic config", encoding="utf-8")
+        stopped = self.command("--stop")
+        self.assertEqual(stopped.returncode, 0)
+        self.assertIn("stopping", stopped.stdout)
+        process.wait(timeout=10)
+
+    def test_stop_ignores_unrelated_invalid_settings_in_selected_config(self):
+        process = self.start()
+        selected = Path(self.temp.name) / "selected-config.json"
+        selected.write_text(json.dumps({
+            "WANDA_DATA_DIR": self.temp.name,
+            "WANDA_PORT": "invalid-port", "WANDA_HOME_MODE": "invalid-home",
+            "WANDA_VOICE_MODEL": 42,
+        }), encoding="utf-8")
+        env = dict(self.env)
+        env.pop("WANDA_DATA_DIR")
+        env.pop("WANDA_PORT")
+        env["WANDA_CONFIG"] = str(selected)
+        stopped = self.command("--stop", env=env)
+        self.assertEqual(stopped.returncode, 0)
+        self.assertIn("stopping", stopped.stdout)
+        process.wait(timeout=10)
+
+    def test_stop_never_scans_other_data_folders_or_guesses_explicit_config(self):
+        process = self.start()
+        selected = Path(self.temp.name) / "broken-selected.json"
+        selected.write_text("{ malformed synthetic config", encoding="utf-8")
+        with tempfile.TemporaryDirectory(prefix="wanda-wrong-stop-target-") as wrong_folder:
+            wrong_env = dict(self.env)
+            wrong_env["WANDA_DATA_DIR"] = wrong_folder
+            wrong_env["WANDA_CONFIG"] = str(selected)
+            wrong = self.command("--stop", env=wrong_env)
+            self.assertEqual(wrong.returncode, 0)
+            self.assertIn("already stopped", wrong.stdout)
+            self.assertIsNone(process.poll())
+        uncertain_env = dict(self.env)
+        uncertain_env.pop("WANDA_DATA_DIR")
+        uncertain_env["WANDA_CONFIG"] = str(selected)
+        uncertain = self.command("--stop", env=uncertain_env)
+        self.assertEqual(uncertain.returncode, 1)
+        self.assertIn("could not identify the data folder", uncertain.stderr)
+        self.assertIn("WANDA_DATA_DIR", uncertain.stderr)
+        self.assertIsNone(process.poll())
+        stopped = self.command("--stop")
+        self.assertEqual(stopped.returncode, 0)
+        process.wait(timeout=10)
+
+    def test_stop_reports_existing_invalid_launcher_state_as_unverified(self):
+        process = self.start()
+        state_path = Path(self.temp.name) / "launcher.json"
+        for bad_state in ("{ invalid synthetic state", "[]", "null",
+                          json.dumps({"port": "not-a-port", "token": "synthetic"}),
+                          json.dumps({"port": self.port, "token": None}),
+                          json.dumps({"port": self.port, "token": "wrong-synthetic-token"})):
+            with self.subTest(bad_state=bad_state[:20]):
+                state_path.write_text(bad_state, encoding="utf-8")
+                stopped = self.command("--stop")
+                self.assertEqual(stopped.returncode, 1)
+                self.assertIn("cannot verify or stop", stopped.stderr)
+                self.assertIn("Control+C", stopped.stderr)
+                self.assertNotIn("already stopped", stopped.stdout + stopped.stderr)
+                self.assertIsNone(process.poll())
+
+    def test_stop_distinguishes_absent_and_stale_unreachable_launcher_state(self):
+        absent = self.command("--stop")
+        self.assertEqual(absent.returncode, 0)
+        self.assertIn("already stopped", absent.stdout)
+        state_path = Path(self.temp.name) / "launcher.json"
+        state_path.write_text(json.dumps({
+            "port": self.port, "token": "stale-synthetic-token", "pid": 123,
+        }), encoding="utf-8")
+        stale = self.command("--stop")
+        self.assertEqual(stale.returncode, 1)
+        self.assertIn("cannot verify or stop", stale.stderr)
+        self.assertNotIn("already stopped", stale.stdout + stale.stderr)
+
+    @unittest.skipIf(os.name == "nt", "Windows terminate bypasses Python's signal cleanup handler")
+    def test_signal_shutdown_keeps_nonobject_launcher_state_without_traceback(self):
+        state_path = Path(self.temp.name) / "launcher.json"
+        for invalid_state in ("[]", "null"):
+            with self.subTest(invalid_state=invalid_state):
+                process = self.start()
+                state_path.write_text(invalid_state, encoding="utf-8")
+                process.terminate()
+                self.assertEqual(process.wait(timeout=10), 0)
+                output = process.stdout.read() if process.stdout is not None else ""
+                self.assertNotIn("Traceback", output)
+                self.assertEqual(state_path.read_text(encoding="utf-8"), invalid_state)
 
 
 if __name__ == "__main__":

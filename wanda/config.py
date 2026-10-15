@@ -25,6 +25,40 @@ def default_data_dir():
     return Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "wanda"
 
 
+def stop_data_dir(environ=None):
+    """Resolve only the selected private data folder for a stop request.
+
+    A running instance must remain stoppable when unrelated settings become
+    invalid. An explicitly selected config with unreadable contents is never
+    replaced by a guessed folder.
+    """
+    env = os.environ if environ is None else environ
+    if "WANDA_DATA_DIR" in env and env["WANDA_DATA_DIR"]:
+        return private_path(env["WANDA_DATA_DIR"])
+    default = private_path(default_data_dir())
+    if "WANDA_DATA_DIR" in env:
+        return default
+    if "WANDA_CONFIG" in env:
+        selected = env["WANDA_CONFIG"]
+    else:
+        candidate = default / "config.json"
+        selected = str(candidate) if candidate.is_file() else ""
+    if not selected:
+        return default
+    path = private_path(selected)
+    if path.stat().st_size > 16384:
+        raise ValueError("Private configuration is too large.")
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError("Private configuration must be a JSON object.")
+    configured = raw.get("WANDA_DATA_DIR")
+    if not configured:
+        return default
+    if not isinstance(configured, str):
+        raise ValueError("WANDA_DATA_DIR must be a folder path.")
+    return private_path(configured)
+
+
 @dataclass(frozen=True)
 class Config:
     data_dir: Path

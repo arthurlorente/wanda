@@ -16,7 +16,12 @@ V1 is not complete. Main has not been changed or merged.
   evidence. Latest verified commit `d6dee615ec71460b092ca9c293fc2154cfd9061e`.
 - [PR #11](https://github.com/arthurlorente/wanda/pull/11): `codex/wanda-live-turns`,
   stacked on PR #10. Browser response sequencing passed local tests and independent
-  review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`.
+  review. Implementation commit `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`;
+  final handoff `17d71d547c8075535715daa2414b2aa971731b92` passed
+  [all CI jobs](https://github.com/arthurlorente/wanda/actions/runs/38709876678).
+- Active branch: `codex/wanda-demo-recovery`, based on PR #11. Local draft-loss
+  and stop-recovery fixes plus a committed-source demo ZIP builder passed local
+  integration. Publication and extracted-start smoke verification remain pending.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -42,6 +47,18 @@ V1 is not complete. Main has not been changed or merged.
   acknowledgements, retains one queued typed turn and additional draft, and drops
   unsent work on disconnect. One correlated automatic-response conflict retry
   never duplicates typed text; fifteen-second missing acknowledgements disconnect.
+- Delayed memory saves preserve newer drafts/selected edits and reject duplicate
+  pending submissions. Failed chat restores only an untouched composer; Clear chat
+  and newer drafts survive. Lost mutation responses disclose uncertain outcomes
+  without automatic retry; a failed refresh cannot undo a confirmed write/reply.
+- Stop resolves the selected data folder without unrelated configuration validation,
+  preserves explicit environment precedence, and reports corrupt/unreachable state
+  honestly. Unknown custom folders require the original window or repaired config;
+  no process scanning, token guessing or cross-folder shutdown is introduced.
+- A deterministic source ZIP includes only allowed committed Git blobs, launchers,
+  docs and templates, with a commit/hash manifest. Untracked/ignored runtime files,
+  local Git object replacements, links/submodules and development harnesses cannot
+  enter through the builder. Python remains required; Git is not needed at runtime.
 
 ## Tests and evidence
 
@@ -72,6 +89,12 @@ V1 is not complete. Main has not been changed or merged.
   `5342454346d175e4a9eb00c1ffa69f6d1585a3d9`; basic repository checks also passed.
 - Actual microphone, listening quality, natural pauses, spoken interruptions and
   physical device behavior still require human testing. No household data used.
+- Recovery/delivery local gate: **178 Python tests passed** in 22.265s and **41
+  Chrome browser workflows passed**. Ten bundle tests cover committed snapshots,
+  exclusions, deterministic bytes, permissions, overwrite refusal and extracted
+  doctor without Git. Eighteen launcher/config tests cover corrupt configuration,
+  folder scoping and truthful shutdown. Node syntax and diff checks passed.
+  Full extracted-app startup and this increment's remote CI remain pending.
 
 ## Authorization, limits and blockers
 
@@ -101,16 +124,17 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. PR #11 local and remote CI passed. Keep this branch as the cumulative demo
-   checkout; no agent owns unfinished edits. Do not merge. Prioritize remaining
-   scoped failure recovery and demo usability before the cutoff.
+1. Commit/publish `codex/wanda-demo-recovery`, build its committed ZIP and verify
+   extracted app startup/local flows/shutdown. Local tests and review are complete;
+   no agent owns unfinished edits. Check remote CI/artifact delivery and record
+   links. Keep PR #11 intact and all PRs unmerged.
 2. PR #10 CI is verified successful. Do not repeat paid tests; both planned
    attempts are complete and live microphone/physical-device acceptance is deferred.
 3. Continue useful scoped reliability/UX work before the cutoff; human-dependent
    acceptance remains deferred rather than fabricated. Update handoff/checkpoint.
 
 Continuation instruction:
-“Continue Issue #7 on `codex/wanda-live-turns` from this checkpoint. Read
+“Continue Issue #7 on `codex/wanda-demo-recovery` from this checkpoint. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
 and the private synthetic-test accounting without exposing credentials. Preserve
 unfinished work and keep PRs #8/#9/#10/#11 unmerged. Native subagents are available and

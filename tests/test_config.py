@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-from wanda.config import Config, ROOT, private_path
+from wanda.config import Config, ROOT, private_path, stop_data_dir
 
 
 class ConfigTests(unittest.TestCase):
@@ -85,6 +85,35 @@ class ConfigTests(unittest.TestCase):
             loaded = Config.load({"WANDA_DATA_DIR": directory})
             self.assertFalse(loaded.voice_enabled)
             self.assertEqual(loaded.api_key, "")
+
+    def test_stop_data_dir_uses_explicit_folder_even_with_invalid_selected_config(self):
+        with tempfile.TemporaryDirectory() as directory:
+            selected = Path(directory) / "broken.json"
+            selected.write_text("{ invalid synthetic json", encoding="utf-8")
+            with patch("wanda.config.Path.home", side_effect=RuntimeError("No home directory")):
+                self.assertEqual(stop_data_dir({
+                    "WANDA_DATA_DIR": directory, "WANDA_CONFIG": str(selected),
+                    "WANDA_PORT": "invalid", "WANDA_HOME_MODE": "invalid",
+                }), Path(directory).resolve())
+
+    def test_stop_data_dir_reads_only_location_and_preserves_explicit_config_intent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            selected = root / "selected.json"
+            selected.write_text(json.dumps({
+                "WANDA_DATA_DIR": str(root / "private"), "WANDA_PORT": "invalid",
+                "WANDA_HOME_MODE": "invalid", "WANDA_VOICE_MODEL": 42,
+            }), encoding="utf-8")
+            with patch("wanda.config.default_data_dir", return_value=root / "default"):
+                self.assertEqual(stop_data_dir({"WANDA_CONFIG": str(selected)}),
+                                 (root / "private").resolve())
+                self.assertEqual(stop_data_dir({"WANDA_CONFIG": str(selected), "WANDA_DATA_DIR": ""}),
+                                 (root / "default").resolve())
+                selected.write_text("{ malformed synthetic config", encoding="utf-8")
+                with self.assertRaises(ValueError):
+                    stop_data_dir({"WANDA_CONFIG": str(selected)})
+                self.assertEqual(stop_data_dir({"WANDA_CONFIG": ""}),
+                                 (root / "default").resolve())
 
 
 if __name__ == "__main__":

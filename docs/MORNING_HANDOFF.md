@@ -21,6 +21,17 @@ If the browser says it is locked, reopen Start Wanda so it receives the new loca
 session key. Do not share the launch link. If port 8765 is busy, set `WANDA_PORT`
 to 8766 in a private config. Local service startup does not expose Wanda to your LAN.
 
+You can also [download and extract a demo ZIP](DEMO_BUNDLE.md), then use its
+launcher without Git. It uses the same private data folder on this computer;
+stop an older running copy before testing the new one. Python is still required.
+
+If **Stop Wanda** cannot verify the running session, press **Control+C** in the
+window that started it. The launcher now distinguishes a missing session record
+from an unreadable, corrupt or unreachable one. It does not guess process IDs or
+search other data folders. An explicitly selected data folder remains stoppable
+even when unrelated configuration is broken. If damaged JSON makes a custom
+folder's location unknown, repair the config or use the original window to stop.
+
 ## Five-minute walkthrough
 
 Use invented information throughout:

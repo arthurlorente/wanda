@@ -73,6 +73,13 @@ A durable private spending ledger, strict synthetic input, bounded output and
 server-side cleanup gate the tests; no real devices are authorized. New work
 stops at 11:00am New York (15:00 UTC) on 2026-10-15 or an actual usage limit.
 
+The next scoped increment on `codex/wanda-demo-recovery` preserves browser drafts
+across delayed/failed requests, stops the selected instance despite unrelated
+config errors, and provides a reproducible ZIP for launch without Git. **178 Python
+tests and 41 browser workflows passed locally**. Extracted full-app verification
+and publication are pending; no new privacy permission or provider commitment is
+introduced. Python is still required to run the ZIP.
+
 ## Next actions and blockers
 
 1. Owner: try [MORNING_HANDOFF](MORNING_HANDOFF.md); no account or key needed.

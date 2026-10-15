@@ -18,6 +18,8 @@ python3 -m wanda
 Keep the launcher window open. Use **Stop Wanda** or Control+C to stop.
 See the plain-English [morning handoff](docs/MORNING_HANDOFF.md) for a five-minute
 walkthrough, configuration, and what is simulated.
+You can also use the [portable demo ZIP](docs/DEMO_BUNDLE.md): extract it and open
+the same launcher, with no Git setup. Python is still required.
 
 | Capability | V0 status |
 | --- | --- |
@@ -73,6 +75,8 @@ Do not publish real API keys, household network details, location information, r
 
 ## Development
 Please read [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) before contributing.
+Run development checks from a repository checkout; the demo ZIP includes runtime
+files and documentation, without the test/build tools.
 
 ```sh
 python3 -m wanda --doctor    # Check runtime/config without contacting providers

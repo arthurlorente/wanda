@@ -13,7 +13,7 @@ import urllib.error
 import urllib.request
 import webbrowser
 
-from .config import Config
+from .config import Config, stop_data_dir
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -33,16 +33,18 @@ def state_file(config):
 def read_running(config):
     try:
         state = json.loads(state_file(config).read_text(encoding="utf-8"))
+        if not isinstance(state, dict):
+            return None
         port = state["port"]
         token = state["token"]
-        if type(port) is not int or not 1024 <= port <= 65535 or not isinstance(token, str):
+        if type(port) is not int or not 1024 <= port <= 65535 or not isinstance(token, str) or not token:
             return None
         request = urllib.request.Request(f"http://127.0.0.1:{port}/api/status", headers={"Authorization": "Bearer " + token})
         # Never use environment proxy settings for a local capability.
         with local_opener().open(request, timeout=2) as response:
             status = json.loads(response.read(16384))
-        return state if status.get("version") and status.get("mode") == "demo" else None
-    except (OSError, ValueError, KeyError, urllib.error.URLError):
+        return state if isinstance(status, dict) and status.get("version") and status.get("mode") == "demo" else None
+    except (OSError, ValueError, KeyError, TypeError, urllib.error.URLError):
         return None
 
 
@@ -62,10 +64,20 @@ def save_state(config, state):
 
 
 def stop(config):
-    state = read_running(config)
-    if not state:
+    try:
+        state_file(config).lstat()
+    except FileNotFoundError:
         print("Wanda is already stopped, or this data folder has no active Wanda session.")
         return 0
+    except OSError:
+        print("Wanda cannot verify or stop this local session because its launcher state is unreadable. "
+              "If its window is open, press Control+C there.", file=sys.stderr)
+        return 1
+    state = read_running(config)
+    if not state:
+        print("Wanda cannot verify or stop this local session because its saved launcher state is invalid "
+              "or the service is unreachable. If its window is open, press Control+C there.", file=sys.stderr)
+        return 1
     request = urllib.request.Request(f"http://127.0.0.1:{state['port']}/api/shutdown", data=b"{}", method="POST",
                                      headers={"Authorization": "Bearer " + state["token"], "Content-Type": "application/json"})
     with local_opener().open(request, timeout=3):
@@ -124,6 +136,20 @@ def main(argv=None):
     if sys.version_info < (3, 11):
         print("Wanda needs Python 3.11 or newer. See docs/MORNING_HANDOFF.md.", file=sys.stderr)
         return 1
+    if args.stop:
+        try:
+            data_dir = stop_data_dir()
+        except (ValueError, OSError, TypeError):
+            print("Wanda could not identify the data folder for Stop Wanda. Set WANDA_DATA_DIR "
+                  "to the folder used at startup, or repair the selected WANDA_CONFIG file; "
+                  "no other folders were searched.", file=sys.stderr)
+            return 1
+        try:
+            return stop(Config(data_dir=data_dir))
+        except (ValueError, OSError, TypeError):
+            print("Wanda could not stop the selected local session. Check its launcher window "
+                  "and try Stop Wanda again.", file=sys.stderr)
+            return 1
     try:
         config = Config.load()
         if args.configure_voice:
@@ -143,8 +169,6 @@ def main(argv=None):
             print("Home: " + config.home_mode)
             print("Configuration: valid; no provider or home connection attempted")
             return 0
-        if args.stop:
-            return stop(config)
         config.prepare()
         running = read_running(config)
         if running:
@@ -180,7 +204,7 @@ def main(argv=None):
             app.close()
             try:
                 current = json.loads(state_file(config).read_text(encoding="utf-8"))
-                if current.get("token") == state["token"]:
+                if isinstance(current, dict) and current.get("token") == state["token"]:
                     state_file(config).unlink()
             except (OSError, ValueError):
                 pass

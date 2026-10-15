@@ -54,7 +54,9 @@ creation, billing change or automatic merge was used by development.
 
 Owner approved encrypted local backup/restore (D-051) and retained all saved
 memories locally (D-050). Recovery is implemented in the unmerged PR #9.
-Work continues on `codex/wanda-voice-validation`, based on PR #9. Synthetic live
+TLS/SDP fixes and live evidence are in [PR #10](https://github.com/arthurlorente/wanda/pull/10),
+stacked on PR #9. Work continues on `codex/wanda-live-turns` for browser follow-up
+response sequencing. Synthetic live
 voice testing has a session-specific **US$10 total** ceiling (D-052), replacing
 the original US$5 ceiling before any paid call. The private key is configured.
 A durable private spending ledger, strict synthetic input, bounded output and

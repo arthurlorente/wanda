@@ -1,4 +1,5 @@
 import ssl
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 
@@ -32,7 +33,8 @@ class TLSTests(unittest.TestCase):
                 patch("wanda.tls.Path.is_file", return_value=True), \
                 patch.object(context, "load_verify_locations") as load:
             self.assertIs(create_https_context(), context)
-            load.assert_called_once_with(cafile="/etc/ssl/cert.pem")
+            # sys.platform is mocked; Path still uses this test host's separators.
+            load.assert_called_once_with(cafile=str(Path("/etc/ssl/cert.pem")))
             self.assert_verified(context)
 
     def test_empty_non_macos_store_does_not_use_fallback(self):

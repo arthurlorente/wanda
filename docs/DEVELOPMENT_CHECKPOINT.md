@@ -11,10 +11,11 @@ V1 is not complete. Main has not been changed or merged.
 - [PR #9](https://github.com/arthurlorente/wanda/pull/9): `codex/wanda-v0-next`,
   stacked on PR #8. Encrypted memory recovery. Latest verified commit
   `4d02c03c3e073fc4ebeff22ba9b24537889c180f`.
-- Active branch: `codex/wanda-voice-validation`, based on the verified PR #9 head.
-  Adds verified HTTPS trust repair, exact SDP preservation and a bounded developer-only live test harness.
-  Publication and remote CI are next. A separate browser response-sequencing fix is
-  being prepared in unstaged files and must be kept out of this increment.
+- [PR #10](https://github.com/arthurlorente/wanda/pull/10): `codex/wanda-voice-validation`,
+  stacked on PR #9. HTTPS trust repair, exact SDP preservation and bounded live
+  evidence. Initial commit `ea42f21a6d26026e80700888f5218bae27b3bcd7`.
+- Active follow-up branch: `codex/wanda-live-turns`, based on PR #10. Separate
+  browser response-sequencing work is in progress; preserve any unstaged edits.
 - Keep all PRs unmerged for human review. Preserve private runtime state outside Git.
 
 ## Implemented state
@@ -52,7 +53,10 @@ V1 is not complete. Main has not been changed or merged.
   real loopback auth/cleanup with fake provider, budget limits and SDP preservation.
   **Six crypto and five child-input tests passed**; **20 browser workflows passed**
   before the final SDP change (covered by Python and actual live smoke). Remote CI
-  for this increment remains pending publication.
+  for PR #10 passed Linux/macOS and browser checks. Windows found a test assertion
+  using POSIX separators while mocking macOS on Windows. The assertion now uses
+  the host path representation; six targeted TLS tests pass. Corrected CI pending.
+  [Initial run](https://github.com/arthurlorente/wanda/actions/runs/38707650624).
 - Actual microphone, listening quality, natural pauses, spoken interruptions and
   physical device behavior still require human testing. No household data used.
 
@@ -84,8 +88,7 @@ V1 is not complete. Main has not been changed or merged.
 
 ## Next actions and exact continuation
 
-1. Complete the final offline gates and publish this increment stacked on PR #9.
-   Attach the PR, verify remote CI and update the morning handoff. Do not merge.
+1. Verify corrected PR #10 CI, then record its evidence. Do not merge.
 2. Voice subagent is preparing a separate browser fix in web/app.js and
    scripts/browser-check.cjs: serialize requested/active/cancelling responses and
    await cancellation acknowledgement before typed follow-ups/style changes.
@@ -96,10 +99,10 @@ V1 is not complete. Main has not been changed or merged.
    acceptance remains deferred rather than fabricated. Update handoff/checkpoint.
 
 Continuation instruction:
-“Continue Issue #7 on `codex/wanda-voice-validation` from this checkpoint. Read
+“Continue Issue #7 on `codex/wanda-live-turns` from this checkpoint. Read
 AGENTS.md and required canonical context; inspect git status, current Issues/PRs
 and the private synthetic-test accounting without exposing credentials. Preserve
-unfinished work and keep PRs #8/#9 unmerged. Native subagents are available and
+unfinished work and keep PRs #8/#9/#10 unmerged. Native subagents are available and
 explicitly authorized; use bounded ownership. Follow the approved US$10 total
 session cap and 11am New York cutoff. The two-attempt harness limit is exhausted;
 no further paid inference is planned, and no ledger reset/refund is permitted. Keep saved

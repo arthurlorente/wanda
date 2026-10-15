@@ -34,6 +34,8 @@ This is an index, not a substitute for ADRs. **Accepted** means an agreed direct
 
 | D-024 | Accepted development workflow | Codex may independently research, implement and test scoped work on feature branches, but must open PRs for human review before merging to main. | Preserve momentum without surrendering architectural, privacy, security or integration approvals. See [WORKFLOW](WORKFLOW.md). |
 
+| D-025 | Accepted evaluation process; licenses undecided | Have Codex compare software, documentation, firmware and hardware licenses against Wanda's philosophy and integrations, then recommend choices for approval. | See [licensing evaluation brief](LICENSING_EVALUATION.md) and [Issue #6](https://github.com/arthurlorente/wanda/issues/6). No operative license added. |
+
 ## How to append decisions
 
 Append a new numbered row when a substantive decision is accepted, rejected, superseded or reopened. Update existing status only with a dated history note and link to the replacing decision or ADR. Technical choices should have an ADR. Keep `PROJECT_CONTEXT.md`, `PROJECT_STATE.md`, requirements and issues in sync.

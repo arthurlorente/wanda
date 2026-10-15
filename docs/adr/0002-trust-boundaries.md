@@ -12,4 +12,6 @@ Anyone at home may speak to satellites. Anonymous voice input may access only al
 
 **Household trust (D-040):** Minimize guest records to what is useful for identification, context and authorized access. A voiceprint or derived biometric template requires its own informed enrollment consent and protected handling; social familiarity is not blanket consent to disclose guest facts to external AI services. Cloud model calls must disclose and minimize transmitted context. Never commercialize household or guest information.
 
+**Permission configuration and autonomy (D-045/D-046):** A resident's authenticated permission profile defines allowed devices and actions and whether confirmation is required. Routine safe actions may run automatically only inside explicit scopes. Wanda may make proactive suggestions without implying authorization to execute. Sensitive or out-of-scope actions require step-up approval; record actions and allow immediate interruption and revocation. The same scope controls apply when service connectivity changes.
+
 **Consequence:** Added identity and authorization UX, reducing risks from untrusted voice commands.
